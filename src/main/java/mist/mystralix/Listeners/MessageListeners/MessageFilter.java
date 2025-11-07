@@ -13,34 +13,26 @@ import java.util.HashSet;
 public class MessageFilter extends ListenerAdapter {
 
     @Override
-    public void onMessageReceived(MessageReceivedEvent event)
-    {
-
+    public void onMessageReceived(MessageReceivedEvent event) {
         String eventMessage = event.getMessage().getContentDisplay();
+        String censorWordsFileName = "\\censored_words.json";
 
-        String censorWordsFileName = "censored_words.json";
         if((event.getAuthor().isBot()) || (event.getMember() == null)) { return; }
 
         File file;
         FileHandler fileHandler = new FileHandler();
-        try {
-            file = fileHandler.getFile(censorWordsFileName);
-        } catch (FileException e) {
-            System.out.println(e.getMessage());
-            return;
-        }
-
         HashSet<String> censoredWords;
         JSONHandler jsonHandler = new JSONHandler();
         try {
-            censoredWords = jsonHandler.getFileContents(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            file = fileHandler.getFile(censorWordsFileName, true);
+            censoredWords = jsonHandler.getFileContentsHashSet(file, String.class);
+        } catch (IOException | FileException e) {
+            System.out.println(e.getMessage());
+            return;
         }
 
         if(censoredWords.contains(eventMessage)) {
             event.getMessage().delete().queue();
         }
-
     }
 }

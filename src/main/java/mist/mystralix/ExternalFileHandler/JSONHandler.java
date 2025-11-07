@@ -1,18 +1,48 @@
 package mist.mystralix.ExternalFileHandler;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import mist.mystralix.Objects.Task;
+import mist.mystralix.Objects.UserCounter;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class JSONHandler {
 
-    public HashSet<String> getFileContents(File file) throws IOException {
+    public <T> HashSet<T> getFileContentsHashSet(File file, Class<T> typeClass) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(
+                file,
+                objectMapper
+                        .getTypeFactory()
+                        .constructCollectionType(HashSet.class, typeClass)
+        );
+    }
 
-        // Return a HashSet of strings
-        return objectMapper.readValue(file, new TypeReference<>() {});
+    public <K, V> HashMap<K, V> getFileContentsHashMap(
+            File file,
+            Class<K> firstTypeClass,
+            Class<V> secondTypeClass
+    ) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        return objectMapper.readValue(
+                file,
+                TypeFactory
+                        .defaultInstance()
+                        .constructMapType(HashMap.class, firstTypeClass, secondTypeClass)
+        );
+    }
+
+    public void setUserTasksInFile(File file, HashSet<Task> userTasks) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writeValue(file, userTasks);
+    }
+
+    public void setUserCounterInFile(File file, HashMap<String, UserCounter> existingCounter) throws IOException {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.writeValue(file, existingCounter);
     }
 }
