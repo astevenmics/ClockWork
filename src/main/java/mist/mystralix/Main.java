@@ -15,7 +15,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
 
         JDA jda = JDABuilder.createLight(
-                "MTQyOTY5OTk2MjIxOTc5NDU0Mw.GpbjkW.WKHeqBtxc7eFSYq1p0bNdFgq5t6wmXTupB73_k",
+                "token",
                         EnumSet.of(
                                 GatewayIntent.GUILD_MESSAGES,
                                 GatewayIntent.DIRECT_MESSAGES,
