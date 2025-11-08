@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class Task {
 
-    // TODO: Auto incremenet once transitioned to Database
+    // TODO: Auto increment once transitioned to Database
     public int id;
     public String title;
     public String description;
