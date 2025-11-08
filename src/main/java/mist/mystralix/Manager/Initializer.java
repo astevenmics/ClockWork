@@ -3,6 +3,7 @@ package mist.mystralix.Manager;
 import mist.mystralix.ExternalFileHandler.FileHandler;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.util.Objects;
 
 public class Initializer {
@@ -26,7 +27,7 @@ public class Initializer {
                 boolean fileCreated = file.createNewFile();
 
                 FileHandler fileHandler = new FileHandler();
-                fileHandler.writeJSONInitializerInFile(file);
+                fileHandler.writeJSONInitializerInFile(file, "{}"); // HashSet
 
                 String folderCreatedComment = fileCreated ? "File has been created!" : "File could not be created!";
                 System.out.println(folderCreatedComment);

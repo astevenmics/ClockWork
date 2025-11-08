@@ -28,7 +28,6 @@ public class Main {
         jda.awaitReady();
         System.out.println("Bot is ready!");
 
-
         Initializer initializer = new Initializer();
         initializer.initializeEssentialFolders();
         initializer.initializeEssentialFiles();

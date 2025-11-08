@@ -54,7 +54,7 @@ public class FileHandler {
 
                 boolean fileCreated = file.createNewFile();
 
-                writeJSONInitializerInFile(file);
+                writeJSONInitializerInFile(file, "[]"); // HashMap
 
                 if(!fileCreated) { return null; }
             }
@@ -64,10 +64,9 @@ public class FileHandler {
         return file;
     }
 
-    public void writeJSONInitializerInFile(File file) throws IOException {
+    public void writeJSONInitializerInFile(File file, String initializer) throws IOException {
         FileWriter fileWriter = new FileWriter(file);
-        fileWriter.write("{}");
+        fileWriter.write(initializer);
         fileWriter.close();
     }
-
 }
