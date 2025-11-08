@@ -54,11 +54,7 @@ public class FileHandler {
 
                 boolean fileCreated = file.createNewFile();
 
-                try (FileWriter fileWriter = new FileWriter(file)) {
-                    fileWriter.write("[]");
-                }  catch(IOException e) {
-                    System.out.println(e.getMessage());
-                }
+                writeJSONInitializerInFile(file);
 
                 if(!fileCreated) { return null; }
             }
@@ -66,6 +62,12 @@ public class FileHandler {
             throw new RuntimeException(e.getMessage());
         }
         return file;
+    }
+
+    public void writeJSONInitializerInFile(File file) throws IOException {
+        FileWriter fileWriter = new FileWriter(file);
+        fileWriter.write("{}");
+        fileWriter.close();
     }
 
 }

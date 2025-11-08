@@ -6,6 +6,7 @@ import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
 import mist.mystralix.Objects.TaskHandler;
 import mist.mystralix.Objects.UserCounter;
+import mist.mystralix.Manager.UserCounterManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -67,13 +68,19 @@ public class AddTask implements SlashCommand {
         TaskHandler taskHandler = new TaskHandler();
         FileHandler fileHandler = new FileHandler();
 
-
-        File file;
         try {
-            UserCounter userCounter = taskHandler.getUserCounter(taskUser.getId());
+            UserCounterManager userCounterManager = new UserCounterManager(fileHandler);
+            UserCounter userCounter = userCounterManager.getUserCounter(taskUser.getId());
+
             Task newTask = new Task(userCounter.counter, taskTitle, taskDescription);
-            file = fileHandler.getUserTaskFile(taskUser);
-            taskHandler.setUserTasks(file, newTask, taskUser);
+
+            File file = fileHandler.getUserTaskFile(taskUser);
+            taskHandler.setUserTasks(
+                    file,
+                    newTask,
+                    taskUser,
+                    userCounterManager
+            );
         } catch (IOException | FileException e) {
             System.out.println(e.getMessage());
             // TODO: Update error (potentially creating a class for visually appealing error reports
