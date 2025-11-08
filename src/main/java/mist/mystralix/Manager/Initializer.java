@@ -3,7 +3,6 @@ package mist.mystralix.Manager;
 import mist.mystralix.ExternalFileHandler.FileHandler;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.util.Objects;
 
 public class Initializer {
