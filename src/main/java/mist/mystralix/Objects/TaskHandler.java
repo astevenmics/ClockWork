@@ -11,9 +11,15 @@ import java.util.HashSet;
 
 public class TaskHandler {
 
+    private final JSONHandler JSON_HANDLER;
+
+    // TODO: Centralize getUserTasks
+    public TaskHandler() {
+        this.JSON_HANDLER = new JSONHandler();
+    }
+
     public HashSet<Task> getUserTasks(File file) throws IOException {
-        JSONHandler jsonHandler = new JSONHandler();
-        return jsonHandler.getFileContentsHashSet(file, Task.class);
+        return JSON_HANDLER.getFileContentsHashSet(file, Task.class);
     }
 
     public void setUserTasks(
@@ -22,13 +28,12 @@ public class TaskHandler {
             User user,
             UserCounterManager userCounterManager
     ) throws FileException, IOException {
-        JSONHandler jsonHandler = new JSONHandler();
         HashSet<Task> userTasks = getUserTasks(file);
 
         userCounterManager.setUserCounter(user.getId());
 
         userTasks.add(newTask);
-        jsonHandler.setUserTasksInFile(file, userTasks);
+        JSON_HANDLER.setUserTasksInFile(file, userTasks);
     }
 
 }

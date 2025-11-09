@@ -43,13 +43,13 @@ public class AddTask implements SlashCommand {
                         "title",
                         "A brief title for the task.",
                         true
-                ),
+                ).setRequiredLength(1, 32),
                 new OptionData(
                         OptionType.STRING,
                         "description",
                         "A brief description for the task.",
                         true
-                ),
+                ).setRequiredLength(1, 256),
         };
     }
 
@@ -112,6 +112,7 @@ public class AddTask implements SlashCommand {
                 taskUser.getEffectiveName() + " | This task has been added to your task list.",
                 taskUser.getEffectiveAvatarUrl()
         );
+
         event.replyEmbeds(embedBuilder.build()).queue();
     }
 

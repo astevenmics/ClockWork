@@ -5,6 +5,7 @@ import mist.mystralix.ExternalFileHandler.FileHandler;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
 import mist.mystralix.Objects.TaskHandler;
+import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -12,7 +13,8 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.io.File;
-import java.util.Collections;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.stream.Collectors;
 
@@ -41,11 +43,21 @@ public class ListTasks implements SlashCommand {
                         "List all tasks of a certain type.",
                         false
                 )
-                        .addChoice(TaskStatus.ALL.getValue(), TaskStatus.ALL.getIntValue())
-                        .addChoice(TaskStatus.COMPLETED.getValue(), TaskStatus.COMPLETED.getIntValue())
-                        .addChoice(TaskStatus.INPROGRESS.getValue(), TaskStatus.INPROGRESS.getIntValue())
-                        .addChoice(TaskStatus.ARCHIVED.getValue(), TaskStatus.ARCHIVED.getIntValue())
-                        .addChoice(TaskStatus.CANCELLED.getValue(), TaskStatus.CANCELLED.getIntValue())
+                        .addChoice(
+                                TaskStatus.ALL.getIcon() + " " + TaskStatus.ALL.getStringValue(),
+                                TaskStatus.ALL.getIntValue())
+                        .addChoice(
+                                TaskStatus.COMPLETED.getIcon() + " " + TaskStatus.COMPLETED.getStringValue(),
+                                TaskStatus.COMPLETED.getIntValue())
+                        .addChoice(
+                                TaskStatus.INPROGRESS.getIcon() + " " + TaskStatus.INPROGRESS.getStringValue(),
+                                TaskStatus.INPROGRESS.getIntValue())
+                        .addChoice(
+                                TaskStatus.ARCHIVED.getIcon() + " " + TaskStatus.ARCHIVED.getStringValue(),
+                                TaskStatus.ARCHIVED.getIntValue())
+                        .addChoice(
+                        TaskStatus.CANCELLED.getIcon() + " " + TaskStatus.CANCELLED.getStringValue(),
+                        TaskStatus.CANCELLED.getIntValue())
         };
     }
 
@@ -72,19 +84,37 @@ public class ListTasks implements SlashCommand {
                 event.reply("You currently do not have any tasks! Use the AddTask command to start.").queue();
                 return;
             }
-            HashSet<Task> tasks = userTasks.stream()
-                    .filter(task -> task.taskStatus.equals(selectedTaskStatus))
-                    .collect(Collectors.toCollection(HashSet::new));
-            if(tasks.isEmpty()){
-                tasks = userTasks;
+            HashSet<Task> tasks =
+                    selectedTaskStatus == TaskStatus.ALL ?
+                            userTasks :
+                            userTasks.stream()
+                                    .filter(task -> task.taskStatus.equals(selectedTaskStatus))
+                                    .collect(Collectors.toCollection(HashSet::new));
+
+            if(tasks.isEmpty()) {
+                event.reply("No tasks found that have the status of **" + selectedTaskStatus.getStringValue() + "**").queue();
+                return;
             }
-            event.deferReply().queue();
-            tasks.forEach(
-                    x -> {
-                        String message = x.id + ". " + x.title + "\n" + x.description + "\n" + x.taskStatus.getValue();
-                        event.getHook().sendMessage(message).queue();
-                    }
+            ArrayList<Task> sortedTasks = new ArrayList<>(tasks);
+            sortedTasks.sort(Comparator.comparingInt(taskA -> taskA.id));
+
+            // TODO: Add pagination
+            EmbedBuilder embedBuilder = new EmbedBuilder();
+            embedBuilder.setTitle("Tasks");
+            for(Task task : sortedTasks) {
+                embedBuilder.addField(
+                        task.id + " - " + task.title,
+                        "Description: " + task.description +
+                                "\nStatus: " + task.taskStatus.getIcon() +
+                                " " + task.taskStatus.getStringValue(),
+                        true);
+            }
+            embedBuilder.setFooter(
+                    user.getEffectiveName() + " | Task Lists",
+                    user.getEffectiveAvatarUrl()
             );
+
+            event.replyEmbeds(embedBuilder.build()).queue();
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
         }
