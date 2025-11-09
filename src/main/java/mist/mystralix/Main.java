@@ -37,7 +37,7 @@ public class Main {
         jda.addEventListener(new MessageLogger());
         jda.addEventListener(new MessageFilter());
 
-        Guild guild = jda.getGuildById("1145616832590516246");
+        Guild guild = jda.getGuildById(System.getenv("GUILD_ID"));
         if (guild != null) guild.updateCommands().addCommands(manager.getCommandData()).queue();
 
     }

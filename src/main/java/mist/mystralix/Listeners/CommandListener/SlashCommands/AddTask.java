@@ -1,5 +1,6 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
+import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Exception.FileException;
 import mist.mystralix.ExternalFileHandler.FileHandler;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
@@ -72,7 +73,12 @@ public class AddTask implements SlashCommand {
             UserCounterManager userCounterManager = new UserCounterManager(fileHandler);
             UserCounter userCounter = userCounterManager.getUserCounter(taskUser.getId());
 
-            Task newTask = new Task(userCounter.counter, taskTitle, taskDescription);
+            Task newTask = new Task(
+                    userCounter.counter,
+                    taskTitle,
+                    taskDescription,
+                    TaskStatus.INPROGRESS
+            );
 
             File file = fileHandler.getUserTaskFile(taskUser);
             taskHandler.setUserTasks(

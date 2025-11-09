@@ -2,6 +2,7 @@ package mist.mystralix.Listeners.CommandListener.Commands;
 
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Listeners.CommandListener.SlashCommands.AddTask;
+import mist.mystralix.Listeners.CommandListener.SlashCommands.ListTasks;
 import mist.mystralix.Listeners.CommandListener.SlashCommands.Ping;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -17,6 +18,7 @@ public class CommandManager extends ListenerAdapter {
     public CommandManager() {
         registerCommand(new Ping());
         registerCommand(new AddTask());
+        registerCommand(new ListTasks());
     }
 
     private void registerCommand(SlashCommand command) {
