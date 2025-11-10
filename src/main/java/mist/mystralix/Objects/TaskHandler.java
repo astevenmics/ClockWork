@@ -1,5 +1,6 @@
 package mist.mystralix.Objects;
 
+import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Exception.FileException;
 import mist.mystralix.ExternalFileHandler.JSONHandler;
 import mist.mystralix.Manager.UserCounterManager;
@@ -33,6 +34,18 @@ public class TaskHandler {
         userCounterManager.setUserCounter(user.getId());
 
         userTasks.put(newTask.id, newTask);
+        JSON_HANDLER.setUserTasksInFile(file, userTasks);
+    }
+
+    public void cancelUserTask(
+            File file,
+            Task taskToCancel
+    ) throws IOException {
+        HashMap<Integer, Task> userTasks = getUserTasks(file);
+
+        taskToCancel.taskStatus = TaskStatus.CANCELLED;
+
+        userTasks.put(taskToCancel.id, taskToCancel);
         JSON_HANDLER.setUserTasksInFile(file, userTasks);
     }
 

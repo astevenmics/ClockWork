@@ -1,12 +1,21 @@
 - AddTask Command - Done
 - ListTasks Command - Done
 - ViewTask Command - Done
+- CancelTask - Done
 - UpdateTask - In Progress
-- CancelTask - Next
-- RemoveTask - Pending
+- RemoveTask - Next
 - Task
     * Update Handling from HashSet to HashMap - Done
 
 - All
     * Improve formatting
     * Use Pagination
+
+- Task Command
+    * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command
+    * /task add
+    * /task list [optional type]
+    * /task view [task id]
+    * /task update [task id]
+    * /task cancel [task id]
+    * /task remove [task id]
