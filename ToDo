@@ -1,9 +1,12 @@
 - AddTask Command - Done
-- ListTasks Command - Done (Partially)
-    * Improved formatting
-    * Use Pagination
-- ViewTask Command - In Progress
-- UpdateTask - Next
+- ListTasks Command - Done
+- ViewTask Command - Done
+- UpdateTask - In Progress
+- CancelTask - Next
 - RemoveTask - Pending
 - Task
     * Update Handling from HashSet to HashMap - Done
+
+- All
+    * Improve formatting
+    * Use Pagination

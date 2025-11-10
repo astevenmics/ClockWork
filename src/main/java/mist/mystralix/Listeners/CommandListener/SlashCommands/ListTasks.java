@@ -104,6 +104,7 @@ public class ListTasks implements SlashCommand {
             // TODO: Add pagination
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Tasks");
+            embedBuilder.setColor(selectedTaskStatus.getColorValue());
             for(Task task : tasks) {
                 embedBuilder.addField(
                         task.id + " - " + task.title,

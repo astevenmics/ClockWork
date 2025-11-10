@@ -8,7 +8,6 @@ import net.dv8tion.jda.api.entities.User;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
 
 public class TaskHandler {
 
