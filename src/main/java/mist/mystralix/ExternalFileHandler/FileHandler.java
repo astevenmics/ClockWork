@@ -54,7 +54,7 @@ public class FileHandler {
 
                 boolean fileCreated = file.createNewFile();
 
-                writeJSONInitializerInFile(file, "[]"); // HashMap
+                writeJSONInitializerInFile(file, "{}"); // HashMap
 
                 if(!fileCreated) { return null; }
             }

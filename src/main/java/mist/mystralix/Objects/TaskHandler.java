@@ -7,6 +7,7 @@ import net.dv8tion.jda.api.entities.User;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
 
 public class TaskHandler {
@@ -18,8 +19,8 @@ public class TaskHandler {
         this.JSON_HANDLER = new JSONHandler();
     }
 
-    public HashSet<Task> getUserTasks(File file) throws IOException {
-        return JSON_HANDLER.getFileContentsHashSet(file, Task.class);
+    public HashMap<Integer, Task> getUserTasks(File file) throws IOException {
+        return JSON_HANDLER.getFileContentsHashMap(file, Integer.class, Task.class);
     }
 
     public void setUserTasks(
@@ -28,11 +29,11 @@ public class TaskHandler {
             User user,
             UserCounterManager userCounterManager
     ) throws FileException, IOException {
-        HashSet<Task> userTasks = getUserTasks(file);
+        HashMap<Integer, Task> userTasks = getUserTasks(file);
 
         userCounterManager.setUserCounter(user.getId());
 
-        userTasks.add(newTask);
+        userTasks.put(newTask.id, newTask);
         JSON_HANDLER.setUserTasksInFile(file, userTasks);
     }
 

@@ -36,7 +36,7 @@ public class JSONHandler {
         );
     }
 
-    public void setUserTasksInFile(File file, HashSet<Task> userTasks) throws IOException {
+    public void setUserTasksInFile(File file, HashMap<Integer, Task> userTasks) throws IOException {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.writeValue(file, userTasks);
     }

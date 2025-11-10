@@ -13,9 +13,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class ListTasks implements SlashCommand {
@@ -79,29 +77,34 @@ public class ListTasks implements SlashCommand {
         // TODO: Use EmbedBuilder
         try {
             File userFile = fileHandler.getUserTaskFile(user);
-            HashSet<Task> userTasks = taskHandler.getUserTasks(userFile);
+            HashMap<Integer, Task> userTasks = taskHandler.getUserTasks(userFile);
             if(userTasks.isEmpty()) {
                 event.reply("You currently do not have any tasks! Use the AddTask command to start.").queue();
                 return;
             }
-            HashSet<Task> tasks =
-                    selectedTaskStatus == TaskStatus.ALL ?
-                            userTasks :
-                            userTasks.stream()
-                                    .filter(task -> task.taskStatus.equals(selectedTaskStatus))
-                                    .collect(Collectors.toCollection(HashSet::new));
 
-            if(tasks.isEmpty()) {
+            ArrayList<Task> userTasksList = userTasks
+                    .values()
+                    .stream()
+                    .filter(task -> task
+                            .taskStatus
+                            .equals(selectedTaskStatus))
+                    .sorted(Comparator.comparingInt(taskItem -> taskItem.id))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            if(userTasksList.isEmpty() && selectedTaskStatus != TaskStatus.ALL) {
                 event.reply("No tasks found that have the status of **" + selectedTaskStatus.getStringValue() + "**").queue();
                 return;
             }
-            ArrayList<Task> sortedTasks = new ArrayList<>(tasks);
-            sortedTasks.sort(Comparator.comparingInt(taskA -> taskA.id));
+
+            ArrayList<Task> tasks =
+                    selectedTaskStatus == TaskStatus.ALL ?
+                            new ArrayList<>(userTasks.values()) : userTasksList;
 
             // TODO: Add pagination
             EmbedBuilder embedBuilder = new EmbedBuilder();
             embedBuilder.setTitle("Tasks");
-            for(Task task : sortedTasks) {
+            for(Task task : tasks) {
                 embedBuilder.addField(
                         task.id + " - " + task.title,
                         "Description: " + task.description +
