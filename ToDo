@@ -2,8 +2,9 @@
 - ListTasks Command - Done
 - ViewTask Command - Done
 - CancelTask - Done
-- UpdateTask - In Progress
-- RemoveTask - Next
+- Transition JSON handling into Database | SQLite > Might change to PostgresSQL / MySQL
+- UpdateTask - Next
+- RemoveTask - Pending
 - Task
     * Update Handling from HashSet to HashMap - Done
 

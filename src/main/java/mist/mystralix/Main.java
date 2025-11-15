@@ -1,5 +1,6 @@
 package mist.mystralix;
 
+import mist.mystralix.Database.DBHandler;
 import mist.mystralix.Listeners.CommandListener.Commands.CommandManager;
 import mist.mystralix.Listeners.MessageListeners.MessageFilter;
 import mist.mystralix.Listeners.MessageListeners.MessageLogger;
@@ -40,5 +41,7 @@ public class Main {
         Guild guild = jda.getGuildById(System.getenv("GUILD_ID"));
         if (guild != null) guild.updateCommands().addCommands(manager.getCommandData()).queue();
 
+        DBHandler dbManager = new DBHandler();
+        dbManager.initializeDatabaseTable();
     }
 }
