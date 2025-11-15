@@ -1,19 +1,14 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
-import mist.mystralix.ExternalFileHandler.FileHandler;
+import mist.mystralix.Database.DBHandler;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
-import mist.mystralix.Objects.TaskHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-
-import java.awt.*;
-import java.io.File;
-import java.util.HashMap;
 
 public class ViewTask implements SlashCommand {
 
@@ -49,26 +44,20 @@ public class ViewTask implements SlashCommand {
 
         User user = event.getUser();
 
+        // TODO: Cleanup
+
         OptionMapping option = event.getOption("task_id");
         if (option == null) { return; }
         int taskID = option.getAsInt();
 
-        Task taskToView = null;
+        DBHandler dbHandler = new DBHandler();
 
-        try {
-            FileHandler fileHandler = new FileHandler();
-            TaskHandler taskHandler = new TaskHandler();
+        Task taskToView = dbHandler.getTask(user.getId(), taskID);
 
-            File userTaskFile = fileHandler.getUserTaskFile(user);
-            HashMap<Integer, Task> userTasks = taskHandler.getUserTasks(userTaskFile);
-
-            taskToView = userTasks.get(taskID);
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        if(taskToView == null) {
+            event.reply("No task found.").queue();
+            return;
         }
-
-        if(taskToView == null) { return; }
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Task #" + taskID);

@@ -1,13 +1,9 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
+import mist.mystralix.Database.DBHandler;
 import mist.mystralix.Enums.TaskStatus;
-import mist.mystralix.Exception.FileException;
-import mist.mystralix.ExternalFileHandler.FileHandler;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
-import mist.mystralix.Objects.TaskHandler;
-import mist.mystralix.Objects.UserCounter;
-import mist.mystralix.Manager.UserCounterManager;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -16,8 +12,6 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 import java.awt.*;
-import java.io.File;
-import java.io.IOException;
 
 public class AddTask implements SlashCommand {
 
@@ -66,33 +60,15 @@ public class AddTask implements SlashCommand {
         String taskDescription = description.getAsString();
 
         User taskUser = event.getUser();
-        TaskHandler taskHandler = new TaskHandler();
-        FileHandler fileHandler = new FileHandler();
 
-        try {
-            UserCounterManager userCounterManager = new UserCounterManager(fileHandler);
-            UserCounter userCounter = userCounterManager.getUserCounter(taskUser.getId());
+        Task newTask = new Task(
+                taskTitle,
+                taskDescription,
+                TaskStatus.INPROGRESS
+        );
 
-            Task newTask = new Task(
-                    userCounter.counter,
-                    taskTitle,
-                    taskDescription,
-                    TaskStatus.INPROGRESS
-            );
-
-            File file = fileHandler.getUserTaskFile(taskUser);
-            taskHandler.setUserTasks(
-                    file,
-                    newTask,
-                    taskUser,
-                    userCounterManager
-            );
-        } catch (IOException | FileException e) {
-            System.out.println(e.getMessage());
-            // TODO: Update error (potentially creating a class for visually appealing error reports
-            event.getHook().editOriginal("Error! Please try again later.").queue();
-            return;
-        }
+        DBHandler dbHandler = new DBHandler();
+        dbHandler.addTask(newTask, taskUser.getId());
 
         // TODO: Update visually
         EmbedBuilder embedBuilder = new EmbedBuilder();

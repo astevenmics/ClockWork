@@ -3,12 +3,8 @@ package mist.mystralix.ExternalFileHandler;
 import mist.mystralix.Exception.FileDoesNotExistException;
 import mist.mystralix.Exception.FileException;
 import mist.mystralix.Exception.ReadPermissionFileException;
-import mist.mystralix.Objects.TaskHandler;
-import net.dv8tion.jda.api.entities.User;
 
 import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Objects;
 
 public class FileHandler {
@@ -40,33 +36,4 @@ public class FileHandler {
         return file;
     }
 
-    public File getUserTaskFile(User user) throws FileException {
-        String userTaskFileName = "\\tasks\\" + user.getId() + ".json";
-        File file;
-
-        try {
-            FileHandler fileHandler = new FileHandler();
-            file = fileHandler.getFile(userTaskFileName, false);
-            if(Objects.isNull(file)) {
-
-                File path = new File(Objects.requireNonNull(TaskHandler.class.getResource("/")).getPath());
-                file = new File(path + userTaskFileName);
-
-                boolean fileCreated = file.createNewFile();
-
-                writeJSONInitializerInFile(file, "{}"); // HashMap
-
-                if(!fileCreated) { return null; }
-            }
-        } catch (IOException | FileException e) {
-            throw new RuntimeException(e.getMessage());
-        }
-        return file;
-    }
-
-    public void writeJSONInitializerInFile(File file, String initializer) throws IOException {
-        FileWriter fileWriter = new FileWriter(file);
-        fileWriter.write(initializer);
-        fileWriter.close();
-    }
 }

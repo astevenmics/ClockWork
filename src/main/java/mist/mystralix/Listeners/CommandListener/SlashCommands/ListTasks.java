@@ -1,10 +1,9 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
+import mist.mystralix.Database.DBHandler;
 import mist.mystralix.Enums.TaskStatus;
-import mist.mystralix.ExternalFileHandler.FileHandler;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
-import mist.mystralix.Objects.TaskHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -12,8 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 public class ListTasks implements SlashCommand {
@@ -71,25 +69,20 @@ public class ListTasks implements SlashCommand {
         );
 
         TaskStatus selectedTaskStatus = TaskStatus.getTaskStatus(option);
-        TaskHandler taskHandler = new TaskHandler();
-        FileHandler fileHandler = new FileHandler();
+
+        DBHandler dbHandler = new DBHandler();
+        ArrayList<Task> allTasks = dbHandler.getAllUserTasks(user.getId());
 
         // TODO: Use EmbedBuilder
-        try {
-            File userFile = fileHandler.getUserTaskFile(user);
-            HashMap<Integer, Task> userTasks = taskHandler.getUserTasks(userFile);
-            if(userTasks.isEmpty()) {
-                event.reply("You currently do not have any tasks! Use the AddTask command to start.").queue();
-                return;
-            }
+        if(allTasks.isEmpty()) {
+            event.reply("You currently do not have any tasks! Use the AddTask command to start.").queue();
+            return;
+        }
 
-            ArrayList<Task> userTasksList = userTasks
-                    .values()
-                    .stream()
+            ArrayList<Task> userTasksList = allTasks.stream()
                     .filter(task -> task
                             .taskStatus
                             .equals(selectedTaskStatus))
-                    .sorted(Comparator.comparingInt(taskItem -> taskItem.id))
                     .collect(Collectors.toCollection(ArrayList::new));
 
             if(userTasksList.isEmpty() && selectedTaskStatus != TaskStatus.ALL) {
@@ -97,9 +90,7 @@ public class ListTasks implements SlashCommand {
                 return;
             }
 
-            ArrayList<Task> tasks =
-                    selectedTaskStatus == TaskStatus.ALL ?
-                            new ArrayList<>(userTasks.values()) : userTasksList;
+            ArrayList<Task> tasks = selectedTaskStatus == TaskStatus.ALL ? allTasks : userTasksList;
 
             // TODO: Add pagination
             EmbedBuilder embedBuilder = new EmbedBuilder();
@@ -107,7 +98,7 @@ public class ListTasks implements SlashCommand {
             embedBuilder.setColor(selectedTaskStatus.getColorValue());
             for(Task task : tasks) {
                 embedBuilder.addField(
-                        task.id + " - " + task.title,
+                        task.title,
                         "Description: " + task.description +
                                 "\nStatus: " + task.taskStatus.getIcon() +
                                 " " + task.taskStatus.getStringValue(),
@@ -119,11 +110,6 @@ public class ListTasks implements SlashCommand {
             );
 
             event.replyEmbeds(embedBuilder.build()).queue();
-        } catch (Exception ex) {
-            System.out.println(ex.getMessage());
-        }
-
 
     }
-
 }

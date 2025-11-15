@@ -1,19 +1,15 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
+import mist.mystralix.Database.DBHandler;
 import mist.mystralix.Enums.TaskStatus;
-import mist.mystralix.ExternalFileHandler.FileHandler;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
-import mist.mystralix.Objects.TaskHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
-
-import java.io.File;
-import java.util.HashMap;
 
 public class CancelTask implements SlashCommand {
 
@@ -47,29 +43,22 @@ public class CancelTask implements SlashCommand {
     @Override
     public void execute(SlashCommandInteraction event) {
 
+        // TODO: Cleanup
         User user = event.getUser();
 
         OptionMapping option = event.getOption("task_id");
         if (option == null) { return; }
         int taskID = option.getAsInt();
 
-        Task taskToCancel = null;
+        DBHandler dbHandler = new DBHandler();
 
-        try {
-            FileHandler fileHandler = new FileHandler();
-            TaskHandler taskHandler = new TaskHandler();
-
-            File userTaskFile = fileHandler.getUserTaskFile(user);
-            HashMap<Integer, Task> userTasks = taskHandler.getUserTasks(userTaskFile);
-
-            taskToCancel = userTasks.get(taskID);
-            taskHandler.cancelUserTask(userTaskFile, taskToCancel);
-
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
+        Task taskToCancel = dbHandler.getTask(user.getId(), taskID);
+        if(taskToCancel == null) {
+            event.reply("No task found.").queue();
+            return;
         }
-
-        if(taskToCancel == null) { return; }
+        taskToCancel.taskStatus = TaskStatus.CANCELLED;
+        dbHandler.cancelUserTask(user.getId(), taskID, taskToCancel);
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Task #" + taskID);

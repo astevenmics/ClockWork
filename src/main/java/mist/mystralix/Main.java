@@ -4,7 +4,6 @@ import mist.mystralix.Database.DBHandler;
 import mist.mystralix.Listeners.CommandListener.Commands.CommandManager;
 import mist.mystralix.Listeners.MessageListeners.MessageFilter;
 import mist.mystralix.Listeners.MessageListeners.MessageLogger;
-import mist.mystralix.Manager.Initializer;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -29,10 +28,6 @@ public class Main {
         jda.awaitReady();
         System.out.println("Bot is ready!");
 
-        Initializer initializer = new Initializer();
-        initializer.initializeEssentialFolders();
-        initializer.initializeEssentialFiles();
-
         CommandManager manager = new CommandManager();
         jda.addEventListener(manager);
         jda.addEventListener(new MessageLogger());
@@ -41,7 +36,7 @@ public class Main {
         Guild guild = jda.getGuildById(System.getenv("GUILD_ID"));
         if (guild != null) guild.updateCommands().addCommands(manager.getCommandData()).queue();
 
-        DBHandler dbManager = new DBHandler();
-        dbManager.initializeDatabaseTable();
+        DBHandler dbHandler = new DBHandler();
+        dbHandler.initializeDatabaseTable();
     }
 }
