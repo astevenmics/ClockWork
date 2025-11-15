@@ -1,51 +1,38 @@
 package mist.mystralix.Objects;
 
-import mist.mystralix.Enums.TaskStatus;
-import mist.mystralix.Exception.FileException;
+import mist.mystralix.Database.DBTaskHandler;
 import net.dv8tion.jda.api.entities.User;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public class TaskHandler {
 
     // ToDo: Apply Database to this class
-//    private final JSONHandler JSON_HANDLER;
-//
-//    // TODO: Centralize getUserTasks
-//    public TaskHandler() {
-//        this.JSON_HANDLER = new JSONHandler();
-//    }
-//
-//    public HashMap<Integer, Task> getUserTasks(File file) throws IOException {
-//        return JSON_HANDLER.getFileContentsHashMap(file, Integer.class, Task.class);
-//    }
-//
-//    public void setUserTasks(
-//            File file,
-//            Task newTask,
-//            User user,
-//            UserCounterManager userCounterManager
-//    ) throws FileException, IOException {
-//        HashMap<Integer, Task> userTasks = getUserTasks(file);
-//
-//        userCounterManager.setUserCounter(user.getId());
-//
-//        userTasks.put(newTask);
-//        JSON_HANDLER.setUserTasksInFile(file, userTasks);
-//    }
-//
-//    public void cancelUserTask(
-//            File file,
-//            Task taskToCancel
-//    ) throws IOException {
-//        HashMap<Integer, Task> userTasks = getUserTasks(file);
-//
-//        taskToCancel.taskStatus = TaskStatus.CANCELLED;
-//
-//        userTasks.put(taskToCancel.id, taskToCancel);
-//        JSON_HANDLER.setUserTasksInFile(file, userTasks);
-//    }
+    private final DBTaskHandler DB_TASK_HANDLER;
+
+    public TaskHandler() {
+        this.DB_TASK_HANDLER = new DBTaskHandler();
+    }
+
+    public void addTask(Task task, User user) {
+        String userID = user.getId();
+        DB_TASK_HANDLER.addTask(task, userID);
+    }
+
+    public ArrayList<Task> getUserTasks(User user) {
+        ArrayList<Task> userTasks = new ArrayList<>();
+        String userID = user.getId();
+        return DB_TASK_HANDLER.getAllUserTasks(userTasks, userID);
+    }
+
+    public Task getUserTask(User user, int taskID) {
+        String userID = user.getId();
+        return DB_TASK_HANDLER.getTask(userID, taskID);
+    }
+
+    public void cancelUserTask(User user, int taskID, Task task) {
+        String userID = user.getId();
+        DB_TASK_HANDLER.cancelUserTask(userID, taskID, task);
+    }
 
 }

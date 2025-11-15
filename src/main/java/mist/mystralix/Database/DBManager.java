@@ -1,30 +1,44 @@
 package mist.mystralix.Database;
 
-import java.io.File;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class DBManager {
 
-    protected static Connection connection;
+    private static HikariDataSource dataSource;
 
-    protected Connection getConnection() {
+    public static void init() {
+        HikariConfig config = new HikariConfig();
+        String dbPort = System.getenv("DB_PORT");
+        config.setJdbcUrl("jdbc:mysql://localhost:" + dbPort + "/clockwork");
+        config.setUsername("root");
+        config.setPassword(System.getenv("DB_PASSWORD"));
 
-        try {
-            File getFile = new File("db/database.db");
-            if (!getFile.exists()) {
-                boolean created = getFile.createNewFile();
-                if(!created) {
-                    System.out.println("Database File not created");
-                }
-            }
-            String url = "jdbc:sqlite:" + getFile.getAbsolutePath();
-            connection = DriverManager.getConnection(url);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            System.out.println("Error connecting to database");
-        }
-        return connection;
+        config.addDataSourceProperty("cachePrepStmts", "true");
+        config.addDataSourceProperty("prepStmtCacheSize", "250");
+        config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
+        config.addDataSourceProperty("useServerPrepStmts", "true");
+        config.addDataSourceProperty("useLocalSessionState", "true");
+        config.addDataSourceProperty("rewriteBatchedStatements", "true");
+        config.addDataSourceProperty("cacheResultSetMetadata", "true");
+        config.addDataSourceProperty("cacheServerConfiguration", "true");
+        config.addDataSourceProperty("elideSetAutoCommits", "true");
+        config.addDataSourceProperty("maintainTimeStats", "false");
+        config.setMaximumPoolSize(20);
+        config.setMinimumIdle(5);
+        config.setIdleTimeout(30000);
+        config.setMaxLifetime(1800000);
+        config.setPoolName("ClockWork MySQL Pool");
+        config.setLeakDetectionThreshold(2000);
+
+        dataSource = new HikariDataSource(config);
+    }
+
+    public static Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
 }

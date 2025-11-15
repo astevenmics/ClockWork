@@ -1,6 +1,7 @@
 package mist.mystralix;
 
-import mist.mystralix.Database.DBHandler;
+import mist.mystralix.Database.DBManager;
+import mist.mystralix.Database.DBSchemaInitializer;
 import mist.mystralix.Listeners.CommandListener.Commands.CommandManager;
 import mist.mystralix.Listeners.MessageListeners.MessageFilter;
 import mist.mystralix.Listeners.MessageListeners.MessageLogger;
@@ -13,6 +14,8 @@ import java.util.EnumSet;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
+
+        DBManager.init();
 
         JDA jda = JDABuilder.createLight(
                 System.getenv("DISCORD_TOKEN"),
@@ -36,7 +39,7 @@ public class Main {
         Guild guild = jda.getGuildById(System.getenv("GUILD_ID"));
         if (guild != null) guild.updateCommands().addCommands(manager.getCommandData()).queue();
 
-        DBHandler dbHandler = new DBHandler();
-        dbHandler.initializeDatabaseTable();
+        DBSchemaInitializer dbSchemaInitializer = new DBSchemaInitializer();
+        dbSchemaInitializer.initializeDatabaseTable();
     }
 }
