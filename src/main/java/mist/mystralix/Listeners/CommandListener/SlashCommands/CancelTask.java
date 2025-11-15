@@ -1,9 +1,9 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
-import mist.mystralix.Database.DBHandler;
 import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
+import mist.mystralix.Objects.TaskHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -50,15 +50,15 @@ public class CancelTask implements SlashCommand {
         if (option == null) { return; }
         int taskID = option.getAsInt();
 
-        DBHandler dbHandler = new DBHandler();
+        TaskHandler taskHandler = new TaskHandler();
 
-        Task taskToCancel = dbHandler.getTask(user.getId(), taskID);
+        Task taskToCancel = taskHandler.getUserTask(user, taskID);
         if(taskToCancel == null) {
             event.reply("No task found.").queue();
             return;
         }
         taskToCancel.taskStatus = TaskStatus.CANCELLED;
-        dbHandler.cancelUserTask(user.getId(), taskID, taskToCancel);
+        taskHandler.cancelUserTask(user, taskID, taskToCancel);
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Task #" + taskID);

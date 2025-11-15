@@ -1,9 +1,9 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
-import mist.mystralix.Database.DBHandler;
 import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
+import mist.mystralix.Objects.TaskHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -70,8 +70,8 @@ public class ListTasks implements SlashCommand {
 
         TaskStatus selectedTaskStatus = TaskStatus.getTaskStatus(option);
 
-        DBHandler dbHandler = new DBHandler();
-        ArrayList<Task> allTasks = dbHandler.getAllUserTasks(user.getId());
+        TaskHandler taskHandler = new TaskHandler();
+        ArrayList<Task> allTasks = taskHandler.getUserTasks(user);
 
         // TODO: Use EmbedBuilder
         if(allTasks.isEmpty()) {

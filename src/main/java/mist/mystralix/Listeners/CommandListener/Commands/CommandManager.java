@@ -14,7 +14,6 @@ public class CommandManager extends ListenerAdapter {
     private final HashMap<String, SlashCommand> commands = new HashMap<>();
 
     public CommandManager() {
-        registerCommand(new Ping());
         registerCommand(new AddTask());
         registerCommand(new ListTasks());
         registerCommand(new ViewTask());
