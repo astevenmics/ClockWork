@@ -13,15 +13,19 @@ public class TaskHandler {
         this.DB_TASK_HANDLER = new DBTaskHandler();
     }
 
-    public void addTask(Task task, User user) {
+    public void addTask(TaskDAO task, User user, String taskUUIDAsString) {
         String userDiscordID = user.getId();
-        DB_TASK_HANDLER.addTask(task, userDiscordID);
+        DB_TASK_HANDLER.addTask(task, userDiscordID, taskUUIDAsString);
     }
 
     public ArrayList<Task> getUserTasks(User user) {
         ArrayList<Task> userTasks = new ArrayList<>();
         String userDiscordID = user.getId();
         return DB_TASK_HANDLER.getAllUserTasks(userTasks, userDiscordID);
+    }
+
+    public Task getUserTask(String taskUUIDAsString) {
+        return  DB_TASK_HANDLER.getTask(taskUUIDAsString);
     }
 
     public Task getUserTask(User user, int taskID) {

@@ -2,13 +2,13 @@ package mist.mystralix.Database;
 
 import com.google.gson.Gson;
 import mist.mystralix.Objects.Task;
+import mist.mystralix.Objects.TaskDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.UUID;
 
 public class DBTaskHandler {
 
@@ -20,14 +20,14 @@ public class DBTaskHandler {
         - Converts the task object into a String JSON object
         - Finally, pushes the converted task object into the database
     */
-    public void addTask(Task task, String userDiscordID) {
+    public void addTask(TaskDAO taskDAO, String userDiscordID, String taskUUIDAsString) {
         /*
             - SQL Query for MySQL to insert a new task
-            - Uses uuid placeholder as the unique identifier for the row
+            - Uses taskUUID placeholder as the unique identifier for the row
             - Uses userDiscordID placeholder as the container for the user's discord ID
             - Uses task placeholder as the container for the task object
         */
-        String sqlStatement = "INSERT INTO tasks (uuid, userDiscordID, task) values (?, ?, ?);";
+        String sqlStatement = "INSERT INTO tasks (taskUUID, userDiscordID, taskDAO) values (?, ?, ?);";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -38,16 +38,7 @@ public class DBTaskHandler {
                 Initializes a Gson object to use in converting a Task JSON String into a Task object
             */
             Gson gson = new Gson();
-            String taskAsString = gson.toJson(task);
-
-            /*
-                Creates a new UUID object/value for the first placeholder as a unique identifier
-            */
-            UUID taskUUID = UUID.randomUUID();
-            /*
-                Converts taskUUID into a string to store in the uuid String placeholder in the table
-            */
-            String taskUUIDAsString = taskUUID.toString();
+            String taskDAOAsString = gson.toJson(taskDAO);
 
             /*
                 Sets the values for each placeholder in the sqlStatement
@@ -55,12 +46,12 @@ public class DBTaskHandler {
                     | It is the TEXT/String version of the UUID object
                 ? 2 | Sets userDiscordID as the value for the second placeholder
                     | userDiscordID is the user's discord ID
-                ? 3 | Sets taskAsString as the value for the third placeholder
-                    | taskAsString is the TEXT/String version of the JSON object Task
+                ? 3 | Sets taskDAOAsString as the value for the third placeholder
+                    | taskDAOAsString is the TEXT/String version of the JSON object Task
             */
             preparedStatement.setString(1, taskUUIDAsString);
             preparedStatement.setString(2, userDiscordID);
-            preparedStatement.setString(3, taskAsString);
+            preparedStatement.setString(3, taskDAOAsString);
 
             /*
                 Executes the statement pushing it into the database
@@ -117,10 +108,12 @@ public class DBTaskHandler {
 
             /*
                 - Expects either one or zero output from resultSet
-                - Gets the "task" column in the result and storing it in the taskAsString variable
-                - "task" column contains the JSON value of a Task object
-                - Uses the Gson object to convert taskAsString into a Task object using its fromJson function
-                - Finally, re-assigns the task variable with the converted Task data from taskAsString
+                - Gets the "taskUUID" column in the result and storing it in the taskUUIDAsString variable
+                - Gets the "userDiscordID" column in the result and storing it in the userDiscordIDAsString variable
+                - Gets the "taskDAO" column in the result and storing it in the taskDAOAsString variable
+                - "taskDAO" column contains the JSON value of a Task object
+                - Uses the Gson object to convert taskDAOAsString into a TaskDAO object using its fromJson function
+                - Finally, re-assigns the task variable with a new Task instantiation with all the variables
                 - If no data is stored in resultSet, returns null
             */
             /*
@@ -129,13 +122,96 @@ public class DBTaskHandler {
             Gson gson = new Gson();
 
             if (resultSet.next()) {
-                String taskAsString = resultSet.getString("task");
-                task = gson.fromJson(taskAsString, Task.class);
+                String taskUUIDAsString = resultSet.getString("taskUUID");
+                String userDiscordIDAsString = resultSet.getString("userDiscordID");
+                String taskDAOAsString = resultSet.getString("taskDAO");
+                TaskDAO taskDAO = gson.fromJson(taskDAOAsString, TaskDAO.class);
+
+                task = new Task(
+                        taskUUIDAsString,
+                        userDiscordIDAsString,
+                        taskID,
+                        taskDAO
+                );
             } else {
                 return null;
             }
         } catch (SQLException e) {
             System.out.println("Error getting user: " + userDiscordID + ", task: " + taskID);
+            throw new RuntimeException("DB Error", e);
+        }
+        return task;
+    }
+
+    /*
+        getTask
+        - Used in getting a specific task using the UUID
+        - Uses UUID to get the row that contains the UUID value in the uuid column
+        - Converts the collected row from a Strings and String JSON into a complete Task object using Gson
+        - Finally, returns the converted Task object
+    */
+    public Task getTask(String taskUUIDAsString) {
+        /*
+            - Initializes a Task object to use upon converting a Task JSON String into a Task object
+            - Initialized outside the try-catch scope as return would also need to be outside the scope
+            - Re-assigns the value of the task variable inside the try-catch scope
+         */
+        Task task;
+
+        /*
+            - SQL Query for MySQL to select all rows
+            - Uses the uuid column to find the row that has the taskUUIDAsString value
+        */
+        String sqlStatement = "SELECT * FROM tasks WHERE taskUUID = ?;";
+        try (
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
+        ) {
+
+            /*
+                Sets the values for each placeholder in the sqlStatement
+                ? 1 | Sets taskUUIDAsString as the value for the first placeholder
+                    | taskUUIDAsString is the task UUID
+            */
+            preparedStatement.setString(1, taskUUIDAsString);
+
+            /*
+                - Expects a ResultSet object as the sqlStatement is set to get and retrieve data
+            */
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            /*
+                Initializes a Gson object to use in converting a Task JSON String into a Task object
+            */
+            Gson gson = new Gson();
+
+            /*
+                - Expects either one or zero output from resultSet
+                - Gets the "userDiscordID" column in the result and storing it in the userDiscordIDAsString variable
+                - Gets the "taskID" column in the result and storing it in the taskID variable
+                - Gets the "taskDAO" column in the result and storing it in the taskDAOAsString variable
+                - "taskDAO" column contains the JSON value of a TaskDAO object
+                - Uses the Gson object to convert taskDAOAsString into a TaskDAO object using its fromJson function
+                - Finally, re-assigns the task variable with the converted Task data from taskDAOAsString
+                - If no data is stored in resultSet, returns null
+            */
+            if (resultSet.next()) {
+                String userDiscordIDAsString = resultSet.getString("userDiscordID");
+                int taskID = resultSet.getInt("taskID");
+                String taskDAOAsString = resultSet.getString("taskDAO");
+                TaskDAO taskDAO = gson.fromJson(taskDAOAsString, TaskDAO.class);
+
+                task = new Task(
+                        taskUUIDAsString,
+                        userDiscordIDAsString,
+                        taskID,
+                        taskDAO
+                );
+            } else {
+                return null;
+            }
+        } catch (SQLException e) {
+            System.out.println("Error getting task with UUID: " + taskUUIDAsString);
             throw new RuntimeException("DB Error", e);
         }
         return task;
@@ -178,14 +254,21 @@ public class DBTaskHandler {
 
             /*
                 - Loops through all the rows in the resultSet until resultSet.next reaches its end
-                - Gets the "task" column in the result and storing it in the taskAsString variable
+                - Gets the "task" column in the result and storing it in the taskDAOAsString variable
                 - "task" column contains the JSON value of a Task object
-                - Uses the Gson object to convert taskAsString into a Task object using its fromJson function
+                - Uses the Gson object to convert taskDAOAsString into a Task object using its fromJson function
                 - Finally, adds the converted data into the Task ArrayList
             */
             while (resultSet.next()) {
-                String taskAsString = resultSet.getString("task");
-                Task userTask = gson.fromJson(taskAsString, Task.class);
+                String taskUUIDAsString = resultSet.getString("taskUUID");
+                String userDiscordIDAsString = resultSet.getString("userDiscordID");
+                int taskID = resultSet.getInt("taskID");
+                String taskDAOAsString = resultSet.getString("taskDAO");
+                Task userTask = new Task(
+                        taskUUIDAsString,
+                        userDiscordIDAsString,
+                        taskID,
+                        gson.fromJson(taskDAOAsString, TaskDAO.class));
                 userTasks.add(userTask);
             }
         } catch (Exception e) {
@@ -207,7 +290,7 @@ public class DBTaskHandler {
             - Uses the userDiscordID column to find all the rows that has the userDiscordID value
             - Uses taskID to add a second filter in finding the row that has the taskID among all the userDiscordID rows found
          */
-        String sqlStatement = "UPDATE tasks SET task = ? WHERE userDiscordID = ? AND taskID = ?;";
+        String sqlStatement = "UPDATE tasks SET taskDAO = ? WHERE userDiscordID = ? AND taskID = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -218,18 +301,18 @@ public class DBTaskHandler {
                 Initializes a Gson object to use in converting an Object into a JSON String
             */
             Gson gson = new Gson();
-            String taskAsString = gson.toJson(task);
+            String taskDAOAsString = gson.toJson(task.taskDAO);
 
             /*
                 Sets the values for each placeholder in the sqlStatement
-                ? 1 | Sets taskAsString as the value for the first placeholder
+                ? 1 | Sets taskDAOAsString as the value for the first placeholder
                     | It is the TEXT/String version of the JSON object Task
                 ? 2 | Sets userDiscordID as the value for the second placeholder
                     | userDiscordID is the user's discord ID
                 ? 3 | Sets taskID as the value for the third placeholder
                     | taskID is the unique integer identifier for tasks
             */
-            preparedStatement.setString(1, taskAsString);
+            preparedStatement.setString(1, taskDAOAsString);
             preparedStatement.setString(2, userDiscordID);
             preparedStatement.setInt(3, taskID);
 

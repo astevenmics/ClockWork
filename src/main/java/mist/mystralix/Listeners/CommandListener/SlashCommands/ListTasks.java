@@ -3,6 +3,7 @@ package mist.mystralix.Listeners.CommandListener.SlashCommands;
 import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import mist.mystralix.Objects.Task;
+import mist.mystralix.Objects.TaskDAO;
 import mist.mystralix.Objects.TaskHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.User;
@@ -10,6 +11,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.stream.Collectors;
@@ -81,6 +83,7 @@ public class ListTasks implements SlashCommand {
 
             ArrayList<Task> userTasksList = allTasks.stream()
                     .filter(task -> task
+                            .taskDAO
                             .taskStatus
                             .equals(selectedTaskStatus))
                     .collect(Collectors.toCollection(ArrayList::new));
@@ -90,26 +93,33 @@ public class ListTasks implements SlashCommand {
                 return;
             }
 
-            ArrayList<Task> tasks = selectedTaskStatus == TaskStatus.ALL ? allTasks : userTasksList;
-
-            // TODO: Add pagination
-            EmbedBuilder embedBuilder = new EmbedBuilder();
-            embedBuilder.setTitle("Tasks");
-            embedBuilder.setColor(selectedTaskStatus.getColorValue());
-            for(Task task : tasks) {
-                embedBuilder.addField(
-                        task.title,
-                        "Description: " + task.description +
-                                "\nStatus: " + task.taskStatus.getIcon() +
-                                " " + task.taskStatus.getStringValue(),
-                        true);
-            }
-            embedBuilder.setFooter(
+        EmbedBuilder embedBuilder = getEmbedBuilder(selectedTaskStatus, allTasks, userTasksList);
+        embedBuilder.setFooter(
                     user.getEffectiveName() + " | Task Lists",
                     user.getEffectiveAvatarUrl()
             );
 
-            event.replyEmbeds(embedBuilder.build()).queue();
+        event.replyEmbeds(embedBuilder.build()).queue();
 
+    }
+
+    @NotNull
+    private static EmbedBuilder getEmbedBuilder(TaskStatus selectedTaskStatus, ArrayList<Task> allTasks, ArrayList<Task> userTasksList) {
+        ArrayList<Task> tasks = selectedTaskStatus == TaskStatus.ALL ? allTasks : userTasksList;
+
+        // TODO: Add pagination
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("Tasks");
+        embedBuilder.setColor(selectedTaskStatus.getColorValue());
+        for(Task task : tasks) {
+            TaskDAO taskDAO = task.taskDAO;
+            embedBuilder.addField(
+                    "#" + task.taskID + " | " + taskDAO.title,
+                    "Description: " + taskDAO.description +
+                            "\nStatus: " + taskDAO.taskStatus.getIcon() +
+                            " " + taskDAO.taskStatus.getStringValue(),
+                    true);
+        }
+        return embedBuilder;
     }
 }

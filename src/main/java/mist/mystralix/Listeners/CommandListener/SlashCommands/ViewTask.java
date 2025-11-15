@@ -1,9 +1,10 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
+import mist.mystralix.Objects.CustomEmbed;
 import mist.mystralix.Objects.Task;
 import mist.mystralix.Objects.TaskHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -44,8 +45,6 @@ public class ViewTask implements SlashCommand {
 
         User user = event.getUser();
 
-        // TODO: Cleanup
-
         OptionMapping option = event.getOption("task_id");
         if (option == null) { return; }
         int taskID = option.getAsInt();
@@ -59,21 +58,15 @@ public class ViewTask implements SlashCommand {
             return;
         }
 
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Task #" + taskID);
-        embedBuilder.setColor(taskToView.taskStatus.getColorValue());
-        embedBuilder.setDescription(
-                "Title: " + taskToView.title + "\n"
-                        + "Description: " + taskToView.description + "\n"
-                        + "Status: " + taskToView.taskStatus.getIcon() + " "
-                        + taskToView.taskStatus.getStringValue()
-        );
-        embedBuilder.setFooter(
-                user.getEffectiveName() + " | Task Viewer",
-                user.getEffectiveAvatarUrl()
+        String title = "Viewing";
+
+        MessageEmbed embed = CustomEmbed.createTaskEmbed(
+                user,
+                title,
+                taskToView
         );
 
-        event.replyEmbeds(embedBuilder.build()).queue();
+        event.replyEmbeds(embed).queue();
 
     }
 

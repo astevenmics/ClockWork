@@ -30,10 +30,10 @@ public class DBSchemaInitializer {
         */
         String tasksTableQuery =
                 "CREATE TABLE IF NOT EXISTS tasks " +
-                        "(uuid VARCHAR(50) PRIMARY KEY," +
+*                        "(taskUUID VARCHAR(50) PRIMARY KEY," +
                         "userDiscordID VARCHAR(50) NOT NULL, " +
                         "taskID BIGINT NOT NULL AUTO_INCREMENT," +
-                        "task VARCHAR(8192) NOT NULL," +
+                        "taskDAO VARCHAR(8192) NOT NULL," +
                         "UNIQUE KEY(taskID)" +
                         ");";
         try (

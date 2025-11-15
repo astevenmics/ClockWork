@@ -1,21 +1,22 @@
 package mist.mystralix.Objects;
 
-import mist.mystralix.Enums.TaskStatus;
-
 public class Task {
 
-    public String title;
-    public String description;
-    public TaskStatus taskStatus;
+    public String taskUUID;
+    public String userDiscordID;
+    public int taskID;
+    public TaskDAO taskDAO;
 
     public Task(
-            String title,
-            String description,
-            TaskStatus taskStatus
+            String taskUUID,
+            String userDiscordID,
+            int taskID,
+            TaskDAO taskDAO
     ) {
-        this.title = title;
-        this.description = description;
-        this.taskStatus = taskStatus;
+        this.taskUUID = taskUUID;
+        this.userDiscordID = userDiscordID;
+        this.taskID = taskID;
+        this.taskDAO = taskDAO;
     }
 
 }

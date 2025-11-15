@@ -2,9 +2,12 @@ package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
 import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
+import mist.mystralix.Objects.CustomEmbed;
 import mist.mystralix.Objects.Task;
+import mist.mystralix.Objects.TaskDAO;
 import mist.mystralix.Objects.TaskHandler;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
@@ -43,7 +46,6 @@ public class CancelTask implements SlashCommand {
     @Override
     public void execute(SlashCommandInteraction event) {
 
-        // TODO: Cleanup
         User user = event.getUser();
 
         OptionMapping option = event.getOption("task_id");
@@ -57,25 +59,23 @@ public class CancelTask implements SlashCommand {
             event.reply("No task found.").queue();
             return;
         }
-        taskToCancel.taskStatus = TaskStatus.CANCELLED;
+
+        TaskDAO taskDAO = taskToCancel.taskDAO;
+        taskDAO.taskStatus = TaskStatus.CANCELLED;
+
         taskHandler.cancelUserTask(user, taskID, taskToCancel);
 
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Task #" + taskID);
-        embedBuilder.setColor(taskToCancel.taskStatus.getColorValue());
-        embedBuilder.setDescription(
-                "Title: " + taskToCancel.title + "\n"
-                        + "Description: " + taskToCancel.description + "\n"
-                        + "Status: " + taskToCancel.taskStatus.getIcon() + " "
-                        + taskToCancel.taskStatus.getStringValue()
-        );
-        embedBuilder.setFooter(
-                user.getEffectiveName() + " | Task Viewer",
-                user.getEffectiveAvatarUrl()
-        );
+        String title = "Cancelled Task";
 
-        event.replyEmbeds(embedBuilder.build()).queue();
+        MessageEmbed embed = CustomEmbed.createTaskEmbed(
+                user,
+                title,
+                taskToCancel
+                );
 
+        event.replyEmbeds(embed).queue();
     }
+
+
 
 }
