@@ -7,7 +7,6 @@ import java.util.ArrayList;
 
 public class TaskHandler {
 
-    // ToDo: Apply Database to this class
     private final DBTaskHandler DB_TASK_HANDLER;
 
     public TaskHandler() {
@@ -15,24 +14,24 @@ public class TaskHandler {
     }
 
     public void addTask(Task task, User user) {
-        String userID = user.getId();
-        DB_TASK_HANDLER.addTask(task, userID);
+        String userDiscordID = user.getId();
+        DB_TASK_HANDLER.addTask(task, userDiscordID);
     }
 
     public ArrayList<Task> getUserTasks(User user) {
         ArrayList<Task> userTasks = new ArrayList<>();
-        String userID = user.getId();
-        return DB_TASK_HANDLER.getAllUserTasks(userTasks, userID);
+        String userDiscordID = user.getId();
+        return DB_TASK_HANDLER.getAllUserTasks(userTasks, userDiscordID);
     }
 
     public Task getUserTask(User user, int taskID) {
-        String userID = user.getId();
-        return DB_TASK_HANDLER.getTask(userID, taskID);
+        String userDiscordID = user.getId();
+        return DB_TASK_HANDLER.getTask(userDiscordID, taskID);
     }
 
     public void cancelUserTask(User user, int taskID, Task task) {
-        String userID = user.getId();
-        DB_TASK_HANDLER.cancelUserTask(userID, taskID, task);
+        String userDiscordID = user.getId();
+        DB_TASK_HANDLER.cancelUserTask(userDiscordID, taskID, task);
     }
 
 }
