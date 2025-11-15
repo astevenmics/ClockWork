@@ -2,7 +2,9 @@
 - ListTasks Command - Done
 - ViewTask Command - Done
 - CancelTask - Done
-- Transition JSON handling into Database | SQLite > Might change to PostgresSQL / MySQL
+- Transition JSON handling into Database - Done
+- Changing database from sqlite to MySQL - Done
+- Clean Up - In Progress
 - UpdateTask - Next
 - RemoveTask - Pending
 - Task
@@ -11,6 +13,7 @@
 - All
     * Improve formatting
     * Use Pagination
+    * SQLite > Might change to PostgresSQL / MySQL - Done
 
 - Task Command
     * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command
