@@ -18,8 +18,11 @@ import java.util.stream.Collectors;
 
 public class ListTasks implements SlashCommand {
 
-    /* Command Name */
-    /* /listtasks */
+    /*
+        Command Name
+            - listtasks
+            - Usage: /listtasks (Task Status: COMPLETED, INPROGRESS, ARCHIVED, CANCELLED)
+    */
     @Override
     public String getName() {
         return "listtasks";
@@ -31,7 +34,13 @@ public class ListTasks implements SlashCommand {
         return "Lists all the tasks regardless of status: completed, in progress, archived, or cancelled.";
     }
 
-    /* Command Options */
+    /*
+        Command Options
+            - Provides the option to get either all the tasks or all the tasks of a specific TaskStatus
+            - type          | Determines the type of tasks the user wants to view
+                            | Returns all tasks if not specified
+                            | Options are: COMPLETED, INPROGRESS, ARCHIVED, and CANCELLED
+    */
     @Override
     public OptionData[] getOptions() {
         return new OptionData[]{

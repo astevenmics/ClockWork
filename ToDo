@@ -4,7 +4,7 @@
 - CancelTask - Done
 - Transition JSON handling into Database - Done
 - Changing database from sqlite to MySQL - Done
-- Clean Up - In Progress
+- Clean Up & Make comments - In Progress
 - UpdateTask - Next
 - RemoveTask - Pending
 - Task

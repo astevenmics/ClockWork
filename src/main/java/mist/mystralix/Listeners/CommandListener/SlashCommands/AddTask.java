@@ -6,7 +6,6 @@ import mist.mystralix.Objects.CustomEmbed;
 import mist.mystralix.Objects.Task;
 import mist.mystralix.Objects.TaskDAO;
 import mist.mystralix.Objects.TaskHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -14,25 +13,35 @@ import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
-import java.awt.*;
 import java.util.UUID;
 
 public class AddTask implements SlashCommand {
 
-    /* Command Name */
-    /* /addtask */
+    /*
+        Command Name
+            - addtask
+            - Usage: /addtask [title] [description]
+    */
     @Override
     public String getName() {
         return "addtask";
     }
 
-    /* Command Description */
+    /*
+        Command Description
+            - Adds a task into the user's task list
+    */
     @Override
     public String getDescription() {
         return "Creating tasks/adding tasks to your task list.";
     }
 
-    /* Command Options */
+    /*
+        Command Options
+            - Requires title and description
+            - Title         | A brief title for the task
+            - Description   | Description of what the task is going to be, have, and such.
+    */
     @Override
     public OptionData[] getOptions() {
         return new OptionData[]{

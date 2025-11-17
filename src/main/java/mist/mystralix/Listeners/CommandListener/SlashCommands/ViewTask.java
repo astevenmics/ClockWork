@@ -13,8 +13,11 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 
 public class ViewTask implements SlashCommand {
 
-    /* Command Name */
-    /* /viewtask */
+    /*
+        Command Name
+            - viewtask
+            - Usage: /viewtask [taskID]
+    */
     @Override
     public String getName() {
         return "viewtask";
@@ -26,7 +29,12 @@ public class ViewTask implements SlashCommand {
         return "View a specific task selected using its task ID";
     }
 
-    /* Command Options */
+    /*
+        Command Options
+            - Requires a taskID
+            - taskID        | A unique identifier for a task.
+                            | TaskIDs are accessible upon making the task and in viewing all the tasks
+    */
     @Override
     public OptionData[] getOptions() {
         return new OptionData[]{
