@@ -1,21 +1,45 @@
-- AddTask Command - Done
-- ListTasks Command - Done
-- ViewTask Command - Done
-- CancelTask - Done
-- Transition JSON handling into Database - Done
-- Changing database from sqlite to MySQL - Done
-- Clean Up & Make comments - In Progress
-- UpdateTask - Next
-- RemoveTask - Pending
+- AddTask Command - ✅
+- ListTasks Command - ✅
+- ViewTask Command - ✅
+- CancelTask - ✅
+- Transition JSON handling into Database - ✅
+- Changing database from sqlite to MySQL - ✅
+- Clean Up & Make comments - ⏳
+    * Comments
+        - DBManager ❌
+        - DBSchemaInitializer ✅
+        - DBTaskHandler ✅
+        - TaskStatus ❌
+        - FileDoesNotExistException ❌
+        - FileException ❌
+        - ReadPermissionFileException ❌
+        - FileHandler ⏳
+        - JSONHandler ❌
+        - CommandManager ❌
+        - AddTask ✅
+        - CancelTask ✅
+        - ListTasks ✅
+        - ViewTask ✅
+        - SlashCommand ✅
+        - MessageFilter ❌
+        - MessageLogger ❌
+        - MessageReceived ❌
+        - CustomEmbed ✅
+        - Task ✅
+        - TaskDAO ✅
+        - TaskHandler ❌
+        - Main ❌
+- UpdateTask - ❌
+- RemoveTask - ❌
 - Task
-    * Update Handling from HashSet to HashMap - Done
+    * Update Handling from HashSet to HashMap - ✅
 
 - All
     * Improve formatting
     * Use Pagination
-    * SQLite > Might change to PostgresSQL / MySQL - Done
+    * SQLite > Might change to PostgresSQL / MySQL - ✅
 
-- Task Command
+- Task Command ❌
     * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command
     * /task add
     * /task list [optional type]
