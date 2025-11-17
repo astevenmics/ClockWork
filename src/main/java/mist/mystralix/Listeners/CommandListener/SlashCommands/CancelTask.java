@@ -6,7 +6,6 @@ import mist.mystralix.Objects.CustomEmbed;
 import mist.mystralix.Objects.Task;
 import mist.mystralix.Objects.TaskDAO;
 import mist.mystralix.Objects.TaskHandler;
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
