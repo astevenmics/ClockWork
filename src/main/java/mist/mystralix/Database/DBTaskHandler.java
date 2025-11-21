@@ -279,7 +279,7 @@ public class DBTaskHandler {
     }
 
     /*
-        cancelUserTask()
+        updateUserTask()
         - Used in updating the TaskStatus value of a task into cancelled
         - Uses userDiscordID and taskID to determine the row to update in the MySQL database
      */
@@ -331,6 +331,47 @@ public class DBTaskHandler {
 
         } catch (SQLException e) {
             System.out.println("Error updating task ID: " + taskID + " for user: " + userDiscordID);
+            throw new RuntimeException("DB Error", e);
+        }
+    }
+
+    /*
+        deleteUserTask()
+        - Used in updating the TaskStatus value of a task into cancelled
+        - Uses userDiscordID to determine the row to update in the MySQL database
+     */
+    public void deleteUserTask(String userDiscordID, Task task) {
+        /*
+            - SQL Query for MySQL to update the information in the task column
+            - Uses the taskUUID column to find the row that has the taskUUID value
+            - Uses the userDiscordID as a second filter in finding the row that has the taskUUID
+         */
+        String sqlStatement = "DELETE FROM tasks WHERE taskUUID = ? AND userDiscordID = ?;";
+        String taskUUID = task.taskUUID;
+
+        try (
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
+        ) {
+            /*
+                Sets the values for each placeholder in the sqlStatement
+                ? 1 | Sets taskUUID as the value for the first placeholder
+                    | It is the TEXT/String version of the unique identifier UUID of a Task
+                ? 2 | Sets userDiscordID as the value for the second placeholder
+                    | userDiscordID is the user's discord ID
+            */
+            preparedStatement.setString(1, taskUUID);
+            preparedStatement.setString(2, userDiscordID);
+
+            /*
+                Gets the number of rows deleted that is returned by the executeUpdate function
+            */
+            int rowsDeleted = preparedStatement.executeUpdate();
+            if (rowsDeleted == 0) {
+                System.out.println("No task deleted | TaskUUID not found: " + taskUUID);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting task UUID: " + taskUUID + " for user: " + userDiscordID);
             throw new RuntimeException("DB Error", e);
         }
     }

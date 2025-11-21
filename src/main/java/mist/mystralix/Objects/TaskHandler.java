@@ -38,4 +38,9 @@ public class TaskHandler {
         DB_TASK_HANDLER.updateUserTask(userDiscordID, taskID, task);
     }
 
+    public void deleteUserTask(User user, Task task) {
+        String userDiscordID = user.getId();
+        DB_TASK_HANDLER.deleteUserTask(userDiscordID, task);
+    }
+
 }

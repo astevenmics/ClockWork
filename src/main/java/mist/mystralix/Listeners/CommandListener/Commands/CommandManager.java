@@ -15,9 +15,10 @@ public class CommandManager extends ListenerAdapter {
 
     public CommandManager() {
         registerCommand(new AddTask());
+        registerCommand(new CancelTask());
+        registerCommand(new DeleteTask());
         registerCommand(new ListTasks());
         registerCommand(new ViewTask());
-        registerCommand(new CancelTask());
         registerCommand(new UpdateTask());
     }
 
