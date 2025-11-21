@@ -33,9 +33,9 @@ public class TaskHandler {
         return DB_TASK_HANDLER.getTask(userDiscordID, taskID);
     }
 
-    public void cancelUserTask(User user, int taskID, Task task) {
+    public void updateUserTask(User user, int taskID, Task task) {
         String userDiscordID = user.getId();
-        DB_TASK_HANDLER.cancelUserTask(userDiscordID, taskID, task);
+        DB_TASK_HANDLER.updateUserTask(userDiscordID, taskID, task);
     }
 
 }

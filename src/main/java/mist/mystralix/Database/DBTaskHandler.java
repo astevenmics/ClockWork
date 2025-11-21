@@ -278,13 +278,12 @@ public class DBTaskHandler {
         return userTasks;
     }
 
-    // TODO: Update cancelUserTask into updateTaskStatus, where value determines the new value of the task object
     /*
         cancelUserTask()
         - Used in updating the TaskStatus value of a task into cancelled
         - Uses userDiscordID and taskID to determine the row to update in the MySQL database
      */
-    public void cancelUserTask(String userDiscordID, int taskID, Task task) {
+    public void updateUserTask(String userDiscordID, int taskID, Task task) {
         /*
             - SQL Query for MySQL to update the information in the task column
             - Uses the userDiscordID column to find all the rows that has the userDiscordID value
@@ -331,7 +330,7 @@ public class DBTaskHandler {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error cancelling task ID: " + taskID + " for user: " + userDiscordID);
+            System.out.println("Error updating task ID: " + taskID + " for user: " + userDiscordID);
             throw new RuntimeException("DB Error", e);
         }
     }

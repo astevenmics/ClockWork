@@ -18,6 +18,7 @@ public class CommandManager extends ListenerAdapter {
         registerCommand(new ListTasks());
         registerCommand(new ViewTask());
         registerCommand(new CancelTask());
+        registerCommand(new UpdateTask());
     }
 
     private void registerCommand(SlashCommand command) {
