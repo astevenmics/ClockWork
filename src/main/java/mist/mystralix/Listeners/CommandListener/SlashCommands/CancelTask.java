@@ -73,7 +73,7 @@ public class CancelTask implements SlashCommand {
         TaskDAO taskDAO = taskToCancel.taskDAO;
         taskDAO.taskStatus = TaskStatus.CANCELLED;
 
-        taskHandler.cancelUserTask(user, taskID, taskToCancel);
+        taskHandler.updateUserTask(user, taskID, taskToCancel);
 
         String title = "Cancelled Task";
 

@@ -19,6 +19,7 @@
         - AddTask ✅
         - CancelTask ✅
         - ListTasks ✅
+        - UpdateTask ✅
         - ViewTask ✅
         - SlashCommand ✅
         - MessageFilter ❌
@@ -29,7 +30,7 @@
         - TaskDAO ✅
         - TaskHandler ❌
         - Main ❌
-- UpdateTask - ❌
+- UpdateTask - ✅
 - RemoveTask - ❌
 - Task
     * Update Handling from HashSet to HashMap - ✅
