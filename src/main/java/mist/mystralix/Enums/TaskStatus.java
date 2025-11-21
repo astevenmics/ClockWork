@@ -30,7 +30,7 @@ public enum TaskStatus {
             Color.decode("#744F34")
     ),
     CANCELLED(
-            "❌",
+            "\uD83D\uDEAB",
             "Cancelled",
             5,
             Color.decode("#6FE16B")
