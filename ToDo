@@ -1,7 +1,7 @@
-- AddTask Command - ✅
-- ListTasks Command - ✅
-- ViewTask Command - ✅
-- CancelTask - ✅
+- AddTask Command - ✅ | Deleted
+- ListTasks Command - ✅ | Deleted
+- ViewTask Command - ✅ | Deleted
+- CancelTask - ✅ | Deleted
 - Transition JSON handling into Database - ✅
 - Changing database from sqlite to MySQL - ✅
 - Clean Up & Make comments - ⏳
@@ -15,36 +15,34 @@
         - ReadPermissionFileException ❌
         - FileHandler ⏳
         - JSONHandler ❌
+        - TaskEmbed ⏳
+        - TaskFunctions ⏳
+        - TaskSubCommandFunctions ⏳
         - CommandManager ❌
-        - AddTask ✅
-        - CancelTask ✅
-        - ListTasks ✅
-        - UpdateTask ✅
-        - ViewTask ✅
+        - TaskCommand ⏳
         - SlashCommand ✅
         - MessageFilter ❌
         - MessageLogger ❌
         - MessageReceived ❌
-        - CustomEmbed ✅
         - Task ✅
         - TaskDAO ✅
         - TaskHandler ❌
         - Main ❌
-- UpdateTask - ✅
-- DeleteTask - ✅
+- UpdateTask - ✅ | Deleted
+- DeleteTask - ✅ | Deleted
 - Task
     * Update Handling from HashSet to HashMap - ✅
 
-- All
-    * Improve formatting
-    * Use Pagination
+- All - ⏳
+    * Improve formatting - ⏳
+    * Use Pagination - ❌
     * SQLite > Might change to PostgresSQL / MySQL - ✅
 
-- Task Command ❌
+- Task Command ✅
     * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command
     * /task add
     * /task list [optional type]
     * /task view [task id]
     * /task update [task id]
     * /task cancel [task id]
-    * /task remove [task id]
+    * /task delete [task id]
