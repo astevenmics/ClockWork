@@ -21,7 +21,7 @@ public enum TaskStatus {
             "⏳",
             "In Progress",
             3,
-            Color.decode("#6FE16B")
+            Color.decode("#FF8000")
     ),
     ARCHIVED(
             "\uD83D\uDCDA",
@@ -33,7 +33,7 @@ public enum TaskStatus {
             "\uD83D\uDEAB",
             "Cancelled",
             5,
-            Color.decode("#6FE16B")
+            Color.decode("#FF0000")
     );
 
     private final String ICON;
