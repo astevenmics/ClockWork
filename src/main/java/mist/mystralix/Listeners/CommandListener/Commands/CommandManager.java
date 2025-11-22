@@ -1,7 +1,7 @@
 package mist.mystralix.Listeners.CommandListener.Commands;
 
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
-import mist.mystralix.Listeners.CommandListener.SlashCommands.*;
+import mist.mystralix.Listeners.CommandListener.SlashCommands.TaskCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
@@ -14,12 +14,7 @@ public class CommandManager extends ListenerAdapter {
     private final HashMap<String, SlashCommand> commands = new HashMap<>();
 
     public CommandManager() {
-        registerCommand(new AddTask());
-        registerCommand(new CancelTask());
-        registerCommand(new DeleteTask());
-        registerCommand(new ListTasks());
-        registerCommand(new ViewTask());
-        registerCommand(new UpdateTask());
+        registerCommand(new TaskCommand());
     }
 
     private void registerCommand(SlashCommand command) {
@@ -46,7 +41,7 @@ public class CommandManager extends ListenerAdapter {
                                         command.getName(),
                                         command.getDescription()
                                 )
-                                .addOptions(command.getOptions())
+                                .addSubcommands(command.getSubcommands())
                 )
                 .toList();
     }

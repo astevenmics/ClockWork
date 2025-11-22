@@ -1,7 +1,7 @@
 package mist.mystralix.Listeners.CommandListener;
 
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-import net.dv8tion.jda.api.interactions.commands.build.OptionData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 /*
     SlashCommand Interface
@@ -10,9 +10,9 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
             * Example: getName() { "task"; }
         - getDescription() | Responsible for holding the information of what the command is.
                            | Description is used for displaying a brief description of what the command is/does
-       - getOptions()      | Responsible for storing the options (if present) that will later be added in the command
-                           | Array contains OptionData values, whether an option is required, id, and such.
-       - execute(SlashCommandInteraction event)
+        - getSubcommands() | Responsible for storing the subcommand data (if present) that will later be added in the command
+                           | Array contains SubcommandData values, with all of its information/options
+        - execute(SlashCommandInteraction event)
                            | Function containing the actions done as the command is executed
 */
 public interface SlashCommand {
@@ -28,9 +28,9 @@ public interface SlashCommand {
     String getDescription();
 
     /*
-        Command Options
+        Subcommand Data
     */
-    OptionData[] getOptions();
+    SubcommandData[] getSubcommands();
 
     /*
         Command Event/Output
