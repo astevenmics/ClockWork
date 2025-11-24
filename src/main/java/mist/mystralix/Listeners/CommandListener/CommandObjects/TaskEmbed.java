@@ -1,8 +1,8 @@
 package mist.mystralix.Listeners.CommandListener.CommandObjects;
 
 import mist.mystralix.Enums.TaskStatus;
-import mist.mystralix.Objects.Task;
-import mist.mystralix.Objects.TaskDAO;
+import mist.mystralix.Objects.Task.Task;
+import mist.mystralix.Objects.Task.TaskDAO;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;

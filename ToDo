@@ -4,6 +4,36 @@
 - CancelTask - ✅ | Deleted
 - Transition JSON handling into Database - ✅
 - Changing database from sqlite to MySQL - ✅
+- UpdateTask - ✅ | Deleted
+- DeleteTask - ✅ | Deleted
+- Task
+    * Update Handling from HashSet to HashMap - ✅
+
+- All - ⏳
+    * Improve formatting - ⏳
+    * Use Pagination - ❌
+    * SQLite > Might change to PostgresSQL / MySQL - ✅
+
+- Task Command ✅
+    * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command
+    * /task add
+    * /task list [optional type]
+    * /task view [task id]
+    * /task update [task id]
+    * /task cancel [task id]
+    * /task delete [task id]
+
+
+- Create a remindme ⏳
+    * Make it persistent even if the application restarts ❌
+    * Commands
+        - remindme ⏳
+        - remind create ❌
+        - remind list ❌
+        - remind delete ❌
+        - remind update ❌
+        - remind view ❌
+
 - Clean Up & Make comments - ⏳
     * Comments
         - DBManager ❌
@@ -28,21 +58,3 @@
         - TaskDAO ✅
         - TaskHandler ❌
         - Main ❌
-- UpdateTask - ✅ | Deleted
-- DeleteTask - ✅ | Deleted
-- Task
-    * Update Handling from HashSet to HashMap - ✅
-
-- All - ⏳
-    * Improve formatting - ⏳
-    * Use Pagination - ❌
-    * SQLite > Might change to PostgresSQL / MySQL - ✅
-
-- Task Command ✅
-    * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command
-    * /task add
-    * /task list [optional type]
-    * /task view [task id]
-    * /task update [task id]
-    * /task cancel [task id]
-    * /task delete [task id]

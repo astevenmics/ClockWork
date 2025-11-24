@@ -1,8 +1,8 @@
 package mist.mystralix.Database;
 
 import com.google.gson.Gson;
-import mist.mystralix.Objects.Task;
-import mist.mystralix.Objects.TaskDAO;
+import mist.mystralix.Objects.Task.Task;
+import mist.mystralix.Objects.Task.TaskDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

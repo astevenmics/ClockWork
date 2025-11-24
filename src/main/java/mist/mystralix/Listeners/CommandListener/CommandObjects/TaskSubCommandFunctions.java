@@ -1,9 +1,10 @@
 package mist.mystralix.Listeners.CommandListener.CommandObjects;
 
 import mist.mystralix.Enums.TaskStatus;
-import mist.mystralix.Objects.Task;
-import mist.mystralix.Objects.TaskDAO;
-import mist.mystralix.Objects.TaskHandler;
+import mist.mystralix.Listeners.CommandListener.ISlashCommandCRUD;
+import mist.mystralix.Objects.Task.Task;
+import mist.mystralix.Objects.Task.TaskDAO;
+import mist.mystralix.Objects.Task.TaskHandler;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -14,9 +15,10 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class TaskSubCommandFunctions {
+public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
-    public MessageEmbed addTask(SlashCommandInteraction event) {
+    @Override
+    public MessageEmbed create(SlashCommandInteraction event) {
         User taskUser = event.getUser();
         OptionMapping title = event.getOption("title");
         OptionMapping description = event.getOption("description");
@@ -59,19 +61,8 @@ public class TaskSubCommandFunctions {
 
     }
 
-    public MessageEmbed cancelTask(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, task -> {
-            User user = event.getUser();
-            TaskHandler taskHandler = new TaskHandler();
-
-            task.taskDAO.taskStatus = TaskStatus.CANCELLED;
-            taskHandler.updateUserTask(user, task.taskID, task);
-
-            return TaskEmbed.createTaskEmbed(user, "Cancelled Task", task);
-        });
-    }
-
-    public MessageEmbed deleteTask(SlashCommandInteraction event) {
+    @Override
+    public MessageEmbed delete(SlashCommandInteraction event) {
         return TaskFunctions.handleTask(event, task -> {
             User user = event.getUser();
             TaskHandler taskHandler = new TaskHandler();
@@ -82,51 +73,8 @@ public class TaskSubCommandFunctions {
         });
     }
 
-    public MessageEmbed listTasks(SlashCommandInteraction event) {
-        User user = event.getUser();
-
-        int option = event.getOption("type",
-                () -> 1,
-                OptionMapping::getAsInt
-        );
-
-        TaskStatus selectedTaskStatus = TaskStatus.getTaskStatus(option);
-
-        TaskHandler taskHandler = new TaskHandler();
-        ArrayList<Task> allTasks = taskHandler.getUserTasks(user);
-
-        // TODO: Update embed formatting
-        if(allTasks.isEmpty()) {
-            return TaskEmbed.createLackingInformationEmbed(
-                    user,
-                    "You currently do not have any tasks! Use the /task add command to start."
-            );
-        }
-
-            ArrayList<Task> userTasksList = allTasks.stream()
-                    .filter(task -> task
-                            .taskDAO
-                            .taskStatus
-                            .equals(selectedTaskStatus))
-                    .collect(Collectors.toCollection(ArrayList::new));
-
-            if(userTasksList.isEmpty() && selectedTaskStatus != TaskStatus.ALL) {
-                return TaskEmbed.createLackingInformationEmbed(
-                        user,
-                        "No tasks found that have the status of " + selectedTaskStatus.getStringValue()
-                );
-            }
-
-        return TaskEmbed.createTaskListEmbed(
-                user,
-                selectedTaskStatus,
-                allTasks,
-                userTasksList
-        );
-
-    }
-
-    public MessageEmbed updateTask(SlashCommandInteraction event) {
+    @Override
+    public MessageEmbed update(SlashCommandInteraction event) {
         TaskHandler taskHandler = new TaskHandler();
         User user = event.getUser();
 
@@ -220,7 +168,8 @@ public class TaskSubCommandFunctions {
 
     }
 
-    public MessageEmbed viewTask(SlashCommandInteraction event) {
+    @Override
+    public MessageEmbed read(SlashCommandInteraction event) {
         return TaskFunctions.handleTask(event, task ->
             TaskEmbed.createTaskEmbed(
                     event.getUser(),
@@ -228,6 +177,63 @@ public class TaskSubCommandFunctions {
                     task
             )
         );
+    }
+
+
+    public MessageEmbed cancelTask(SlashCommandInteraction event) {
+        return TaskFunctions.handleTask(event, task -> {
+            User user = event.getUser();
+            TaskHandler taskHandler = new TaskHandler();
+
+            task.taskDAO.taskStatus = TaskStatus.CANCELLED;
+            taskHandler.updateUserTask(user, task.taskID, task);
+
+            return TaskEmbed.createTaskEmbed(user, "Cancelled Task", task);
+        });
+    }
+
+    public MessageEmbed listTasks(SlashCommandInteraction event) {
+        User user = event.getUser();
+
+        int option = event.getOption("type",
+                () -> 1,
+                OptionMapping::getAsInt
+        );
+
+        TaskStatus selectedTaskStatus = TaskStatus.getTaskStatus(option);
+
+        TaskHandler taskHandler = new TaskHandler();
+        ArrayList<Task> allTasks = taskHandler.getUserTasks(user);
+
+        // TODO: Update embed formatting
+        if(allTasks.isEmpty()) {
+            return TaskEmbed.createLackingInformationEmbed(
+                    user,
+                    "You currently do not have any tasks! Use the /task add command to start."
+            );
+        }
+
+        ArrayList<Task> userTasksList = allTasks.stream()
+                .filter(task -> task
+                        .taskDAO
+                        .taskStatus
+                        .equals(selectedTaskStatus))
+                .collect(Collectors.toCollection(ArrayList::new));
+
+        if(userTasksList.isEmpty() && selectedTaskStatus != TaskStatus.ALL) {
+            return TaskEmbed.createLackingInformationEmbed(
+                    user,
+                    "No tasks found that have the status of " + selectedTaskStatus.getStringValue()
+            );
+        }
+
+        return TaskEmbed.createTaskListEmbed(
+                user,
+                selectedTaskStatus,
+                allTasks,
+                userTasksList
+        );
+
     }
 
 }

@@ -1,4 +1,4 @@
-package mist.mystralix.Objects;
+package mist.mystralix.Objects.Task;
 
 import mist.mystralix.Enums.TaskStatus;
 

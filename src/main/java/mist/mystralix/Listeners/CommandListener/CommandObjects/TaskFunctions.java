@@ -1,7 +1,7 @@
 package mist.mystralix.Listeners.CommandListener.CommandObjects;
 
-import mist.mystralix.Objects.Task;
-import mist.mystralix.Objects.TaskHandler;
+import mist.mystralix.Objects.Task.Task;
+import mist.mystralix.Objects.Task.TaskHandler;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;

@@ -176,12 +176,12 @@ public class TaskCommand implements SlashCommand {
         MessageEmbed messageEmbed;
 
         messageEmbed = switch (subCommand) {
-            case "add"      -> task.addTask(event);
+            case "add"      -> task.create(event);
             case "cancel"   -> task.cancelTask(event);
-            case "delete"   -> task.deleteTask(event);
+            case "delete"   -> task.delete(event);
             case "list"     -> task.listTasks(event);
-            case "update"   -> task.updateTask(event);
-            case "view"     -> task.viewTask(event);
+            case "update"   -> task.update(event);
+            case "view"     -> task.read(event);
             default         -> null;
         };
 
