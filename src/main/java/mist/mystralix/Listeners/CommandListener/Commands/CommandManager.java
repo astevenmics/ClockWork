@@ -1,6 +1,7 @@
 package mist.mystralix.Listeners.CommandListener.Commands;
 
 import mist.mystralix.Listeners.CommandListener.SlashCommand;
+import mist.mystralix.Listeners.CommandListener.SlashCommands.ReminderCommand;
 import mist.mystralix.Listeners.CommandListener.SlashCommands.TaskCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -15,6 +16,7 @@ public class CommandManager extends ListenerAdapter {
 
     public CommandManager() {
         registerCommand(new TaskCommand());
+        registerCommand(new ReminderCommand());
     }
 
     private void registerCommand(SlashCommand command) {

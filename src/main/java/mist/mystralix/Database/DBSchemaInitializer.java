@@ -36,6 +36,15 @@ public class DBSchemaInitializer {
                         "taskDAO VARCHAR(8192) NOT NULL," +
                         "UNIQUE KEY(taskID)" +
                         ");";
+        String remindersTableQuery =
+                "CREATE TABLE IF NOT EXISTS reminders " +
+                        "(reminderUUID VARCHAR(50) PRIMARY KEY," +
+                        "userDiscordID VARCHAR(50) NOT NULL, " +
+                        "reminderID BIGINT NOT NULL AUTO_INCREMENT," +
+                        "message VARCHAR(8192) NOT NULL," +
+                        "targetTimestamp BIGINT NOT NULL," +
+                        "UNIQUE KEY(reminderID)" +
+                        ");";
         try (
                 Connection connection = DBManager.getConnection();
                 Statement statement = connection.createStatement()
@@ -44,6 +53,7 @@ public class DBSchemaInitializer {
                 Executes the statement pushing it into the database
             */
             statement.executeUpdate(tasksTableQuery);
+            statement.executeUpdate(remindersTableQuery);
         } catch (SQLException e) {
             System.out.println("Error initializing task table into the database");
             throw new RuntimeException("DB Error", e);

@@ -4,20 +4,35 @@ package mist.mystralix.Objects.Reminder;
 public class Reminder {
 
     public String reminderUUID;
-    public String message;
+    public String userDiscordID;
     public int reminderID;
-    public long timestamp;
+    public String message;
+    public long targetTimestamp;
 
     public Reminder(
             String reminderUUID,
-            String message,
+            String userDiscordID,
             int reminderID,
-            long timestamp
+            String message,
+            long targetTimestamp
     ) {
         this.reminderUUID = reminderUUID;
-        this.message = message;
+        this.userDiscordID = userDiscordID;
         this.reminderID = reminderID;
-        this.timestamp = timestamp;
+        this.message = message;
+        this.targetTimestamp = targetTimestamp;
+    }
+
+    public Reminder(
+            String reminderUUID,
+            String userDiscordID,
+            String message,
+            long targetTimestamp
+    ) {
+        this.reminderUUID = reminderUUID;
+        this.userDiscordID = userDiscordID;
+        this.message = message;
+        this.targetTimestamp = targetTimestamp;
     }
 
 }

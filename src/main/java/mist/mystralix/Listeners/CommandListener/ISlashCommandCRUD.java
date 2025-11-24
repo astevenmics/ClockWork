@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 
 /*
+    TODO: Update this comment
     SlashCommand Interface
         - Responsible in making sure that all commands that uses the SlashCommand feature have all the required options
         - getName()        | Responsible for getting the name of the command
