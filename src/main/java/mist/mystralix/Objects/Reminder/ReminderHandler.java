@@ -50,21 +50,9 @@ public class ReminderHandler {
     }
 
     public void updateUserReminder(
-            int reminderID,
-            String reminderUUID,
-            String userDiscordID,
-            String reminderMessage,
-            long targetTimestamp
+            Reminder updatedReminder
     ) {
-        DB_REMINDER_HANDLER.update(
-                new Reminder(
-                        reminderUUID,
-                        userDiscordID,
-                        reminderID,
-                        reminderMessage,
-                        targetTimestamp
-                )
-        );
+        DB_REMINDER_HANDLER.update(updatedReminder);
     }
 
     public void delete(

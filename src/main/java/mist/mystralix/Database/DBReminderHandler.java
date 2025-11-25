@@ -1,9 +1,7 @@
 package mist.mystralix.Database;
 
-import com.google.gson.Gson;
 import mist.mystralix.Objects.Reminder.Reminder;
 
-import java.math.BigInteger;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -57,7 +55,7 @@ public class DBReminderHandler {
             if(resultSet.next() ) {
                 String reminderUUID = resultSet.getString("reminderUUID");
                 String reminderMessage = resultSet.getString("message");
-                long timestamp = resultSet.getLong("timestamp");
+                long timestamp = resultSet.getLong("targetTimestamp");
 
                 return new Reminder(
                         reminderUUID,
@@ -180,7 +178,7 @@ public class DBReminderHandler {
     public ArrayList<Reminder> readAll(String userDiscordID) {
 
         ArrayList<Reminder> reminders = new ArrayList<>();
-        String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ?;";
+        String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? ORDER BY reminderID ASC;";
 
         try(
                 Connection connection = DBManager.getConnection();

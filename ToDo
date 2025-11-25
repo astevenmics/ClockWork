@@ -26,6 +26,9 @@
 
 - Create a remindme ⏳
     * Make it persistent even if the application restarts ❌
+    * Scheduler
+    * Refactor code
+    * Implement interfaces
     * Commands
         - remindme ⏳
         - remind create ❌

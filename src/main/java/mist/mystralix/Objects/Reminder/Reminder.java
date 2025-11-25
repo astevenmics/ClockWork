@@ -8,6 +8,7 @@ public class Reminder {
     public int reminderID;
     public String message;
     public long targetTimestamp;
+    // ToDo: Add status whether it is still ongoing, expired
 
     public Reminder(
             String reminderUUID,

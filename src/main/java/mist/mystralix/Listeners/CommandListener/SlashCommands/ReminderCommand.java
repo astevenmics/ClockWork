@@ -123,9 +123,10 @@ public class ReminderCommand implements SlashCommand {
 
         messageEmbed = switch (subCommand) {
             case "create" -> reminderSubCommandFunctions.create(event);
-            case "delete" -> null;
-            case "update" -> null;
-            case "view" -> null;
+            case "delete" -> reminderSubCommandFunctions.delete(event);
+            case "update" -> reminderSubCommandFunctions.update(event);
+            case "view" -> reminderSubCommandFunctions.read(event);
+            case "list" -> reminderSubCommandFunctions.readAll(event);
             default -> null;
         };
 
