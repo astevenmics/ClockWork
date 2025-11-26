@@ -208,7 +208,6 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         TaskHandler taskHandler = new TaskHandler();
         ArrayList<Task> tasks = taskHandler.getUserTasks(user);
 
-        // TODO: Update embed formatting
         if(tasks.isEmpty()) {
             return TASK_EMBED.createErrorEmbed(
                     user,
