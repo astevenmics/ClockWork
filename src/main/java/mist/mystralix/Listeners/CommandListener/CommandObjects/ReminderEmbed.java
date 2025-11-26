@@ -5,21 +5,16 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.utils.TimeFormat;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 
-public class ReminderEmbed {
+public class ReminderEmbed implements IMessageEmbedBuilder {
 
-    @NotNull
-    public static MessageEmbed createReminderEmbed(
-            User user,
-            String embedTitle,
-            Reminder reminder
-    ) {
-
+    @Override
+    public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
+        if(!(object instanceof Reminder reminder)) { return null; }
         String reminderMessage = reminder.message;
         int reminderID = reminder.reminderID;
 
@@ -34,7 +29,7 @@ public class ReminderEmbed {
 
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(embedTitle + " | Reminder #" + reminderID);
+        embedBuilder.setTitle(title + " | Reminder #" + reminderID);
         embedBuilder.setColor(Color.GREEN);
         embedBuilder.setDescription(
                 "Message: " + reminderMessage + "\n"
@@ -49,19 +44,18 @@ public class ReminderEmbed {
         return embedBuilder.build();
     }
 
-    @NotNull
-    public static MessageEmbed createReminderListEmbed(
-            User user,
-            ArrayList<Reminder> userReminders
-    ) {
-
+    @Override
+    public MessageEmbed createListEmbed(User user, ArrayList<?> userReminders) {
+        if(userReminders.isEmpty() || !(userReminders.getFirst() instanceof Reminder)) { return null; }
         // TODO: Add pagination
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Tasks");
         embedBuilder.setColor(Color.ORANGE);
-        for(Reminder reminder : userReminders) {
-            int reminderID = reminder.reminderID;
+
+        for(Object objectReminder : userReminders) {
+            if(!(objectReminder instanceof Reminder reminder)) { continue; }
             String reminderMessage = reminder.message;
+            int reminderID = reminder.reminderID;
             Instant instant = Instant.ofEpochMilli(reminder.targetTimestamp);
             String discordTimestamp = TimeFormat.DATE_TIME_LONG.format(instant);
 
@@ -77,15 +71,12 @@ public class ReminderEmbed {
         return embedBuilder.build();
     }
 
-    @NotNull
-    public static MessageEmbed createReminderErrorEmbed(
-            User user,
-            String errorMessage
-    ) {
+    @Override
+    public MessageEmbed createErrorEmbed(User user, String message) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Error | Reminder");
         embedBuilder.setColor(Color.RED);
-        embedBuilder.setDescription(errorMessage);
+        embedBuilder.setDescription(message);
         embedBuilder.setFooter(
                 user.getEffectiveName() + " | Reminder Error",
                 user.getEffectiveAvatarUrl()
@@ -94,15 +85,12 @@ public class ReminderEmbed {
         return embedBuilder.build();
     }
 
-    @NotNull
-    public static MessageEmbed createLackingInformationEmbed(
-            User user,
-            String lackingInformationMessage
-    ) {
+    @Override
+    public MessageEmbed createMissingParametersEmbed(User user, String message) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Task Interaction Incomplete");
         embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(lackingInformationMessage);
+        embedBuilder.setDescription(message);
         embedBuilder.setFooter(
                 user.getEffectiveName() + " | Task Lacking Information",
                 user.getEffectiveAvatarUrl()
@@ -110,5 +98,4 @@ public class ReminderEmbed {
 
         return embedBuilder.build();
     }
-
 }

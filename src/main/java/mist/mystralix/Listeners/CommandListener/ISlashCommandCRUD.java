@@ -38,4 +38,9 @@ public interface ISlashCommandCRUD {
     */
     MessageEmbed delete(SlashCommandInteraction event);
 
+    /*
+        Comment Here
+    */
+    MessageEmbed readAll(SlashCommandInteraction event);
+
 }

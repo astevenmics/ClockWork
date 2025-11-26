@@ -14,14 +14,17 @@ import java.util.UUID;
 
 public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
+    private final ReminderEmbed REMINDER_EMBED = new ReminderEmbed();
+
     @Override
     public MessageEmbed create(SlashCommandInteraction event) {
+        
         User user = event.getUser();
         OptionMapping message = event.getOption("message");
         OptionMapping targetTime = event.getOption("time");
 
         if (message == null || targetTime == null) {
-            return ReminderEmbed.createReminderErrorEmbed(user, "Neither message nor time were provided");
+            return REMINDER_EMBED.createMissingParametersEmbed(user, "Neither message nor time were provided");
         }
 
         String reminderMessage = message.getAsString();
@@ -29,9 +32,9 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
         long reminderAsLong = TimeHandler.parseDuration(reminderTargetTimestampAsString);
         if(reminderAsLong <= 0){
-            return ReminderEmbed.createReminderErrorEmbed(user, "Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m...");
+            return REMINDER_EMBED.createErrorEmbed(user, "Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m...");
         } else if (reminderAsLong < 60_000L){
-            return ReminderEmbed.createReminderErrorEmbed(user, "Time target/duration needs to be, at least, over a minute");
+            return REMINDER_EMBED.createErrorEmbed(user, "Time target/duration needs to be, at least, over a minute");
         }
 
         long currentTime = System.currentTimeMillis();
@@ -50,7 +53,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         );
 
         Reminder newlyCreatedReminder = reminderHandler.getUserReminder(userDiscordID, reminderUUID);
-        return ReminderEmbed.createReminderEmbed(
+        return REMINDER_EMBED.createMessageEmbed(
                 user,
                 "New Reminder",
                 newlyCreatedReminder
@@ -59,12 +62,13 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
+        
         User user = event.getUser();
         String userDiscordID = user.getId();
         OptionMapping reminder_id = event.getOption("reminder_id");
 
         if (reminder_id == null) {
-            return ReminderEmbed.createReminderErrorEmbed(user, "No ID was provided");
+            return REMINDER_EMBED.createMissingParametersEmbed(user, "No ID was provided");
         }
 
         int reminderID = Integer.parseInt(reminder_id.getAsString());
@@ -73,14 +77,14 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
         Reminder reminderToDelete = reminderHandler.getUserReminder(userDiscordID, reminderID);
         if(reminderToDelete == null){
-            return ReminderEmbed.createReminderErrorEmbed(user, "Invalid reminder ID/Reminder not existing");
+            return REMINDER_EMBED.createErrorEmbed(user, "Invalid reminder ID/Reminder not existing");
         }
 
         reminderHandler.delete(reminderToDelete);
 
         System.out.println("Deleted reminder with ID: " + reminderID);
 
-        return ReminderEmbed.createReminderEmbed(
+        return REMINDER_EMBED.createMessageEmbed(
                 user,
                 "Deleted",
                 reminderToDelete
@@ -89,6 +93,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed update(SlashCommandInteraction event) {
+        
         User user = event.getUser();
         String userDiscordID = user.getId();
 
@@ -97,7 +102,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping targetTime = event.getOption("time");
 
         if (id == null || message == null || targetTime == null) {
-            return ReminderEmbed.createReminderErrorEmbed(user, "Neither id, message, nor time were provided");
+            return REMINDER_EMBED.createMissingParametersEmbed(user, "Neither id, message, nor time were provided");
         }
 
         int reminderID = id.getAsInt();
@@ -105,7 +110,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         String reminderTargetTimestampAsString = targetTime.getAsString();
         long reminderAsLong = TimeHandler.parseDuration(reminderTargetTimestampAsString);
         if(reminderAsLong == -1){
-            return ReminderEmbed.createReminderErrorEmbed(user, "Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m...");
+            return REMINDER_EMBED.createErrorEmbed(user, "Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m...");
         }
 
         long currentTime = System.currentTimeMillis();
@@ -114,14 +119,14 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         ReminderHandler reminderHandler = new ReminderHandler();
         Reminder reminderToUpdate = reminderHandler.getUserReminder(userDiscordID, reminderID);
         if(reminderToUpdate == null){
-            return ReminderEmbed.createReminderErrorEmbed(user, "Invalid reminder ID/Reminder not existing");
+            return REMINDER_EMBED.createErrorEmbed(user, "Invalid reminder ID/Reminder not existing");
         }
         reminderToUpdate.message = reminderMessage;
         reminderToUpdate.targetTimestamp = targetTimeStamp;
 
         reminderHandler.updateUserReminder(reminderToUpdate);
 
-        return ReminderEmbed.createReminderEmbed(
+        return REMINDER_EMBED.createMessageEmbed(
                 user,
                 "Updated",
                 reminderToUpdate
@@ -130,13 +135,14 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
+        
         User user = event.getUser();
         String userDiscordID = user.getId();
 
         OptionMapping id = event.getOption("reminder_id");
 
         if (id == null) {
-            return ReminderEmbed.createReminderErrorEmbed(user, "No ID was provided");
+            return REMINDER_EMBED.createMissingParametersEmbed(user, "No ID was provided");
         }
 
         int reminderID = id.getAsInt();
@@ -144,24 +150,26 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
         Reminder reminderToView = reminderHandler.getUserReminder(userDiscordID, reminderID);
         if(reminderToView == null){
-            return ReminderEmbed.createReminderErrorEmbed(user, "Invalid reminder ID/Reminder not existing");
+            return REMINDER_EMBED.createErrorEmbed(user, "Invalid reminder ID/Reminder not existing");
         }
         // put into embed
-        return ReminderEmbed.createReminderEmbed(
+        return REMINDER_EMBED.createMessageEmbed(
                 user,
                 "View",
                 reminderToView
                 );
     }
 
+    @Override
     public MessageEmbed readAll(SlashCommandInteraction event) {
+        
         User user = event.getUser();
         String userDiscordID = user.getId();
 
         ReminderHandler reminderHandler = new ReminderHandler();
 
         ArrayList<Reminder> userReminders = reminderHandler.getAllUserReminders(userDiscordID);
-        return ReminderEmbed.createReminderListEmbed(
+        return REMINDER_EMBED.createListEmbed(
                 user,
                 userReminders
         );

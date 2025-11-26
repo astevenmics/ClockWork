@@ -1,12 +1,10 @@
 package mist.mystralix.Listeners.CommandListener.CommandObjects;
 
-import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Objects.Task.Task;
 import mist.mystralix.Objects.Task.TaskDAO;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
-import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -15,38 +13,18 @@ import java.util.ArrayList;
     CustomEmbed | Utility Class
         - Responsible for creating custom embeds per specific uses
 */
-public class TaskEmbed {
+public class TaskEmbed implements IMessageEmbedBuilder {
 
-    /*
-        - Creates a complete embed specifically for task-related actions
-            * Adding tasks
-            * Cancelling tasks
-            * Viewing a specific task
-        - Three parameters
-            * User user
-                - Expected to be the user that executed the command
-                - Used in getting the user's effective name
-                - Used in getting user's avatar URL
-            * String embedTitle
-                - Contains the custom title for each usage
-                - Allows the task to be different for each usage
-            * Task task
-                - Used in getting all the information posted in the embed
-    */
-    @NotNull
-    public static MessageEmbed createTaskEmbed(
-            User user,
-            String embedTitle,
-            Task task
-    ) {
-
+    @Override
+    public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
+        if(!(object instanceof Task task)) { return null; }
         TaskDAO taskDAO = task.taskDAO;
         String taskDAOTitle = taskDAO.title;
-        String taskDAODescription = taskDAO.title;
+        String taskDAODescription = taskDAO.description;
         String taskDAOStatus = taskDAO.taskStatus.getIcon() + " " + taskDAO.taskStatus.getStringValue();
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(embedTitle + " | Task #" + task.taskID);
+        embedBuilder.setTitle(title + " | Task #" + task.taskID);
         embedBuilder.setColor(taskDAO.taskStatus.getColorValue());
         embedBuilder.setDescription(
                 "Title: " + taskDAOTitle + "\n"
@@ -61,20 +39,15 @@ public class TaskEmbed {
         return embedBuilder.build();
     }
 
-    @NotNull
-    public static MessageEmbed createTaskListEmbed(
-            User user,
-            TaskStatus selectedTaskStatus,
-            ArrayList<Task> allTasks,
-            ArrayList<Task> userTasksList
-    ) {
-        ArrayList<Task> tasks = selectedTaskStatus == TaskStatus.ALL ? allTasks : userTasksList;
-
+    @Override
+    public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
+        if (list.isEmpty() || !(list.getFirst() instanceof Task)) { return null; }
         // TODO: Add pagination
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Tasks");
-        embedBuilder.setColor(selectedTaskStatus.getColorValue());
-        for(Task task : tasks) {
+        embedBuilder.setColor(Color.WHITE);
+        for(Object objectTask : list) {
+            if(!(objectTask instanceof Task task)) { continue; }
             TaskDAO taskDAO = task.taskDAO;
             String taskDAOTitle = taskDAO.title;
             String taskDAODescription = taskDAO.title;
@@ -85,6 +58,7 @@ public class TaskEmbed {
                     "Description: " + taskDAODescription +
                             "\nStatus: " + taskDAOStatus,
                     true);
+
         }
         embedBuilder.setFooter(
                 user.getEffectiveName() + " | Task Lists",
@@ -93,15 +67,12 @@ public class TaskEmbed {
         return embedBuilder.build();
     }
 
-    @NotNull
-    public static MessageEmbed createTaskErrorEmbed(
-            User user,
-            String errorMessage
-    ) {
+    @Override
+    public MessageEmbed createErrorEmbed(User user, String message) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Error | Task");
         embedBuilder.setColor(Color.RED);
-        embedBuilder.setDescription(errorMessage);
+        embedBuilder.setDescription(message);
         embedBuilder.setFooter(
                 user.getEffectiveName() + " | Task Error",
                 user.getEffectiveAvatarUrl()
@@ -110,15 +81,12 @@ public class TaskEmbed {
         return embedBuilder.build();
     }
 
-    @NotNull
-    public static MessageEmbed createLackingInformationEmbed(
-            User user,
-            String lackingInformationMessage
-    ) {
+    @Override
+    public MessageEmbed createMissingParametersEmbed(User user, String message) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Task Interaction Incomplete");
         embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(lackingInformationMessage);
+        embedBuilder.setDescription(message);
         embedBuilder.setFooter(
                 user.getEffectiveName() + " | Task Lacking Information",
                 user.getEffectiveAvatarUrl()

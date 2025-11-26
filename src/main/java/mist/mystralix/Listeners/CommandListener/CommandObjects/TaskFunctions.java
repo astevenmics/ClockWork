@@ -13,13 +13,14 @@ public class TaskFunctions {
 
     public static MessageEmbed handleTask(
             SlashCommandInteraction event,
+            TaskEmbed taskEmbed,
             Function<Task, MessageEmbed> action
     ) {
         User user = event.getUser();
 
         OptionMapping option = event.getOption("task_id");
         if (option == null) {
-            return TaskEmbed.createTaskErrorEmbed(user, "No task ID provided");
+            return taskEmbed.createMissingParametersEmbed(user, "No task ID provided");
         }
         int taskID = option.getAsInt();
 
@@ -27,7 +28,7 @@ public class TaskFunctions {
 
         Task task = taskHandler.getUserTask(user, taskID);
         if(task == null) {
-            return TaskEmbed.createLackingInformationEmbed(
+            return taskEmbed.createErrorEmbed(
                     user,
                     "No task found"
             );

@@ -179,7 +179,7 @@ public class TaskCommand implements SlashCommand {
             case "add"      -> task.create(event);
             case "cancel"   -> task.cancelTask(event);
             case "delete"   -> task.delete(event);
-            case "list"     -> task.listTasks(event);
+            case "list"     -> task.readAll(event);
             case "update"   -> task.update(event);
             case "view"     -> task.read(event);
             default         -> null;

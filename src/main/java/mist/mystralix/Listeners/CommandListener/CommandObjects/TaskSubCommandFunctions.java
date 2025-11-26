@@ -17,6 +17,8 @@ import java.util.stream.Collectors;
 
 public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
+    private final TaskEmbed TASK_EMBED = new TaskEmbed();
+
     @Override
     public MessageEmbed create(SlashCommandInteraction event) {
         User taskUser = event.getUser();
@@ -24,7 +26,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping description = event.getOption("description");
 
         if (title == null || description == null) {
-            return TaskEmbed.createTaskErrorEmbed(taskUser, "Neither title nor description were provided");
+            return TASK_EMBED.createMissingParametersEmbed(taskUser, "Neither title nor description were provided");
         }
 
         String taskTitle = title.getAsString();
@@ -53,7 +55,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         String embedTitle = "New Task";
         Task newlyCreatedTask = taskHandler.getUserTask(taskUUIDAsString);
 
-        return TaskEmbed.createTaskEmbed(
+        return TASK_EMBED.createMessageEmbed(
                 taskUser,
                 embedTitle,
                 newlyCreatedTask
@@ -63,13 +65,13 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, task -> {
+        return TaskFunctions.handleTask(event, TASK_EMBED, task -> {
             User user = event.getUser();
             TaskHandler taskHandler = new TaskHandler();
 
             taskHandler.deleteUserTask(user, task);
 
-            return TaskEmbed.createTaskEmbed(user, "Deleted Task", task);
+            return TASK_EMBED.createMessageEmbed(user, "Deleted Task", task);
         });
     }
 
@@ -100,7 +102,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
             - If taskToUpdate is null, ends the event with a reply to the user
         */
         if(taskToUpdate == null) {
-            return TaskEmbed.createLackingInformationEmbed(user, "No task found");
+            return TASK_EMBED.createErrorEmbed(user, "No task found");
         }
 
         /*
@@ -160,7 +162,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         taskHandler.updateUserTask(user, taskID, taskToUpdate);
 
         String title = "Updated Task";
-        return TaskEmbed.createTaskEmbed(
+        return TASK_EMBED.createMessageEmbed(
                 user,
                 title,
                 taskToUpdate
@@ -170,29 +172,30 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, task ->
-            TaskEmbed.createTaskEmbed(
-                    event.getUser(),
-                    "Viewing",
-                    task
+        return TaskFunctions.handleTask(event, TASK_EMBED, task ->
+            TASK_EMBED.createMessageEmbed(
+                event.getUser(),
+                "Viewing",
+                task
             )
         );
     }
 
 
     public MessageEmbed cancelTask(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, task -> {
+        return TaskFunctions.handleTask(event, TASK_EMBED, task -> {
             User user = event.getUser();
             TaskHandler taskHandler = new TaskHandler();
 
             task.taskDAO.taskStatus = TaskStatus.CANCELLED;
             taskHandler.updateUserTask(user, task.taskID, task);
 
-            return TaskEmbed.createTaskEmbed(user, "Cancelled Task", task);
+            return TASK_EMBED.createMessageEmbed(user, "Cancelled Task", task);
         });
     }
 
-    public MessageEmbed listTasks(SlashCommandInteraction event) {
+    @Override
+    public MessageEmbed readAll(SlashCommandInteraction event) {
         User user = event.getUser();
 
         int option = event.getOption("type",
@@ -203,35 +206,35 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         TaskStatus selectedTaskStatus = TaskStatus.getTaskStatus(option);
 
         TaskHandler taskHandler = new TaskHandler();
-        ArrayList<Task> allTasks = taskHandler.getUserTasks(user);
+        ArrayList<Task> tasks = taskHandler.getUserTasks(user);
 
         // TODO: Update embed formatting
-        if(allTasks.isEmpty()) {
-            return TaskEmbed.createLackingInformationEmbed(
+        if(tasks.isEmpty()) {
+            return TASK_EMBED.createErrorEmbed(
                     user,
                     "You currently do not have any tasks! Use the /task add command to start."
             );
         }
 
-        ArrayList<Task> userTasksList = allTasks.stream()
-                .filter(task -> task
-                        .taskDAO
-                        .taskStatus
-                        .equals(selectedTaskStatus))
-                .collect(Collectors.toCollection(ArrayList::new));
+        if(selectedTaskStatus != TaskStatus.ALL) {
+            tasks = tasks.stream()
+                    .filter(task -> task
+                            .taskDAO
+                            .taskStatus
+                            .equals(selectedTaskStatus))
+                    .collect(Collectors.toCollection(ArrayList::new));
 
-        if(userTasksList.isEmpty() && selectedTaskStatus != TaskStatus.ALL) {
-            return TaskEmbed.createLackingInformationEmbed(
-                    user,
-                    "No tasks found that have the status of " + selectedTaskStatus.getStringValue()
-            );
+            if(tasks.isEmpty()) {
+                return TASK_EMBED.createErrorEmbed(
+                        user,
+                        "No tasks found that have the status of " + selectedTaskStatus.getStringValue()
+                );
+            }
         }
 
-        return TaskEmbed.createTaskListEmbed(
+        return TASK_EMBED.createListEmbed(
                 user,
-                selectedTaskStatus,
-                allTasks,
-                userTasksList
+                tasks
         );
 
     }
