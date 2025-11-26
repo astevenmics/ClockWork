@@ -82,13 +82,13 @@ public class ReminderCommand implements SlashCommand {
                             OptionType.STRING,
                             "message",
                             "Reminder Message",
-                            true
+                            false
                     ),
                     new OptionData(
                             OptionType.STRING,
                             "time",
                             "[1d/1h/30m] | Example: 1h30m",
-                            true
+                            false
                     )
                 ),
             new SubcommandData(
