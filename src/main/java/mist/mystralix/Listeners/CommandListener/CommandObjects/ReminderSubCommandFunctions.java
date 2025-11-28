@@ -3,6 +3,7 @@ package mist.mystralix.Listeners.CommandListener.CommandObjects;
 import mist.mystralix.Listeners.CommandListener.ISlashCommandCRUD;
 import mist.mystralix.Objects.Reminder.Reminder;
 import mist.mystralix.Objects.Reminder.ReminderHandler;
+import mist.mystralix.Objects.Reminder.ReminderScheduler;
 import mist.mystralix.Objects.TimeHandler;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -66,6 +67,9 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 userDiscordID,
                 reminderUUID
         );
+
+        ReminderScheduler reminderScheduler = new ReminderScheduler();
+        reminderScheduler.scheduleReminder(user, newlyCreatedReminder);
         return REMINDER_EMBED.createMessageEmbed(
                 user,
                 "New Reminder",

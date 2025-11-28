@@ -5,6 +5,7 @@ import mist.mystralix.Database.DBSchemaInitializer;
 import mist.mystralix.Listeners.CommandListener.Commands.CommandManager;
 import mist.mystralix.Listeners.MessageListeners.MessageFilter;
 import mist.mystralix.Listeners.MessageListeners.MessageLogger;
+import mist.mystralix.Objects.Reminder.ReminderScheduler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -41,5 +42,8 @@ public class Main {
 
         DBSchemaInitializer dbSchemaInitializer = new DBSchemaInitializer();
         dbSchemaInitializer.initializeDatabaseTable();
+
+        ReminderScheduler reminderScheduler = new ReminderScheduler();
+        reminderScheduler.scheduleReminders(jda);
     }
 }

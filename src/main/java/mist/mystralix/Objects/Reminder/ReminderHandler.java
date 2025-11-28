@@ -1,6 +1,9 @@
 package mist.mystralix.Objects.Reminder;
 
 import mist.mystralix.Database.DBReminderHandler;
+import mist.mystralix.Listeners.CommandListener.CommandObjects.ReminderEmbed;
+import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.User;
 
 import java.util.ArrayList;
 
@@ -64,6 +67,24 @@ public class ReminderHandler {
                 reminderUUID,
                 userDiscordID
         );
+    }
+
+    public void sendReminder(User user, Reminder reminder) {
+        ReminderEmbed reminderEmbed = new ReminderEmbed();
+        if (user == null) {
+            System.out.println("Error: User not found! | " + reminder.userDiscordID);
+            return;
+        }
+
+        user.openPrivateChannel().queue(
+                channel -> {
+                    MessageEmbed messageEmbed = reminderEmbed.createMessageEmbed(
+                            user,
+                            "Reminder Alert!",
+                            reminder
+                    );
+                    channel.sendMessageEmbeds(messageEmbed).queue();
+        });
     }
 
 

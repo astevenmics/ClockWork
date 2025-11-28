@@ -7,6 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class DBReminderHandler {
 
@@ -211,6 +212,38 @@ public class DBReminderHandler {
             throw new RuntimeException("DB Error", e);
         }
 
+    }
+
+    public HashSet<Reminder> getAllReminders() {
+        HashSet<Reminder> reminders = new HashSet<>();
+        String sqlStatement = "SELECT * FROM reminders;";
+        try(
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
+                ) {
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while(resultSet.next()) {
+                String reminderUUID = resultSet.getString("reminderUUID");
+                String userDiscordID = resultSet.getString("userDiscordID");
+                int reminderID = resultSet.getInt("reminderID");
+                String reminderMessage = resultSet.getString("message");
+                long targetTimestamp = resultSet.getLong("targetTimestamp");
+                reminders.add(
+                        new Reminder(
+                               reminderUUID,
+                               userDiscordID,
+                               reminderID,
+                               reminderMessage,
+                               targetTimestamp
+                        )
+                );
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Error reading all reminders", e);
+        }
+        return reminders;
     }
 
 
