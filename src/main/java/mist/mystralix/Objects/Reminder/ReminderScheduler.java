@@ -15,7 +15,7 @@ public class ReminderScheduler {
     private final DBReminderHandler DB_REMINDER_HANDLER = new DBReminderHandler();
 
     public void scheduleReminders(JDA jda) {
-        HashSet<Reminder> allReminders = DB_REMINDER_HANDLER.getAllReminders();
+        HashSet<Reminder> allReminders = DB_REMINDER_HANDLER.getAllActiveReminders();
         ReminderHandler reminderHandler = new ReminderHandler();
 
         for (Reminder reminder : allReminders) {
@@ -25,17 +25,17 @@ public class ReminderScheduler {
             String userDiscordID = reminder.userDiscordID;
 
             if (remainingTime <= 0) {
-                jda.retrieveUserById(userDiscordID).queue(user ->
-                                reminderHandler.sendReminder(
-                                        user,
-                                        reminder
-                                ),
-                        error -> System.out.println(error.getMessage()));
+                jda.retrieveUserById(userDiscordID).queue(user -> {
+                            reminderHandler.sendReminder(user, reminder);
+                            reminderHandler.reminderSentUpdate(reminder);
+                        }, error -> System.out.println(error.getMessage())
+                );
             } else {
                 SCHEDULER.schedule(() ->
-                    jda.retrieveUserById(userDiscordID).queue(user ->
-                            reminderHandler.sendReminder(user, reminder),
-                            error -> System.out.println(error.getMessage())
+                    jda.retrieveUserById(userDiscordID).queue(user -> {
+                                reminderHandler.sendReminder(user, reminder);
+                                reminderHandler.reminderSentUpdate(reminder);
+                            }, error -> System.out.println(error.getMessage())
                     ),
                     remainingTime,
                     TimeUnit.MILLISECONDS);
@@ -48,8 +48,10 @@ public class ReminderScheduler {
 
         long reminderTargetTimestamp = reminder.targetTimestamp;
         long remainingTime = reminderTargetTimestamp - System.currentTimeMillis();
-                SCHEDULER.schedule(() ->
-                        reminderHandler.sendReminder(user, reminder),
+                SCHEDULER.schedule(() -> {
+                            reminderHandler.sendReminder(user, reminder);
+                            reminderHandler.reminderSentUpdate(reminder);
+                        },
                         remainingTime,
                         TimeUnit.MILLISECONDS
                 );

@@ -19,7 +19,8 @@ public class ReminderHandler {
             String reminderUUID,
             String userDiscordID,
             String reminderMessage,
-            long targetTimestamp
+            long targetTimestamp,
+            boolean isNotificationSent
     ) {
         DB_REMINDER_HANDLER
             .create(
@@ -27,7 +28,8 @@ public class ReminderHandler {
                 reminderUUID,
                 userDiscordID,
                 reminderMessage,
-                targetTimestamp
+                targetTimestamp,
+                isNotificationSent
                 )
             );
     }
@@ -76,15 +78,23 @@ public class ReminderHandler {
             return;
         }
 
+        MessageEmbed embed = reminderEmbed.createMessageEmbed(
+                user,
+                "Reminder Alert!",
+                reminder
+        );
+
         user.openPrivateChannel().queue(
-                channel -> {
-                    MessageEmbed messageEmbed = reminderEmbed.createMessageEmbed(
-                            user,
-                            "Reminder Alert!",
-                            reminder
-                    );
-                    channel.sendMessageEmbeds(messageEmbed).queue();
-        });
+                channel -> channel.sendMessageEmbeds(embed).queue(
+                        _ -> System.out.println("✅ Reminder sent to " + user.getEffectiveName()),
+                        fail -> System.out.println("❌ Failed to send to " + user.getEffectiveName() + " (DM blocked): " + fail.getMessage())
+                ),
+                _ -> System.out.println("❌ Cannot open DM with " + user.getEffectiveName() + " — DMs off or user blocked the bot.")
+        );
+    }
+
+    public void reminderSentUpdate(Reminder reminder) {
+        DB_REMINDER_HANDLER.updateIsNotificationSent(reminder);
     }
 
 

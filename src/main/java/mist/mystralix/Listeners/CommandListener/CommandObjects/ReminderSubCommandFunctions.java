@@ -53,14 +53,15 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
         String userDiscordID = user.getId();
         String reminderUUID = UUID.randomUUID().toString();
-
+        boolean isNotificationSent = false;
 
         ReminderHandler reminderHandler = new ReminderHandler();
         reminderHandler.createReminder(
                 reminderUUID,
                 userDiscordID,
                 reminderMessage,
-                targetTimeStamp
+                targetTimeStamp,
+                isNotificationSent
         );
 
         Reminder newlyCreatedReminder = reminderHandler.getUserReminder(

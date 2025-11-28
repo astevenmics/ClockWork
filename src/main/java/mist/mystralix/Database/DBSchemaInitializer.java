@@ -43,6 +43,7 @@ public class DBSchemaInitializer {
                         "reminderID BIGINT NOT NULL AUTO_INCREMENT," +
                         "message VARCHAR(8192) NOT NULL," +
                         "targetTimestamp BIGINT NOT NULL," +
+                        "isNotificationSent BOOLEAN NOT NULL DEFAULT FALSE," +
                         "UNIQUE KEY(reminderID)" +
                         ");";
         try (

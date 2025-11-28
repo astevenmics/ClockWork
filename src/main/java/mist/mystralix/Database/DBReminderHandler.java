@@ -17,10 +17,11 @@ public class DBReminderHandler {
         String userDiscordID = reminder.userDiscordID;
         String reminderMessage = reminder.message;
         long timestamp = reminder.targetTimestamp;
+        boolean isNotificationSent = reminder.isNotificationSent;
 
         String sqlStatement = "INSERT INTO reminders " +
-                "(reminderUUID, userDiscordID, message, targetTimestamp) " +
-                "VALUES (?, ?, ?, ?);";
+                "(reminderUUID, userDiscordID, message, targetTimestamp, isNotificationSent) " +
+                "VALUES (?, ?, ?, ?, ?);";
 
         try(
                 Connection connection = DBManager.getConnection();
@@ -30,6 +31,7 @@ public class DBReminderHandler {
             preparedStatement.setString(2, userDiscordID);
             preparedStatement.setString(3, reminderMessage);
             preparedStatement.setLong(4, timestamp);
+            preparedStatement.setBoolean(5, isNotificationSent);
 
             preparedStatement.executeUpdate();
         }
@@ -57,13 +59,15 @@ public class DBReminderHandler {
                 String reminderUUID = resultSet.getString("reminderUUID");
                 String reminderMessage = resultSet.getString("message");
                 long timestamp = resultSet.getLong("targetTimestamp");
+                boolean isNotificationSent = resultSet.getBoolean("isNotificationSent");
 
                 return new Reminder(
                         reminderUUID,
                         userDiscordID,
                         reminderID,
                         reminderMessage,
-                        timestamp
+                        timestamp,
+                        isNotificationSent
                 );
 
             } else {
@@ -95,13 +99,15 @@ public class DBReminderHandler {
                 String reminderMessage = resultSet.getString("message");
                 long timestamp = resultSet.getLong("targetTimestamp");
                 int reminderID = resultSet.getInt("reminderID");
+                boolean isNotificationSent = resultSet.getBoolean("isNotificationSent");
 
                 return new Reminder(
                         reminderUUID,
                         userDiscordID,
                         reminderID,
                         reminderMessage,
-                        timestamp
+                        timestamp,
+                        isNotificationSent
                 );
 
             } else {
@@ -194,6 +200,7 @@ public class DBReminderHandler {
                 String reminderMessage = resultSet.getString("message");
                 int reminderID = resultSet.getInt("reminderID");
                 long targetTimestamp = resultSet.getLong("targetTimestamp");
+                boolean isNotificationSent = resultSet.getBoolean("isNotificationSent");
 
                 reminders.add(
                     new Reminder(
@@ -201,7 +208,8 @@ public class DBReminderHandler {
                         userDiscordID,
                         reminderID,
                         reminderMessage,
-                        targetTimestamp
+                        targetTimestamp,
+                        isNotificationSent
                     )
                 );
             }
@@ -214,9 +222,9 @@ public class DBReminderHandler {
 
     }
 
-    public HashSet<Reminder> getAllReminders() {
+    public HashSet<Reminder> getAllActiveReminders() {
         HashSet<Reminder> reminders = new HashSet<>();
-        String sqlStatement = "SELECT * FROM reminders;";
+        String sqlStatement = "SELECT * FROM reminders WHERE isNotificationSent = 0;";
         try(
                 Connection connection = DBManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
@@ -229,13 +237,15 @@ public class DBReminderHandler {
                 int reminderID = resultSet.getInt("reminderID");
                 String reminderMessage = resultSet.getString("message");
                 long targetTimestamp = resultSet.getLong("targetTimestamp");
+                boolean isNotificationSent = resultSet.getBoolean("isNotificationSent");
                 reminders.add(
                         new Reminder(
-                               reminderUUID,
-                               userDiscordID,
-                               reminderID,
-                               reminderMessage,
-                               targetTimestamp
+                                reminderUUID,
+                                userDiscordID,
+                                reminderID,
+                                reminderMessage,
+                                targetTimestamp,
+                                isNotificationSent
                         )
                 );
             }
@@ -244,6 +254,39 @@ public class DBReminderHandler {
             throw new RuntimeException("Error reading all reminders", e);
         }
         return reminders;
+    }
+
+    public void updateIsNotificationSent(Reminder reminder) {
+
+        int reminderID = reminder.reminderID;
+        String userDiscordID = reminder.userDiscordID;
+        String reminderUUID = reminder.reminderUUID;
+        boolean isNotificationSent = true;
+
+        String sqlStatement =
+                "UPDATE reminders " +
+                        "SET isNotificationSent = ? " +
+                        "WHERE reminderUUID = ? AND userDiscordID = ?;";
+
+        try(
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
+        ) {
+            preparedStatement.setBoolean(1, isNotificationSent);
+            preparedStatement.setString(2, reminderUUID);
+            preparedStatement.setString(3, userDiscordID);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated == 0) {
+                System.out.println("Reminder not found/updated");
+            }
+
+        }
+        catch (SQLException e) {
+            System.out.println("Error updating reminder ID: " + reminderID + "for user: " + userDiscordID);
+            throw new RuntimeException("DB Error", e);
+        }
+
     }
 
 

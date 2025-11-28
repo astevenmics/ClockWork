@@ -15,30 +15,45 @@
     * SQLite > Might change to PostgresSQL / MySQL - ✅
 
 - Task Command ✅
-    * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command
-    * /task add
-    * /task list [optional type]
-    * /task view [task id]
-    * /task update [task id]
-    * /task cancel [task id]
-    * /task delete [task id]
+    * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command ✅
+    * /task add ✅
+    * /task list [optional type] ✅
+    * /task view [task id] ✅
+    * /task update [task id] ✅
+    * /task cancel [task id] ✅
+    * /task delete [task id] ✅
 
+- Team Command ❌
+    * /team create ❌
+    * /team add [user] ❌
+    * /team remove [user] ❌
+    * /team accept [teamID] ❌
+    * /team leave [teamID] ❌
+    * /team [teamID] list ❌
+    * /team [teamID] tasks ❌
+    * /team [teamID] task create ❌
+    * /team [teamID] task delete ❌
+    * /team [teamID] task update ❌
+    * /team [teamID] task list ❌
+    * /team [teamID] task assign [taskID] [userID] ❌
+    * /team [teamID] task unassign [taskID] [userID] ❌
+    * /team [teamID] task view [taskID] ❌
 
-- Create a remindme ⏳
-    * Make it persistent even if the application restarts ❌
-    * Scheduler
+- Create a remind ⏳
+    * Make it persistent even if the application restarts ✅
+    * Scheduler ✅
     * Refactor code
     * Implement interfaces ✅
-    * Commands
-        - remindme ⏳
-        - remind create ❌
-        - remind list ❌
-        - remind delete ❌
-        - remind update ❌
-        - remind view ❌
+    * Commands ✅
+        - remind ✅
+        - remind create ✅
+        - remind list ✅
+        - remind delete ✅
+        - remind update ✅
+        - remind view ✅
 
 - Clean Up & Make comments - ⏳
-    * Comments
+    * Comments ⏳
         - DBManager ❌
         - DBSchemaInitializer ✅
         - DBTaskHandler ✅
@@ -57,6 +72,9 @@
         - MessageFilter ❌
         - MessageLogger ❌
         - MessageReceived ❌
+        - Reminder ❌
+        - ReminderHandler ❌
+        - ReminderScheduler ❌
         - Task ✅
         - TaskDAO ✅
         - TaskHandler ❌
