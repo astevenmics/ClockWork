@@ -78,4 +78,5 @@
         - Task ✅
         - TaskDAO ✅
         - TaskHandler ❌
+        - TimeHandler ✅
         - Main ❌

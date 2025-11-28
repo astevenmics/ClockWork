@@ -13,10 +13,10 @@ import net.dv8tion.jda.api.requests.GatewayIntent;
 
 import java.util.EnumSet;
 
-public class Main {
+public class ClockWork {
     public static void main(String[] args) throws InterruptedException {
 
-        DBManager.init();
+        DBManager.buildConnectionPool();
 
         JDA jda = JDABuilder.createLight(
                 System.getenv("DISCORD_TOKEN"),

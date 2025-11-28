@@ -10,7 +10,7 @@ public class DBManager {
 
     private static HikariDataSource dataSource;
 
-    public static void init() {
+    public static void buildConnectionPool() {
         HikariConfig config = new HikariConfig();
         String dbPort = System.getenv("DB_PORT");
         config.setJdbcUrl("jdbc:mysql://localhost:" + dbPort + "/clockwork");
