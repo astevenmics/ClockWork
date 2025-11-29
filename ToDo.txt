@@ -16,6 +16,20 @@
     * Turn the whole project into async ❌
     * Combine ReminderFunctions and TaskFunctions ❌
     * Combine ReminderRepository and TaskRepository using a BaseRepository ❌
+    * Update MessageLogger ❌
+        - Asynchronous ❌
+        - File-based logger ❌
+        - Daily rotation ❌
+        - Timestamps ❌
+        - Username + ID ❌
+        - Filters: DMs, Guilds, Errors, etc. ❌
+    * ISlashCommandCRUD ❌
+        - DIP ❌
+        - AbstractSlashCommandCRUD ❌
+    * SlashCommand ❌
+        - Use annotations for name, subcommand, description, etc. ❌
+        - @Slash(name = "commandName") ❌
+        - @Sub(name = "subCommand") ❌
 
 - Task Command ⏳
     * Create Dependency Inject for SubCommands ❌
@@ -58,35 +72,34 @@
         - remind update ✅
         - remind view ✅
 
-- Clean Up & Make comments - ⏳
-    * Comments ⏳
+- Clean Up & Make comments - ✅
+    * Comments ✅
         - DBReminderRepository ✅
         - ReminderRepository ✅
         - DBTaskRepository ✅
         - TaskRepository ✅
-        - DBManager ❌
-        - DBSchemaInitializer ❌
+        - DBManager ✅
+        - DBSchemaInitializer ✅
         - TaskStatus ✅
-        - FileDoesNotExistException ❌
-        - FileException ❌
-        - ReadPermissionFileException ❌
-        - FileHandler ❌
-        - JSONHandler ❌
+        - FileDoesNotExistException ✅
+        - FileException ✅
+        - ReadPermissionFileException ✅
+        - FileHandler ✅
+        - JSONHandler ✅
         - ReminderEmbed ✅
         - ReminderFunctions ✅
         - ReminderSubCommandFunctions ✅
         - TaskEmbed ✅
         - TaskFunctions ✅
         - TaskSubCommandFunctions ✅
-        - IMessageEmbedBuilder ❌
-        - CommandManager ❌
+        - IMessageEmbedBuilder ✅
+        - CommandManager ✅
         - ReminderCommand ✅
-        - SlashCommand ❌
+        - SlashCommand ✅
         - TaskCommand ✅
-        - ISlashCommandCRUD ❌
-        - MessageFilter ❌
-        - MessageLogger ❌
-        - MessageReceived ❌
+        - ISlashCommandCRUD ✅
+        - MessageFilter ✅
+        - MessageLogger ✅
         - Reminder ✅
         - ReminderScheduler ✅
         - ReminderService ✅
