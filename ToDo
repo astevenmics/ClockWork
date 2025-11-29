@@ -13,8 +13,12 @@
     * Improve formatting - ⏳
     * Use Pagination - ❌
     * SQLite > Might change to PostgresSQL / MySQL - ✅
+    * Turn the whole project into async
 
-- Task Command ✅
+- Task Command ⏳
+    * Create Dependency Inject for SubCommands ❌
+    * Registry-Based Command Dispatch ❌
+    * Automatic Option Generation from ENUMs ❌
     * Move AddTask, ListTasks, ViewTasks, UpdateTask, CancelTask, and RemoveTask into one command ✅
     * /task add ✅
     * /task list [optional type] ✅
@@ -67,7 +71,7 @@
         - TaskFunctions ⏳
         - TaskSubCommandFunctions ⏳
         - CommandManager ❌
-        - TaskCommand ⏳
+        - TaskCommand ✅
         - SlashCommand ✅
         - MessageFilter ❌
         - MessageLogger ❌
@@ -77,6 +81,6 @@
         - ReminderScheduler ❌
         - Task ✅
         - TaskDAO ✅
-        - TaskHandler ❌
+        - TaskHandler ✅
         - TimeHandler ✅
-        - Main ❌
+        - Main ✅

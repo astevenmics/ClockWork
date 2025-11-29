@@ -10,89 +10,149 @@ import net.dv8tion.jda.api.entities.User;
 import java.awt.*;
 import java.util.ArrayList;
 
-/*
-    CustomEmbed | Utility Class
-        - Responsible for creating custom embeds per specific uses
-*/
+/**
+ * Responsible for building embed messages related to task objects.
+ *
+ * <p>This class serves as the presentation layer for any Task-related output
+ * in Discord. It produces embeds for:
+ * <ul>
+ *     <li>Single task views</li>
+ *     <li>Task lists</li>
+ *     <li>Error messages</li>
+ *     <li>Missing parameter notifications</li>
+ * </ul>
+ *
+ * Implements {@link IMessageEmbedBuilder} for standardized output behavior.
+ */
 public class TaskEmbed implements IMessageEmbedBuilder {
 
+    /**
+     * Builds an embed representing a single task.
+     *
+     * @param user  the user who triggered the interaction
+     * @param title the title of the embed
+     * @param object a generic object expected to be a {@link Task}
+     * @return a formatted {@link MessageEmbed}, or {@code null} if the object is not a Task
+     */
     @Override
     public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
-        if(!(object instanceof Task task)) { return null; }
-        TaskDAO taskDAO = task.taskDAO;
-        String taskDAOTitle = taskDAO.title;
-        String taskDAODescription = taskDAO.description;
-        String taskDAOStatus = taskDAO.taskStatus.getIcon() + " " + taskDAO.taskStatus.getStringValue();
 
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle(title + " | Task #" + task.taskID);
-        embedBuilder.setColor(taskDAO.taskStatus.getColorValue());
-        embedBuilder.setDescription(
-                "Title: " + taskDAOTitle + "\n"
-                        + "Description: " + taskDAODescription + "\n"
-                        + "Status: " + taskDAOStatus
+        // Ensure provided object is a Task instance
+        if (!(object instanceof Task task)) {
+            return null;
+        }
+
+        TaskDAO taskDAO = task.getTaskDAO();
+        String taskTitle = taskDAO.getTitle();
+        String taskDesc = taskDAO.getDescription();
+        String taskStatus = taskDAO.getTaskStatus().getIcon() + " " + taskDAO.getTaskStatus().getStringValue();
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle(title + " | Task #" + task.getTaskID());
+        embed.setColor(taskDAO.getTaskStatus().getColorValue());
+        embed.setDescription(
+                "Title: " + taskTitle + "\n" +
+                        "Description: " + taskDesc + "\n" +
+                        "Status: " + taskStatus
         );
-        embedBuilder.setFooter(
+
+        embed.setFooter(
                 user.getEffectiveName() + " | Task",
                 user.getEffectiveAvatarUrl()
         );
 
-        return embedBuilder.build();
+        return embed.build();
     }
 
+    /**
+     * Builds an embed containing a list of tasks.
+     *
+     * <p>If the list is empty or does not contain Task objects,
+     * this method returns {@code null}.</p>
+     *
+     * @param user the user requesting the list
+     * @param list the collection of task objects
+     * @return an embed showing all tasks, or {@code null} on invalid input
+     */
     @Override
     public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
-        if (list.isEmpty() || !(list.getFirst() instanceof Task)) { return null; }
-        // TODO: Add pagination
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Tasks");
-        embedBuilder.setColor(Color.WHITE);
-        for(Object objectTask : list) {
-            if(!(objectTask instanceof Task task)) { continue; }
-            TaskDAO taskDAO = task.taskDAO;
-            String taskDAOTitle = taskDAO.title;
-            String taskDAODescription = taskDAO.title;
-            String taskDAOStatus = taskDAO.taskStatus.getIcon() + " " + taskDAO.taskStatus.getStringValue();
 
-            embedBuilder.addField(
-                    "#" + task.taskID + " | " + taskDAOTitle,
-                    "Description: " + taskDAODescription +
-                            "\nStatus: " + taskDAOStatus,
-                    true);
-
+        // Validate list contents
+        if (list.isEmpty() || !(list.getFirst() instanceof Task)) {
+            return null;
         }
-        embedBuilder.setFooter(
-                user.getEffectiveName() + " | Task Lists",
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Tasks");
+        embed.setColor(Color.WHITE);
+
+        // TODO: Pagination support for large task lists
+        for (Object obj : list) {
+            if (!(obj instanceof Task task)) continue;
+
+            TaskDAO dao = task.getTaskDAO();
+            String taskTitle = dao.getTitle();
+            String taskDesc = dao.getDescription();
+            String taskStatus = dao.getTaskStatus().getIcon() + " " + dao.getTaskStatus().getStringValue();
+
+            embed.addField(
+                    "#" + task.getTaskID() + " | " + taskTitle,
+                    "Description: " + taskDesc + "\n" +
+                            "Status: " + taskStatus,
+                    true
+            );
+        }
+
+        embed.setFooter(
+                user.getEffectiveName() + " | Task List",
                 user.getEffectiveAvatarUrl()
         );
-        return embedBuilder.build();
+
+        return embed.build();
     }
 
+    /**
+     * Builds an embed representing a task-related error.
+     *
+     * @param user the user who triggered the error message
+     * @param message the content of the error
+     * @return a red-highlighted error embed
+     */
     @Override
     public MessageEmbed createErrorEmbed(User user, String message) {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Error | Task");
-        embedBuilder.setColor(Color.RED);
-        embedBuilder.setDescription(message);
-        embedBuilder.setFooter(
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Error | Task");
+        embed.setColor(Color.RED);
+        embed.setDescription(message);
+
+        embed.setFooter(
                 user.getEffectiveName() + " | Task Error",
                 user.getEffectiveAvatarUrl()
         );
 
-        return embedBuilder.build();
+        return embed.build();
     }
 
+    /**
+     * Builds an embed notifying the user that needed parameters were missing
+     * (e.g., missing task ID, title, or description).
+     *
+     * @param user the user receiving the notice
+     * @param message the error message describing missing parameters
+     * @return an orange-highlighted embed indicating incomplete user input
+     */
     @Override
     public MessageEmbed createMissingParametersEmbed(User user, String message) {
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Task Interaction Incomplete");
-        embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setDescription(message);
-        embedBuilder.setFooter(
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Task Interaction Incomplete");
+        embed.setColor(Color.ORANGE);
+        embed.setDescription(message);
+
+        embed.setFooter(
                 user.getEffectiveName() + " | Task Lacking Information",
                 user.getEffectiveAvatarUrl()
         );
 
-        return embedBuilder.build();
+        return embed.build();
     }
 }
