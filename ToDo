@@ -10,10 +10,12 @@
     * Update Handling from HashSet to HashMap - ✅
 
 - All - ⏳
-    * Improve formatting - ⏳
-    * Use Pagination - ❌
-    * SQLite > Might change to PostgresSQL / MySQL - ✅
-    * Turn the whole project into async
+    * Improve formatting ⏳
+    * Use Pagination ❌
+    * SQLite > Might change to PostgresSQL / MySQL ✅
+    * Turn the whole project into async ❌
+    * Combine ReminderFunctions and TaskFunctions ❌
+    * Combine ReminderRepository and TaskRepository using a BaseRepository ❌
 
 - Task Command ⏳
     * Create Dependency Inject for SubCommands ❌
@@ -58,29 +60,39 @@
 
 - Clean Up & Make comments - ⏳
     * Comments ⏳
+        - DBReminderRepository ✅
+        - ReminderRepository ✅
+        - DBTaskRepository ✅
+        - TaskRepository ✅
         - DBManager ❌
-        - DBSchemaInitializer ✅
-        - DBTaskHandler ✅
-        - TaskStatus ❌
+        - DBSchemaInitializer ❌
+        - TaskStatus ✅
         - FileDoesNotExistException ❌
         - FileException ❌
         - ReadPermissionFileException ❌
-        - FileHandler ⏳
+        - FileHandler ❌
         - JSONHandler ❌
-        - TaskEmbed ⏳
-        - TaskFunctions ⏳
-        - TaskSubCommandFunctions ⏳
+        - ReminderEmbed ✅
+        - ReminderFunctions ✅
+        - ReminderSubCommandFunctions ✅
+        - TaskEmbed ✅
+        - TaskFunctions ✅
+        - TaskSubCommandFunctions ✅
+        - IMessageEmbedBuilder ❌
         - CommandManager ❌
+        - ReminderCommand ✅
+        - SlashCommand ❌
         - TaskCommand ✅
-        - SlashCommand ✅
+        - ISlashCommandCRUD ❌
         - MessageFilter ❌
         - MessageLogger ❌
         - MessageReceived ❌
-        - Reminder ❌
-        - ReminderHandler ❌
-        - ReminderScheduler ❌
+        - Reminder ✅
+        - ReminderScheduler ✅
+        - ReminderService ✅
         - Task ✅
         - TaskDAO ✅
-        - TaskHandler ✅
+        - TaskService ✅
         - TimeHandler ✅
-        - Main ✅
+        - ClockWork ✅
+        - ClockWorkContainer ✅

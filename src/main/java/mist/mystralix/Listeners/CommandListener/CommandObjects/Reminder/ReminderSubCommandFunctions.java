@@ -14,68 +14,111 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Implements all business logic for the reminder-related subcommands.
+ *
+ * <p>This class processes the functional behavior for:</p>
+ * <ul>
+ *     <li>/reminder create</li>
+ *     <li>/reminder delete</li>
+ *     <li>/reminder update</li>
+ *     <li>/reminder view</li>
+ *     <li>/reminder list</li>
+ * </ul>
+ *
+ * <p>Each subcommand interacts with {@link ReminderService} for persistence and
+ * reminder state management. Output formatting is delegated to {@link ReminderEmbed}.
+ * Shared validation and lookup steps are centralized in {@link ReminderFunctions#handleReminder}.</p>
+ */
 public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
+    /** Service layer used for database operations and reminder dispatching. */
     private final ReminderService REMINDER_SERVICE;
 
+    /** Shared embed builder utility used for consistent visual responses. */
+    private final ReminderEmbed REMINDER_EMBED = new ReminderEmbed();
+
+    /**
+     * Constructs a handler for all reminder subcommands.
+     *
+     * @param reminderService the dependency providing CRUD and scheduling operations
+     */
     public ReminderSubCommandFunctions(ReminderService reminderService) {
         this.REMINDER_SERVICE = reminderService;
     }
 
-    private final ReminderEmbed REMINDER_EMBED = new ReminderEmbed();
-
+    /**
+     * Handles /reminder create.
+     *
+     * <p>This method performs:</p>
+     * <ul>
+     *     <li>Input validation for message and time</li>
+     *     <li>Duration parsing using {@link TimeHandler#parseDuration(String)}</li>
+     *     <li>Reminder creation and persistence</li>
+     *     <li>Scheduling the reminder using {@link ReminderScheduler}</li>
+     *     <li>Returning a formatted embed summarizing the created reminder</li>
+     * </ul>
+     *
+     * <p>If the time format is invalid or duration is too short, an error embed is returned.</p>
+     */
     @Override
     public MessageEmbed create(SlashCommandInteraction event) {
-        
+
         User user = event.getUser();
         OptionMapping message = event.getOption("message");
         OptionMapping targetTime = event.getOption("time");
 
+        // Required field validation
         if (message == null || targetTime == null) {
             return REMINDER_EMBED.createMissingParametersEmbed(
-                    user,
-                    "Neither message nor time were provided"
+                    user, "Neither message nor time were provided"
             );
         }
 
         String reminderMessage = message.getAsString();
         String reminderTargetTimestampAsString = targetTime.getAsString();
 
+        // Parse duration string into milliseconds
         long reminderAsLong = TimeHandler.parseDuration(reminderTargetTimestampAsString);
-        if(reminderAsLong <= 0){
+        if (reminderAsLong <= 0) {
             return REMINDER_EMBED.createErrorEmbed(
                     user,
                     "Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m..."
             );
-        } else if (reminderAsLong < 60_000L){
+        } else if (reminderAsLong < 60_000L) {
             return REMINDER_EMBED.createErrorEmbed(
                     user,
-                    "Time target/duration needs to be, at least, over a minute"
+                    "Time target/duration must be at least 1 minute."
             );
         }
 
-        long currentTime = System.currentTimeMillis();
-        long targetTimeStamp = currentTime + reminderAsLong;
+        // Compute final timestamp
+        long targetTimestamp = System.currentTimeMillis() + reminderAsLong;
 
+        // Create reminder metadata
         String userDiscordID = user.getId();
         String reminderUUID = UUID.randomUUID().toString();
         boolean isNotificationSent = false;
 
+        // Persist reminder
         REMINDER_SERVICE.createReminder(
                 reminderUUID,
                 userDiscordID,
                 reminderMessage,
-                targetTimeStamp,
+                targetTimestamp,
                 isNotificationSent
         );
 
+        // Retrieve stored domain object
         Reminder newlyCreatedReminder = REMINDER_SERVICE.getUserReminder(
                 userDiscordID,
                 reminderUUID
         );
 
-        ReminderScheduler reminderScheduler = new ReminderScheduler(REMINDER_SERVICE);
-        reminderScheduler.scheduleReminder(user, newlyCreatedReminder);
+        // Schedule reminder execution
+        new ReminderScheduler(REMINDER_SERVICE)
+                .scheduleReminder(user, newlyCreatedReminder);
+
         return REMINDER_EMBED.createMessageEmbed(
                 user,
                 "New Reminder",
@@ -83,149 +126,97 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         );
     }
 
+    /**
+     * Handles /reminder delete.
+     *
+     * <p>The shared CRUD logic is delegated to
+     * {@link ReminderFunctions#handleReminder(SlashCommandInteraction, ReminderService, ReminderEmbed, java.util.function.Function)}.</p>
+     *
+     * <p>If the reminder exists, it is removed from persistent storage and an embed confirming the deletion is returned.</p>
+     */
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
-        
-        User user = event.getUser();
-        String userDiscordID = user.getId();
-        OptionMapping reminder_id = event.getOption("reminder_id");
-
-        if (reminder_id == null) {
-            return REMINDER_EMBED.createMissingParametersEmbed(
-                    user,
-                    "No ID was provided"
-            );
-        }
-
-        int reminderID = Integer.parseInt(reminder_id.getAsString());
-
-        Reminder reminderToDelete = REMINDER_SERVICE.getUserReminder(
-                userDiscordID,
-                reminderID
-        );
-        if(reminderToDelete == null){
-            return REMINDER_EMBED.createErrorEmbed(
-                    user,
-                    "Invalid reminder ID/Reminder not existing"
-            );
-        }
-
-        REMINDER_SERVICE.delete(reminderToDelete);
-
-        System.out.println("Deleted reminder with ID: " + reminderID);
-
-        return REMINDER_EMBED.createMessageEmbed(
-                user,
-                "Deleted",
-                reminderToDelete
-        );
+        return ReminderFunctions.handleReminder(event, REMINDER_SERVICE, REMINDER_EMBED, reminder -> {
+            REMINDER_SERVICE.delete(reminder);
+            return REMINDER_EMBED.createMessageEmbed(event.getUser(), "Deleted", reminder);
+        });
     }
 
+    /**
+     * Handles /reminder update.
+     *
+     * <p>The shared lookup and validation logic is handled by {@link ReminderFunctions#handleReminder}.</p>
+     *
+     * <p>Supports updating:</p>
+     * <ul>
+     *     <li>Reminder message</li>
+     *     <li>Reminder timestamp (via duration string)</li>
+     * </ul>
+     *
+     * <p>Invalid duration inputs will return an error embed.</p>
+     */
     @Override
     public MessageEmbed update(SlashCommandInteraction event) {
-        
-        User user = event.getUser();
-        String userDiscordID = user.getId();
+        return ReminderFunctions.handleReminder(event, REMINDER_SERVICE, REMINDER_EMBED, reminder -> {
 
-        int reminderID = event.getOption(
-                "reminder_id",
-                () -> 0,
-                OptionMapping::getAsInt
-        );
-        String reminderMessage = event.getOption(
-                "message",
-                () -> null,
-                OptionMapping::getAsString
-        );
-        String reminderTargetTimestampAsString = event.getOption(
-                "time",
-                () -> null,
-                OptionMapping::getAsString
-        );
+            User user = event.getUser();
 
-        if (reminderID == 0) {
-            return REMINDER_EMBED.createMissingParametersEmbed(
-                    user,
-                    "Neither id, message, nor time were provided"
-            );
-        }
+            // Optional message update
+            Optional.ofNullable(
+                    event.getOption("message", () -> null, OptionMapping::getAsString)
+            ).ifPresent(reminder::setMessage);
 
-        Reminder reminderToUpdate = REMINDER_SERVICE.getUserReminder(userDiscordID, reminderID);
+            // Optional time update
+            String timeString = event.getOption("time", () -> null, OptionMapping::getAsString);
 
-        if(reminderToUpdate == null){
-            return REMINDER_EMBED.createErrorEmbed(
-                    user,
-                    "Invalid reminder ID/Reminder not existing"
-            );
-        }
+            if (timeString != null) {
+                long duration = TimeHandler.parseDuration(timeString);
 
-        Optional.ofNullable(reminderMessage).ifPresent(m -> reminderToUpdate.message = m);
+                if (duration <= 0) {
+                    return REMINDER_EMBED.createErrorEmbed(
+                            user, "Invalid time format. Example: 1d, 1h20m"
+                    );
+                }
 
-        if(reminderTargetTimestampAsString != null){
-            long reminderAsLong = TimeHandler.parseDuration(reminderTargetTimestampAsString);
-            if(reminderAsLong == -1) {
-                return REMINDER_EMBED.createErrorEmbed(
-                        user,
-                        "Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m..."
-                );
+                reminder.setTargetTimestamp(System.currentTimeMillis() + duration);
             }
 
-            long currentTime = System.currentTimeMillis();
-            reminderToUpdate.targetTimestamp = currentTime + reminderAsLong;
-        }
+            REMINDER_SERVICE.updateUserReminder(reminder);
 
-        REMINDER_SERVICE.updateUserReminder(reminderToUpdate);
-
-        return REMINDER_EMBED.createMessageEmbed(
-                user,
-                "Updated",
-                reminderToUpdate
-        );
+            return REMINDER_EMBED.createMessageEmbed(user, "Updated", reminder);
+        });
     }
 
+    /**
+     * Handles /reminder view.
+     *
+     * <p>Retrieves a single reminder and displays its details formatted as an embed.</p>
+     */
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
-        
-        User user = event.getUser();
-        String userDiscordID = user.getId();
-
-        OptionMapping id = event.getOption("reminder_id");
-
-        if (id == null) {
-            return REMINDER_EMBED.createMissingParametersEmbed(
-                    user,
-                    "No ID was provided"
-            );
-        }
-
-        int reminderID = id.getAsInt();
-
-        Reminder reminderToView = REMINDER_SERVICE.getUserReminder(userDiscordID, reminderID);
-        if(reminderToView == null){
-            return REMINDER_EMBED.createErrorEmbed(
-                    user,
-                    "Invalid reminder ID/Reminder not existing"
-            );
-        }
-        // put into embed
-        return REMINDER_EMBED.createMessageEmbed(
-                user,
-                "View",
-                reminderToView
-                );
-    }
-
-    @Override
-    public MessageEmbed readAll(SlashCommandInteraction event) {
-        
-        User user = event.getUser();
-        String userDiscordID = user.getId();
-
-        ArrayList<Reminder> userReminders = (ArrayList<Reminder>) REMINDER_SERVICE.getAllUserReminders(userDiscordID);
-        return REMINDER_EMBED.createListEmbed(
-                user,
-                userReminders
+        return ReminderFunctions.handleReminder(event, REMINDER_SERVICE, REMINDER_EMBED, reminder ->
+                REMINDER_EMBED.createMessageEmbed(
+                        event.getUser(),
+                        "View",
+                        reminder
+                )
         );
     }
 
+    /**
+     * Handles /reminder list.
+     *
+     * <p>Retrieves all reminders associated with the requesting user and displays them in an aggregated list embed.</p>
+     */
+    @Override
+    public MessageEmbed readAll(SlashCommandInteraction event) {
+
+        User user = event.getUser();
+        String userDiscordID = user.getId();
+
+        ArrayList<Reminder> userReminders =
+                (ArrayList<Reminder>) REMINDER_SERVICE.getAllUserReminders(userDiscordID);
+
+        return REMINDER_EMBED.createListEmbed(user, userReminders);
+    }
 }
