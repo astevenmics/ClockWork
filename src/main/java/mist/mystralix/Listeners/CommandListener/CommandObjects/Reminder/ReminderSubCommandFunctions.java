@@ -1,9 +1,9 @@
-package mist.mystralix.Listeners.CommandListener.CommandObjects;
+package mist.mystralix.Listeners.CommandListener.CommandObjects.Reminder;
 
 import mist.mystralix.Listeners.CommandListener.ISlashCommandCRUD;
 import mist.mystralix.Objects.Reminder.Reminder;
-import mist.mystralix.Objects.Reminder.ReminderHandler;
 import mist.mystralix.Objects.Reminder.ReminderScheduler;
+import mist.mystralix.Objects.Reminder.ReminderService;
 import mist.mystralix.Objects.TimeHandler;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -15,6 +15,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
+
+    private final ReminderService REMINDER_SERVICE;
+
+    public ReminderSubCommandFunctions(ReminderService reminderService) {
+        this.REMINDER_SERVICE = reminderService;
+    }
 
     private final ReminderEmbed REMINDER_EMBED = new ReminderEmbed();
 
@@ -55,8 +61,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         String reminderUUID = UUID.randomUUID().toString();
         boolean isNotificationSent = false;
 
-        ReminderHandler reminderHandler = new ReminderHandler();
-        reminderHandler.createReminder(
+        REMINDER_SERVICE.createReminder(
                 reminderUUID,
                 userDiscordID,
                 reminderMessage,
@@ -64,12 +69,12 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 isNotificationSent
         );
 
-        Reminder newlyCreatedReminder = reminderHandler.getUserReminder(
+        Reminder newlyCreatedReminder = REMINDER_SERVICE.getUserReminder(
                 userDiscordID,
                 reminderUUID
         );
 
-        ReminderScheduler reminderScheduler = new ReminderScheduler();
+        ReminderScheduler reminderScheduler = new ReminderScheduler(REMINDER_SERVICE);
         reminderScheduler.scheduleReminder(user, newlyCreatedReminder);
         return REMINDER_EMBED.createMessageEmbed(
                 user,
@@ -94,9 +99,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
         int reminderID = Integer.parseInt(reminder_id.getAsString());
 
-        ReminderHandler reminderHandler = new ReminderHandler();
-
-        Reminder reminderToDelete = reminderHandler.getUserReminder(
+        Reminder reminderToDelete = REMINDER_SERVICE.getUserReminder(
                 userDiscordID,
                 reminderID
         );
@@ -107,7 +110,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
-        reminderHandler.delete(reminderToDelete);
+        REMINDER_SERVICE.delete(reminderToDelete);
 
         System.out.println("Deleted reminder with ID: " + reminderID);
 
@@ -147,8 +150,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
-        ReminderHandler reminderHandler = new ReminderHandler();
-        Reminder reminderToUpdate = reminderHandler.getUserReminder(userDiscordID, reminderID);
+        Reminder reminderToUpdate = REMINDER_SERVICE.getUserReminder(userDiscordID, reminderID);
 
         if(reminderToUpdate == null){
             return REMINDER_EMBED.createErrorEmbed(
@@ -172,7 +174,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
             reminderToUpdate.targetTimestamp = currentTime + reminderAsLong;
         }
 
-        reminderHandler.updateUserReminder(reminderToUpdate);
+        REMINDER_SERVICE.updateUserReminder(reminderToUpdate);
 
         return REMINDER_EMBED.createMessageEmbed(
                 user,
@@ -197,9 +199,8 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         }
 
         int reminderID = id.getAsInt();
-        ReminderHandler reminderHandler = new ReminderHandler();
 
-        Reminder reminderToView = reminderHandler.getUserReminder(userDiscordID, reminderID);
+        Reminder reminderToView = REMINDER_SERVICE.getUserReminder(userDiscordID, reminderID);
         if(reminderToView == null){
             return REMINDER_EMBED.createErrorEmbed(
                     user,
@@ -220,9 +221,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         User user = event.getUser();
         String userDiscordID = user.getId();
 
-        ReminderHandler reminderHandler = new ReminderHandler();
-
-        ArrayList<Reminder> userReminders = reminderHandler.getAllUserReminders(userDiscordID);
+        ArrayList<Reminder> userReminders = (ArrayList<Reminder>) REMINDER_SERVICE.getAllUserReminders(userDiscordID);
         return REMINDER_EMBED.createListEmbed(
                 user,
                 userReminders

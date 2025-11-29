@@ -6,6 +6,7 @@ import mist.mystralix.Listeners.CommandListener.Commands.CommandManager;
 import mist.mystralix.Listeners.MessageListeners.MessageFilter;
 import mist.mystralix.Listeners.MessageListeners.MessageLogger;
 import mist.mystralix.Objects.Reminder.ReminderScheduler;
+import mist.mystralix.Objects.Reminder.ReminderService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -32,7 +33,9 @@ public class ClockWork {
         jda.awaitReady();
         System.out.println("Bot is ready!");
 
-        CommandManager manager = new CommandManager();
+        ClockWorkContainer clockWorkContainer = new ClockWorkContainer();
+        CommandManager manager = new CommandManager(clockWorkContainer);
+
         jda.addEventListener(manager);
         jda.addEventListener(new MessageLogger());
         jda.addEventListener(new MessageFilter());
@@ -43,7 +46,8 @@ public class ClockWork {
         DBSchemaInitializer dbSchemaInitializer = new DBSchemaInitializer();
         dbSchemaInitializer.initializeDatabaseTable();
 
-        ReminderScheduler reminderScheduler = new ReminderScheduler();
+        ReminderService reminderService = clockWorkContainer.getReminderService();
+        ReminderScheduler reminderScheduler = new ReminderScheduler(reminderService);
         reminderScheduler.scheduleReminders(jda);
     }
 }

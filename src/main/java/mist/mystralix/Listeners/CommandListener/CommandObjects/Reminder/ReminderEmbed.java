@@ -1,5 +1,6 @@
-package mist.mystralix.Listeners.CommandListener.CommandObjects;
+package mist.mystralix.Listeners.CommandListener.CommandObjects.Reminder;
 
+import mist.mystralix.Listeners.CommandListener.CommandObjects.IMessageEmbedBuilder;
 import mist.mystralix.Objects.Reminder.Reminder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;

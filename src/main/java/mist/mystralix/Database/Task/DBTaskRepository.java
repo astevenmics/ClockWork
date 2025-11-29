@@ -1,6 +1,7 @@
-package mist.mystralix.Database;
+package mist.mystralix.Database.Task;
 
 import com.google.gson.Gson;
+import mist.mystralix.Database.DBManager;
 import mist.mystralix.Objects.Task.Task;
 import mist.mystralix.Objects.Task.TaskDAO;
 

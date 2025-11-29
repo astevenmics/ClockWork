@@ -1,5 +1,6 @@
-package mist.mystralix.Database;
+package mist.mystralix.Database.Reminder;
 
+import mist.mystralix.Database.DBManager;
 import mist.mystralix.Objects.Reminder.Reminder;
 
 import java.sql.Connection;
@@ -9,8 +10,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class DBReminderHandler {
+public class DBReminderRepository implements ReminderRepository {
 
+    @Override
     public void create(Reminder reminder) {
 
         String reminderUUID = reminder.reminderUUID;
@@ -42,6 +44,7 @@ public class DBReminderHandler {
 
     }
 
+    @Override
     public Reminder read(String userDiscordID, int reminderID) {
 
         String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? AND reminderID = ?;";
@@ -82,6 +85,7 @@ public class DBReminderHandler {
 
     }
 
+    @Override
     public Reminder read(String userDiscordID, String reminderUUID) {
 
         String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? AND reminderUUID = ?;";
@@ -122,6 +126,7 @@ public class DBReminderHandler {
 
     }
 
+    @Override
     public void update(Reminder reminder) {
 
         int reminderID = reminder.reminderID;
@@ -157,6 +162,7 @@ public class DBReminderHandler {
 
     }
 
+    @Override
     public void delete(String reminderUUID, String userDiscordID) {
 
         String sqlStatement =
@@ -182,6 +188,7 @@ public class DBReminderHandler {
 
     }
 
+    @Override
     public ArrayList<Reminder> readAll(String userDiscordID) {
 
         ArrayList<Reminder> reminders = new ArrayList<>();
@@ -222,6 +229,7 @@ public class DBReminderHandler {
 
     }
 
+    @Override
     public HashSet<Reminder> getAllActiveReminders() {
         HashSet<Reminder> reminders = new HashSet<>();
         String sqlStatement = "SELECT * FROM reminders WHERE isNotificationSent = 0;";
@@ -256,6 +264,7 @@ public class DBReminderHandler {
         return reminders;
     }
 
+    @Override
     public void updateIsNotificationSent(Reminder reminder) {
 
         int reminderID = reminder.reminderID;

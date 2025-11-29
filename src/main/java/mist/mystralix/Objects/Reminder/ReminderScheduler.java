@@ -1,6 +1,5 @@
 package mist.mystralix.Objects.Reminder;
 
-import mist.mystralix.Database.DBReminderHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 
@@ -12,11 +11,14 @@ import java.util.concurrent.TimeUnit;
 public class ReminderScheduler {
 
     private final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
-    private final DBReminderHandler DB_REMINDER_HANDLER = new DBReminderHandler();
+    private final ReminderService REMINDER_SERVICE;
+
+    public ReminderScheduler(ReminderService reminderService) {
+        this.REMINDER_SERVICE = reminderService;
+    }
 
     public void scheduleReminders(JDA jda) {
-        HashSet<Reminder> allReminders = DB_REMINDER_HANDLER.getAllActiveReminders();
-        ReminderHandler reminderHandler = new ReminderHandler();
+        HashSet<Reminder> allReminders = REMINDER_SERVICE.getAllActiveReminders();
 
         for (Reminder reminder : allReminders) {
             long reminderTargetTimestamp = reminder.targetTimestamp;
@@ -26,15 +28,15 @@ public class ReminderScheduler {
 
             if (remainingTime <= 0) {
                 jda.retrieveUserById(userDiscordID).queue(user -> {
-                            reminderHandler.sendReminder(user, reminder);
-                            reminderHandler.reminderSentUpdate(reminder);
+                    REMINDER_SERVICE.sendReminder(user, reminder);
+                    REMINDER_SERVICE.reminderSentUpdate(reminder);
                         }, error -> System.out.println(error.getMessage())
                 );
             } else {
                 SCHEDULER.schedule(() ->
                     jda.retrieveUserById(userDiscordID).queue(user -> {
-                                reminderHandler.sendReminder(user, reminder);
-                                reminderHandler.reminderSentUpdate(reminder);
+                        REMINDER_SERVICE.sendReminder(user, reminder);
+                        REMINDER_SERVICE.reminderSentUpdate(reminder);
                             }, error -> System.out.println(error.getMessage())
                     ),
                     remainingTime,
@@ -44,16 +46,15 @@ public class ReminderScheduler {
     }
 
     public void scheduleReminder(User user, Reminder reminder) {
-        ReminderHandler reminderHandler = new ReminderHandler();
 
         long reminderTargetTimestamp = reminder.targetTimestamp;
         long remainingTime = reminderTargetTimestamp - System.currentTimeMillis();
                 SCHEDULER.schedule(() -> {
-                            reminderHandler.sendReminder(user, reminder);
-                            reminderHandler.reminderSentUpdate(reminder);
-                        },
-                        remainingTime,
-                        TimeUnit.MILLISECONDS
+                    REMINDER_SERVICE.sendReminder(user, reminder);
+                    REMINDER_SERVICE.reminderSentUpdate(reminder);
+                },
+                    remainingTime,
+                    TimeUnit.MILLISECONDS
                 );
     }
 

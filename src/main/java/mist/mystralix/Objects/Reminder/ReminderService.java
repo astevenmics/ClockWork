@@ -1,18 +1,19 @@
 package mist.mystralix.Objects.Reminder;
 
-import mist.mystralix.Database.DBReminderHandler;
-import mist.mystralix.Listeners.CommandListener.CommandObjects.ReminderEmbed;
+import mist.mystralix.Database.Reminder.ReminderRepository;
+import mist.mystralix.Listeners.CommandListener.CommandObjects.Reminder.ReminderEmbed;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 
-import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 
-public class ReminderHandler {
+public class ReminderService {
 
-    private final DBReminderHandler DB_REMINDER_HANDLER;
+    private final ReminderRepository REMINDER_REPOSITORY;
 
-    public ReminderHandler() {
-        this.DB_REMINDER_HANDLER = new DBReminderHandler();
+    public ReminderService(ReminderRepository reminderRepository) {
+        this.REMINDER_REPOSITORY = reminderRepository;
     }
 
     public void createReminder(
@@ -22,7 +23,7 @@ public class ReminderHandler {
             long targetTimestamp,
             boolean isNotificationSent
     ) {
-        DB_REMINDER_HANDLER
+        REMINDER_REPOSITORY
             .create(
                 new Reminder(
                 reminderUUID,
@@ -38,26 +39,26 @@ public class ReminderHandler {
             String userDiscordID,
             int reminderID
     ) {
-        return DB_REMINDER_HANDLER.read(userDiscordID, reminderID);
+        return REMINDER_REPOSITORY.read(userDiscordID, reminderID);
     }
 
     public Reminder getUserReminder(
             String userDiscordID,
             String reminderUUID
     ) {
-        return DB_REMINDER_HANDLER.read(userDiscordID, reminderUUID);
+        return REMINDER_REPOSITORY.read(userDiscordID, reminderUUID);
     }
 
-    public ArrayList<Reminder> getAllUserReminders(
+    public List<Reminder> getAllUserReminders(
             String userDiscordID
     ) {
-        return DB_REMINDER_HANDLER.readAll(userDiscordID);
+        return REMINDER_REPOSITORY.readAll(userDiscordID);
     }
 
     public void updateUserReminder(
             Reminder updatedReminder
     ) {
-        DB_REMINDER_HANDLER.update(updatedReminder);
+        REMINDER_REPOSITORY.update(updatedReminder);
     }
 
     public void delete(
@@ -65,10 +66,14 @@ public class ReminderHandler {
     ) {
         String reminderUUID = reminder.reminderUUID;
         String userDiscordID = reminder.userDiscordID;
-        DB_REMINDER_HANDLER.delete(
+        REMINDER_REPOSITORY.delete(
                 reminderUUID,
                 userDiscordID
         );
+    }
+
+    public HashSet<Reminder> getAllActiveReminders() {
+        return REMINDER_REPOSITORY.getAllActiveReminders();
     }
 
     public void sendReminder(User user, Reminder reminder) {
@@ -94,7 +99,7 @@ public class ReminderHandler {
     }
 
     public void reminderSentUpdate(Reminder reminder) {
-        DB_REMINDER_HANDLER.updateIsNotificationSent(reminder);
+        REMINDER_REPOSITORY.updateIsNotificationSent(reminder);
     }
 
 

@@ -4,6 +4,7 @@ import mist.mystralix.ClockWorkContainer;
 import mist.mystralix.Listeners.CommandListener.SlashCommands.SlashCommand;
 import mist.mystralix.Listeners.CommandListener.SlashCommands.ReminderCommand;
 import mist.mystralix.Listeners.CommandListener.SlashCommands.TaskCommand;
+import mist.mystralix.Objects.Reminder.ReminderService;
 import mist.mystralix.Objects.Task.TaskService;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
@@ -18,10 +19,10 @@ public class CommandManager extends ListenerAdapter {
 
     public CommandManager(ClockWorkContainer clockWorkContainer) {
         TaskService taskService = clockWorkContainer.getTaskService();
-//        ReminderService reminderService = clockWorkContainer.getReminderService();
+        ReminderService reminderService = clockWorkContainer.getReminderService();
 
         registerCommand(new TaskCommand(taskService));
-        registerCommand(new ReminderCommand());
+        registerCommand(new ReminderCommand(reminderService));
     }
 
     private void registerCommand(SlashCommand command) {

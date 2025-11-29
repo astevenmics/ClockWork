@@ -1,6 +1,7 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
-import mist.mystralix.Listeners.CommandListener.CommandObjects.ReminderSubCommandFunctions;
+import mist.mystralix.Listeners.CommandListener.CommandObjects.Reminder.ReminderSubCommandFunctions;
+import mist.mystralix.Objects.Reminder.ReminderService;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
@@ -8,6 +9,12 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
 public final class ReminderCommand implements SlashCommand {
+
+    private final ReminderService REMINDER_SERVICE;
+
+    public ReminderCommand(ReminderService reminderService) {
+        this.REMINDER_SERVICE = reminderService;
+    }
 
     /*
         Command Name
@@ -117,7 +124,7 @@ public final class ReminderCommand implements SlashCommand {
 
         event.deferReply().queue();
 
-        ReminderSubCommandFunctions reminderSubCommandFunctions = new ReminderSubCommandFunctions();
+        ReminderSubCommandFunctions reminderSubCommandFunctions = new ReminderSubCommandFunctions(REMINDER_SERVICE);
         MessageEmbed messageEmbed;
 
         messageEmbed = switch (subCommand) {
