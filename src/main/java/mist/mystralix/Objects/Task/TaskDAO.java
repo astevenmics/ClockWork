@@ -20,7 +20,7 @@ public class TaskDAO {
     public String description;
 
     /*
-        TaskStatus taskStatus   | A value that showcases whether a task is COMPLETED, INPROGRESS, ARCHIVED, OR CANCELLED
+        TaskStatus taskStatus   | A value that showcases whether a task is COMPLETED, IN PROGRESS, ARCHIVED, OR CANCELLED
     */
     public TaskStatus taskStatus;
 
@@ -33,7 +33,7 @@ public class TaskDAO {
             * String description
                 - Information of what the task is going to be, have, and such.
             * TaskStatus taskStatus
-                - A value that showcases whether a task is COMPLETED, INPROGRESS, ARCHIVED, OR CANCELLED
+                - A value that showcases whether a task is COMPLETED, IN PROGRESS, ARCHIVED, OR CANCELLED
     */
     public TaskDAO(
             String title,

@@ -9,8 +9,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
-public class DBTaskHandler {
+public class DBTaskRepository implements TaskRepository {
 
     /*
         addTask
@@ -20,6 +21,7 @@ public class DBTaskHandler {
         - Converts the task object into a String JSON object
         - Finally, pushes the converted task object into the database
     */
+    @Override
     public void addTask(TaskDAO taskDAO, String userDiscordID, String taskUUIDAsString) {
         /*
             - SQL Query for MySQL to insert a new task
@@ -72,6 +74,7 @@ public class DBTaskHandler {
         - Converts the collected row from a String JSON into a Task object using Gson
         - Finally, returns the converted Task object
     */
+    @Override
     public Task getTask(String userDiscordID, int taskID) {
         /*
             - Initializes a Task object to use upon converting a Task JSON String into a Task object
@@ -150,6 +153,7 @@ public class DBTaskHandler {
         - Converts the collected row from a Strings and String JSON into a complete Task object using Gson
         - Finally, returns the converted Task object
     */
+    @Override
     public Task getTask(String taskUUIDAsString) {
         /*
             - Initializes a Task object to use upon converting a Task JSON String into a Task object
@@ -224,7 +228,10 @@ public class DBTaskHandler {
         - Collects all rows gathered and stores in the userTasks ArrayList
         - Finally, returns a Task ArrayList
      */
-    public ArrayList<Task> getAllUserTasks(ArrayList<Task> userTasks, String userDiscordID) {
+    @Override
+    public List<Task> getAllUserTasks(String userDiscordID) {
+
+        List<Task> userTasks = new ArrayList<>();
         /*
             - SQL Query for MySQL to select all rows containing the userDiscordID value in the userDiscordID column
             - Sorts the collected rows by its taskID value from least to highest value (1 to the highest number)
@@ -283,6 +290,7 @@ public class DBTaskHandler {
         - Used in updating the TaskStatus value of a task into cancelled
         - Uses userDiscordID and taskID to determine the row to update in the MySQL database
      */
+    @Override
     public void updateUserTask(String userDiscordID, int taskID, Task task) {
         /*
             - SQL Query for MySQL to update the information in the task column
@@ -340,6 +348,7 @@ public class DBTaskHandler {
         - Used in updating the TaskStatus value of a task into cancelled
         - Uses userDiscordID to determine the row to update in the MySQL database
      */
+    @Override
     public void deleteUserTask(String userDiscordID, Task task) {
         /*
             - SQL Query for MySQL to update the information in the task column

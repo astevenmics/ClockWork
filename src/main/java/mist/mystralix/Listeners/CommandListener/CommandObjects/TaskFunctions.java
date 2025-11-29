@@ -1,7 +1,8 @@
 package mist.mystralix.Listeners.CommandListener.CommandObjects;
 
+import mist.mystralix.Database.DBTaskRepository;
 import mist.mystralix.Objects.Task.Task;
-import mist.mystralix.Objects.Task.TaskHandler;
+import mist.mystralix.Objects.Task.TaskService;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -13,6 +14,7 @@ public class TaskFunctions {
 
     public static MessageEmbed handleTask(
             SlashCommandInteraction event,
+            TaskService taskService,
             TaskEmbed taskEmbed,
             Function<Task, MessageEmbed> action
     ) {
@@ -24,9 +26,7 @@ public class TaskFunctions {
         }
         int taskID = option.getAsInt();
 
-        TaskHandler taskHandler = new TaskHandler();
-
-        Task task = taskHandler.getUserTask(user, taskID);
+        Task task = taskService.getUserTask(user, taskID);
         if(task == null) {
             return taskEmbed.createErrorEmbed(
                     user,

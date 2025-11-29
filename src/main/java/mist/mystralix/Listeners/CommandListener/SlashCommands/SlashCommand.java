@@ -1,4 +1,4 @@
-package mist.mystralix.Listeners.CommandListener;
+package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
@@ -15,7 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
         - execute(SlashCommandInteraction event)
                            | Function containing the actions done as the command is executed
 */
-public interface SlashCommand {
+public sealed interface SlashCommand permits ReminderCommand, TaskCommand {
 
     /*
         Command Name

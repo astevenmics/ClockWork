@@ -1,10 +1,11 @@
 package mist.mystralix.Listeners.CommandListener.CommandObjects;
 
+import mist.mystralix.Database.DBTaskRepository;
 import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Listeners.CommandListener.ISlashCommandCRUD;
 import mist.mystralix.Objects.Task.Task;
 import mist.mystralix.Objects.Task.TaskDAO;
-import mist.mystralix.Objects.Task.TaskHandler;
+import mist.mystralix.Objects.Task.TaskService;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -16,6 +17,12 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class TaskSubCommandFunctions implements ISlashCommandCRUD {
+
+    private final TaskService TASK_SERVICE;
+
+    public TaskSubCommandFunctions(TaskService taskService) {
+        this.TASK_SERVICE = taskService;
+    }
 
     private final TaskEmbed TASK_EMBED = new TaskEmbed();
 
@@ -49,11 +56,10 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         */
         String taskUUIDAsString = taskUUID.toString();
 
-        TaskHandler taskHandler = new TaskHandler();
-        taskHandler.addTask(newTask, taskUser, taskUUIDAsString);
+        TASK_SERVICE.addTask(newTask, taskUser, taskUUIDAsString);
 
         String embedTitle = "New Task";
-        Task newlyCreatedTask = taskHandler.getUserTask(taskUUIDAsString);
+        Task newlyCreatedTask = TASK_SERVICE.getUserTask(taskUUIDAsString);
 
         return TASK_EMBED.createMessageEmbed(
                 taskUser,
@@ -65,11 +71,10 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, TASK_EMBED, task -> {
+        return TaskFunctions.handleTask(event, TASK_SERVICE, TASK_EMBED, task -> {
             User user = event.getUser();
-            TaskHandler taskHandler = new TaskHandler();
 
-            taskHandler.deleteUserTask(user, task);
+            TASK_SERVICE.deleteUserTask(user, task);
 
             return TASK_EMBED.createMessageEmbed(user, "Deleted Task", task);
         });
@@ -77,7 +82,6 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed update(SlashCommandInteraction event) {
-        TaskHandler taskHandler = new TaskHandler();
         User user = event.getUser();
 
         /*
@@ -95,7 +99,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
             - If existing, returns a Task object
             - If not, returns null
         */
-        Task taskToUpdate = taskHandler.getUserTask(user, taskID);
+        Task taskToUpdate = TASK_SERVICE.getUserTask(user, taskID);
 
         /*
             - Checks early on if the task the user wants to update is on their lists of tasks
@@ -159,7 +163,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
             - Pushes the updates into the database
             - Uses taskID despite it already being in the taskToUpdate Task object for readability
         */
-        taskHandler.updateUserTask(user, taskID, taskToUpdate);
+        TASK_SERVICE.updateUserTask(user, taskID, taskToUpdate);
 
         String title = "Updated Task";
         return TASK_EMBED.createMessageEmbed(
@@ -172,7 +176,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, TASK_EMBED, task ->
+        return TaskFunctions.handleTask(event, TASK_SERVICE, TASK_EMBED, task ->
             TASK_EMBED.createMessageEmbed(
                 event.getUser(),
                 "Viewing",
@@ -183,12 +187,12 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
 
     public MessageEmbed cancelTask(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, TASK_EMBED, task -> {
+        return TaskFunctions.handleTask(event, TASK_SERVICE, TASK_EMBED, task -> {
             User user = event.getUser();
-            TaskHandler taskHandler = new TaskHandler();
+            TaskService taskService = new TaskService(new DBTaskRepository());
 
             task.taskDAO.taskStatus = TaskStatus.CANCELLED;
-            taskHandler.updateUserTask(user, task.taskID, task);
+            taskService.updateUserTask(user, task.taskID, task);
 
             return TASK_EMBED.createMessageEmbed(user, "Cancelled Task", task);
         });
@@ -205,8 +209,8 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
         TaskStatus selectedTaskStatus = TaskStatus.getTaskStatus(option);
 
-        TaskHandler taskHandler = new TaskHandler();
-        ArrayList<Task> tasks = taskHandler.getUserTasks(user);
+        TaskService taskService = new TaskService(new DBTaskRepository());
+        ArrayList<Task> tasks = (ArrayList<Task>) taskService.getUserTasks(user);
 
         if(tasks.isEmpty()) {
             return TASK_EMBED.createErrorEmbed(

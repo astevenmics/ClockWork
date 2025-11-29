@@ -1,14 +1,13 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
 import mist.mystralix.Listeners.CommandListener.CommandObjects.ReminderSubCommandFunctions;
-import mist.mystralix.Listeners.CommandListener.SlashCommand;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-public class ReminderCommand implements SlashCommand {
+public final class ReminderCommand implements SlashCommand {
 
     /*
         Command Name

@@ -2,14 +2,20 @@ package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
 import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Listeners.CommandListener.CommandObjects.TaskSubCommandFunctions;
-import mist.mystralix.Listeners.CommandListener.SlashCommand;
+import mist.mystralix.Objects.Task.TaskService;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-public class TaskCommand implements SlashCommand {
+public final class TaskCommand implements SlashCommand {
+
+    private final TaskService TASK_SERVICE;
+
+    public TaskCommand(TaskService taskService) {
+        this.TASK_SERVICE = taskService;
+    }
 
     /*
         Command Name
@@ -172,7 +178,7 @@ public class TaskCommand implements SlashCommand {
 
         event.deferReply().queue();
 
-        TaskSubCommandFunctions task = new TaskSubCommandFunctions();
+        TaskSubCommandFunctions task = new TaskSubCommandFunctions(TASK_SERVICE);
         MessageEmbed messageEmbed;
 
         messageEmbed = switch (subCommand) {
