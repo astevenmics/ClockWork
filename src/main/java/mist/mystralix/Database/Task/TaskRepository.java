@@ -1,4 +1,4 @@
-package mist.mystralix.Database;
+package mist.mystralix.Database.Task;
 
 import mist.mystralix.Objects.Task.Task;
 import mist.mystralix.Objects.Task.TaskDAO;

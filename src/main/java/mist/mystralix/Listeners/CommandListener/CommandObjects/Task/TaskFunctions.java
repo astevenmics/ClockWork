@@ -1,6 +1,5 @@
-package mist.mystralix.Listeners.CommandListener.CommandObjects;
+package mist.mystralix.Listeners.CommandListener.CommandObjects.Task;
 
-import mist.mystralix.Database.DBTaskRepository;
 import mist.mystralix.Objects.Task.Task;
 import mist.mystralix.Objects.Task.TaskService;
 import net.dv8tion.jda.api.entities.MessageEmbed;

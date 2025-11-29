@@ -1,7 +1,7 @@
 package mist.mystralix.Listeners.CommandListener.SlashCommands;
 
 import mist.mystralix.Enums.TaskStatus;
-import mist.mystralix.Listeners.CommandListener.CommandObjects.TaskSubCommandFunctions;
+import mist.mystralix.Listeners.CommandListener.CommandObjects.Task.TaskSubCommandFunctions;
 import mist.mystralix.Objects.Task.TaskService;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;

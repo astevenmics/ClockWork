@@ -1,6 +1,6 @@
-package mist.mystralix.Listeners.CommandListener.CommandObjects;
+package mist.mystralix.Listeners.CommandListener.CommandObjects.Task;
 
-import mist.mystralix.Database.DBTaskRepository;
+import mist.mystralix.Database.Task.DBTaskRepository;
 import mist.mystralix.Enums.TaskStatus;
 import mist.mystralix.Listeners.CommandListener.ISlashCommandCRUD;
 import mist.mystralix.Objects.Task.Task;

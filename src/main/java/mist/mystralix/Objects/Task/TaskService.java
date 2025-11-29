@@ -1,40 +1,40 @@
 package mist.mystralix.Objects.Task;
 
-import mist.mystralix.Database.TaskRepository;
+import mist.mystralix.Database.Task.TaskRepository;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.List;
 
 public class TaskService {
 
-    private final TaskRepository repository;
+    private final TaskRepository TASK_REPOSITORY;
 
-    public TaskService(TaskRepository repository) {
-        this.repository = repository;
+    public TaskService(TaskRepository taskRepository) {
+        this.TASK_REPOSITORY = taskRepository;
     }
 
     public void addTask(TaskDAO task, User user, String uuid) {
-        repository.addTask(task, user.getId(), uuid);
+        TASK_REPOSITORY.addTask(task, user.getId(), uuid);
     }
 
     public List<Task> getUserTasks(User user) {
-        return repository.getAllUserTasks(user.getId());
+        return TASK_REPOSITORY.getAllUserTasks(user.getId());
     }
 
     public Task getUserTask(String uuid) {
-        return repository.getTask(uuid);
+        return TASK_REPOSITORY.getTask(uuid);
     }
 
     public Task getUserTask(User user, int taskId) {
-        return repository.getTask(user.getId(), taskId);
+        return TASK_REPOSITORY.getTask(user.getId(), taskId);
     }
 
     public void updateUserTask(User user, int taskId, Task task) {
-        repository.updateUserTask(user.getId(), taskId, task);
+        TASK_REPOSITORY.updateUserTask(user.getId(), taskId, task);
     }
 
     public void deleteUserTask(User user, Task task) {
-        repository.deleteUserTask(user.getId(), task);
+        TASK_REPOSITORY.deleteUserTask(user.getId(), task);
     }
 
 }

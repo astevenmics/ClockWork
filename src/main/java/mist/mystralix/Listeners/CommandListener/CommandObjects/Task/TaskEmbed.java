@@ -1,5 +1,6 @@
-package mist.mystralix.Listeners.CommandListener.CommandObjects;
+package mist.mystralix.Listeners.CommandListener.CommandObjects.Task;
 
+import mist.mystralix.Listeners.CommandListener.CommandObjects.IMessageEmbedBuilder;
 import mist.mystralix.Objects.Task.Task;
 import mist.mystralix.Objects.Task.TaskDAO;
 import net.dv8tion.jda.api.EmbedBuilder;
