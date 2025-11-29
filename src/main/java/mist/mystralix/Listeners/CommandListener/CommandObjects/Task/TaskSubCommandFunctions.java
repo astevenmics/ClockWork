@@ -1,7 +1,10 @@
 package mist.mystralix.Listeners.CommandListener.CommandObjects.Task;
 
 import mist.mystralix.Enums.TaskStatus;
+import mist.mystralix.Listeners.CommandListener.CommandObjects.IMessageEmbedBuilder;
+import mist.mystralix.Listeners.CommandListener.CommandObjects.InputValidation;
 import mist.mystralix.Listeners.CommandListener.ISlashCommandCRUD;
+import mist.mystralix.Objects.IdentifiableFetcher;
 import mist.mystralix.Objects.Task.Task;
 import mist.mystralix.Objects.Task.TaskDAO;
 import mist.mystralix.Objects.Task.TaskService;
@@ -13,6 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -84,7 +88,10 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         TASK_SERVICE.addTask(taskDAO, user, uuid);
 
         // Retrieve full Task model (DAO + metadata)
-        Task createdTask = TASK_SERVICE.getUserTask(uuid);
+        Task createdTask = TASK_SERVICE.getUserTask(
+                user.getId(),
+                uuid
+        );
 
         return TASK_EMBED.createMessageEmbed(
                 user,
@@ -94,18 +101,24 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
     }
 
     /**
-     * Deletes a task using shared validation logic in {@link TaskFunctions#handleTask}.
+     * Deletes a task using shared validation logic in {@link InputValidation#validate(SlashCommandInteraction, IdentifiableFetcher, IMessageEmbedBuilder, String, Function)}.
      *
      * @param event slash command
      * @return embed indicating deletion
      */
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, TASK_SERVICE, TASK_EMBED, task -> {
-            User user = event.getUser();
-            TASK_SERVICE.deleteUserTask(user, task);
-            return TASK_EMBED.createMessageEmbed(user, "Deleted Task", task);
-        });
+        return InputValidation.validate(
+                event,
+                TASK_SERVICE,
+                TASK_EMBED,
+                "task_id",
+                task -> {
+                    User user = event.getUser();
+                    TASK_SERVICE.deleteUserTask(task);
+                    return TASK_EMBED.createMessageEmbed(user, "Deleted Task", task);
+                }
+        );
     }
 
     /**
@@ -125,7 +138,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         int taskID = event.getOption("id", () -> 0, OptionMapping::getAsInt);
 
         // Lookup task
-        Task task = TASK_SERVICE.getUserTask(user, taskID);
+        Task task = TASK_SERVICE.getUserTask(user.getId(), taskID);
         if (task == null) {
             return TASK_EMBED.createErrorEmbed(user, "No task found");
         }
@@ -152,7 +165,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         Optional.ofNullable(newDesc).ifPresent(dao::setDescription);
         Optional.ofNullable(newStatus).ifPresent(dao::setTaskStatus);
 
-        TASK_SERVICE.updateUserTask(user, taskID, task);
+        TASK_SERVICE.updateUserTask(task);
 
         return TASK_EMBED.createMessageEmbed(user, "Updated Task", task);
     }
@@ -162,12 +175,17 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
      */
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, TASK_SERVICE, TASK_EMBED, task ->
-                TASK_EMBED.createMessageEmbed(
-                        event.getUser(),
-                        "Viewing",
-                        task
-                )
+        return InputValidation.validate(
+                event,
+                TASK_SERVICE,
+                TASK_EMBED,
+                "task_id",
+                task ->
+                    TASK_EMBED.createMessageEmbed(
+                            event.getUser(),
+                            "Viewing",
+                            task
+                    )
         );
     }
 
@@ -181,19 +199,21 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
      * @return embed confirming cancellation
      */
     public MessageEmbed cancelTask(SlashCommandInteraction event) {
-        return TaskFunctions.handleTask(event, TASK_SERVICE, TASK_EMBED, task -> {
-            User user = event.getUser();
+        return InputValidation.validate(
+                event,
+                TASK_SERVICE,
+                TASK_EMBED,
+                "task_id",
+                task -> {
+                    User user = event.getUser();
 
-            // Apply cancellation
-            task.getTaskDAO().setTaskStatus(TaskStatus.CANCELLED);
-            TASK_SERVICE.updateUserTask(
-                    user,
-                    task.getTaskID(),
-                    task
-            );
+                    // Apply cancellation
+                    task.getTaskDAO().setTaskStatus(TaskStatus.CANCELLED);
+                    TASK_SERVICE.updateUserTask(task);
 
-            return TASK_EMBED.createMessageEmbed(user, "Cancelled Task", task);
-        });
+                    return TASK_EMBED.createMessageEmbed(user, "Cancelled Task", task);
+                }
+        );
     }
 
     /**

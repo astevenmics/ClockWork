@@ -1,6 +1,9 @@
 package mist.mystralix.Listeners.CommandListener.CommandObjects.Reminder;
 
+import mist.mystralix.Listeners.CommandListener.CommandObjects.IMessageEmbedBuilder;
+import mist.mystralix.Listeners.CommandListener.CommandObjects.InputValidation;
 import mist.mystralix.Listeners.CommandListener.ISlashCommandCRUD;
+import mist.mystralix.Objects.IdentifiableFetcher;
 import mist.mystralix.Objects.Reminder.Reminder;
 import mist.mystralix.Objects.Reminder.ReminderScheduler;
 import mist.mystralix.Objects.Reminder.ReminderService;
@@ -13,6 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 /**
  * Implements all business logic for the reminder-related subcommands.
@@ -28,7 +32,7 @@ import java.util.UUID;
  *
  * <p>Each subcommand interacts with {@link ReminderService} for persistence and
  * reminder state management. Output formatting is delegated to {@link ReminderEmbed}.
- * Shared validation and lookup steps are centralized in {@link ReminderFunctions#handleReminder}.</p>
+ * Shared validation and lookup steps are centralized in {@link InputValidation#validate(SlashCommandInteraction, IdentifiableFetcher, IMessageEmbedBuilder, String, Function)}.</p>
  */
 public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
@@ -130,22 +134,28 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
      * Handles /reminder delete.
      *
      * <p>The shared CRUD logic is delegated to
-     * {@link ReminderFunctions#handleReminder(SlashCommandInteraction, ReminderService, ReminderEmbed, java.util.function.Function)}.</p>
+     * {@link InputValidation#validate(SlashCommandInteraction, IdentifiableFetcher, IMessageEmbedBuilder, String, Function)}.</p>
      *
      * <p>If the reminder exists, it is removed from persistent storage and an embed confirming the deletion is returned.</p>
      */
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
-        return ReminderFunctions.handleReminder(event, REMINDER_SERVICE, REMINDER_EMBED, reminder -> {
-            REMINDER_SERVICE.delete(reminder);
-            return REMINDER_EMBED.createMessageEmbed(event.getUser(), "Deleted", reminder);
-        });
+        return InputValidation.validate(
+                event, 
+                REMINDER_SERVICE, 
+                REMINDER_EMBED,
+                "reminder_id",
+                reminder -> {
+                    REMINDER_SERVICE.delete(reminder);
+                    return REMINDER_EMBED.createMessageEmbed(event.getUser(), "Deleted", reminder);
+                }
+        );
     }
 
     /**
      * Handles /reminder update.
      *
-     * <p>The shared lookup and validation logic is handled by {@link ReminderFunctions#handleReminder}.</p>
+     * <p>The shared lookup and validation logic is handled by {@link InputValidation#validate(SlashCommandInteraction, IdentifiableFetcher, IMessageEmbedBuilder, String, Function)}.</p>
      *
      * <p>Supports updating:</p>
      * <ul>
@@ -157,34 +167,39 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
      */
     @Override
     public MessageEmbed update(SlashCommandInteraction event) {
-        return ReminderFunctions.handleReminder(event, REMINDER_SERVICE, REMINDER_EMBED, reminder -> {
-
-            User user = event.getUser();
-
-            // Optional message update
-            Optional.ofNullable(
-                    event.getOption("message", () -> null, OptionMapping::getAsString)
-            ).ifPresent(reminder::setMessage);
-
-            // Optional time update
-            String timeString = event.getOption("time", () -> null, OptionMapping::getAsString);
-
-            if (timeString != null) {
-                long duration = TimeHandler.parseDuration(timeString);
-
-                if (duration <= 0) {
-                    return REMINDER_EMBED.createErrorEmbed(
-                            user, "Invalid time format. Example: 1d, 1h20m"
-                    );
+        return InputValidation.validate(
+                event, 
+                REMINDER_SERVICE, 
+                REMINDER_EMBED, 
+                "reminder_id", 
+                reminder -> {
+                    User user = event.getUser();
+        
+                    // Optional message update
+                    Optional.ofNullable(
+                            event.getOption("message", () -> null, OptionMapping::getAsString)
+                    ).ifPresent(reminder::setMessage);
+        
+                    // Optional time update
+                    String timeString = event.getOption("time", () -> null, OptionMapping::getAsString);
+        
+                    if (timeString != null) {
+                        long duration = TimeHandler.parseDuration(timeString);
+        
+                        if (duration <= 0) {
+                            return REMINDER_EMBED.createErrorEmbed(
+                                    user, "Invalid time format. Example: 1d, 1h20m"
+                            );
+                        }
+        
+                        reminder.setTargetTimestamp(System.currentTimeMillis() + duration);
+                    }
+        
+                    REMINDER_SERVICE.updateUserReminder(reminder);
+        
+                    return REMINDER_EMBED.createMessageEmbed(user, "Updated", reminder);
                 }
-
-                reminder.setTargetTimestamp(System.currentTimeMillis() + duration);
-            }
-
-            REMINDER_SERVICE.updateUserReminder(reminder);
-
-            return REMINDER_EMBED.createMessageEmbed(user, "Updated", reminder);
-        });
+        );
     }
 
     /**
@@ -194,8 +209,13 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
      */
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
-        return ReminderFunctions.handleReminder(event, REMINDER_SERVICE, REMINDER_EMBED, reminder ->
-                REMINDER_EMBED.createMessageEmbed(
+        return InputValidation.validate(
+                event, 
+                REMINDER_SERVICE, 
+                REMINDER_EMBED,
+                "reminder_id",
+                reminder ->
+                    REMINDER_EMBED.createMessageEmbed(
                         event.getUser(),
                         "View",
                         reminder

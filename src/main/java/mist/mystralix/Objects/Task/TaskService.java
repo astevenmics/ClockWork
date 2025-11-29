@@ -1,6 +1,7 @@
 package mist.mystralix.Objects.Task;
 
 import mist.mystralix.Database.Task.TaskRepository;
+import mist.mystralix.Objects.IdentifiableFetcher;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
  * implementation that is injected into this service.
  * This ensures the service remains testable and independent of the database.</p>
  */
-public class TaskService {
+public class TaskService implements IdentifiableFetcher<Task> {
 
     /**
      * Repository implementation that handles all task persistence operations.
@@ -47,7 +48,13 @@ public class TaskService {
      * @param uuid  a unique identifier representing the task
      */
     public void addTask(TaskDAO task, User user, String uuid) {
-        TASK_REPOSITORY.addTask(task, user.getId(), uuid);
+
+        TASK_REPOSITORY.create(
+                new Task(
+                        uuid,
+                        user.getId(),
+                        task)
+        );
     }
 
     /**
@@ -57,7 +64,7 @@ public class TaskService {
      * @return a list of {@link Task} objects belonging to the user
      */
     public List<Task> getUserTasks(User user) {
-        return TASK_REPOSITORY.getAllUserTasks(user.getId());
+        return TASK_REPOSITORY.readAll(user.getId());
     }
 
     /**
@@ -66,39 +73,41 @@ public class TaskService {
      * @param uuid the unique identifier of the task
      * @return the corresponding {@link Task}, or {@code null} if not found
      */
-    public Task getUserTask(String uuid) {
-        return TASK_REPOSITORY.getTask(uuid);
+    public Task getUserTask(String userDiscordID, String uuid) {
+        return TASK_REPOSITORY.findByUUID(userDiscordID, uuid);
     }
 
     /**
      * Retrieves a task belonging to a specific user by its numeric ID.
      *
-     * @param user    the owner of the task
+     * @param userDiscordID    the discord ID of the owner of the task
      * @param taskId  the numeric task ID
      * @return the corresponding {@link Task}, or {@code null} if not found
      */
-    public Task getUserTask(User user, int taskId) {
-        return TASK_REPOSITORY.getTask(user.getId(), taskId);
+    public Task getUserTask(String userDiscordID, int taskId) {
+        return TASK_REPOSITORY.findByID(userDiscordID, taskId);
     }
 
     /**
      * Updates an existing user task.
      *
-     * @param user    the owner of the task
-     * @param taskId  the ID of the task to update
      * @param task    the modified task object containing updated fields
      */
-    public void updateUserTask(User user, int taskId, Task task) {
-        TASK_REPOSITORY.updateUserTask(user.getId(), taskId, task);
+    public void updateUserTask(Task task) {
+        TASK_REPOSITORY.update(task);
     }
 
     /**
      * Deletes a user-owned task.
      *
-     * @param user the Discord user who owns the task
      * @param task the task object to delete
      */
-    public void deleteUserTask(User user, Task task) {
-        TASK_REPOSITORY.deleteUserTask(user.getId(), task);
+    public void deleteUserTask(Task task) {
+        TASK_REPOSITORY.delete(task);
+    }
+
+    @Override
+    public Task fetchByUserIDAndObjectID(String userDiscordId, int taskId) {
+        return getUserTask(userDiscordId, taskId);
     }
 }

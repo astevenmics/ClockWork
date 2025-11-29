@@ -42,7 +42,7 @@ public class Task {
      * Multiple tasks can exist per user, and their taskIDs typically follow
      * an incremental sequence.</p>
      */
-    private final int taskID;
+    private int taskID;
 
     /**
      * Contains the mutable portion of the task:
@@ -70,6 +70,16 @@ public class Task {
         this.taskUUID = taskUUID;
         this.userDiscordID = userDiscordID;
         this.taskID = taskID;
+        this.taskDAO = taskDAO;
+    }
+
+    public Task(
+            String taskUUID,
+            String userDiscordID,
+            TaskDAO taskDAO
+    ) {
+        this.taskUUID = taskUUID;
+        this.userDiscordID = userDiscordID;
         this.taskDAO = taskDAO;
     }
 

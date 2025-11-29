@@ -32,12 +32,14 @@ public class DBTaskRepository implements TaskRepository {
     /**
      * Inserts a new task row into the database.
      *
-     * @param taskDAO          basic task payload (title, description, status)
-     * @param userDiscordID    ID of the task owner
-     * @param taskUUIDAsString unique UUID for the task
+     * @param task          task containing uuid, userDiscordID, and DAO information
      */
     @Override
-    public void addTask(TaskDAO taskDAO, String userDiscordID, String taskUUIDAsString) {
+    public void create(Task task) {
+        String taskUUIDAsString = task.getTaskUUID();
+        String userDiscordID = task.getUserDiscordID();
+        TaskDAO taskDAO = task.getTaskDAO();
+
         String sqlStatement =
                 "INSERT INTO tasks (taskUUID, userDiscordID, taskDAO) VALUES (?, ?, ?);";
 
@@ -61,6 +63,50 @@ public class DBTaskRepository implements TaskRepository {
     }
 
     /**
+     * Retrieves a task using only its UUID.
+     *
+     * @param taskUUIDAsString unique task UUID
+     * @return a {@link Task}, or null if not found
+     */
+    @Override
+    public Task findByUUID(String userDiscordID, String taskUUIDAsString) {
+        Task task = null;
+
+        String sqlStatement = "SELECT * FROM tasks WHERE userDiscordID = ? AND taskUUID = ?;";
+
+        try (
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
+        ) {
+            preparedStatement.setString(1, userDiscordID);
+            preparedStatement.setString(2, taskUUIDAsString);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Gson gson = new Gson();
+
+            if (resultSet.next()) {
+                int taskID = resultSet.getInt("taskID");
+                String taskDAOJson = resultSet.getString("taskDAO");
+
+                TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
+
+                task = new Task(
+                        taskUUIDAsString,
+                        userDiscordID,
+                        taskID,
+                        taskDAO
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error retrieving task with UUID: " + taskUUIDAsString);
+            throw new RuntimeException("DB Error", e);
+        }
+
+        return task;
+    }
+
+    /**
      * Retrieves a task using both userDiscordID and taskID.
      *
      * <p>Useful when the user references tasks by their
@@ -71,7 +117,7 @@ public class DBTaskRepository implements TaskRepository {
      * @return a fully constructed {@link Task}, or null if not found
      */
     @Override
-    public Task getTask(String userDiscordID, int taskID) {
+    public Task findByID(String userDiscordID, int taskID) {
         Task task = null;
 
         String sqlStatement = "SELECT * FROM tasks WHERE userDiscordID = ? AND taskID = ?;";
@@ -109,57 +155,13 @@ public class DBTaskRepository implements TaskRepository {
     }
 
     /**
-     * Retrieves a task using only its UUID.
-     *
-     * @param taskUUIDAsString unique task UUID
-     * @return a {@link Task}, or null if not found
-     */
-    @Override
-    public Task getTask(String taskUUIDAsString) {
-        Task task = null;
-
-        String sqlStatement = "SELECT * FROM tasks WHERE taskUUID = ?;";
-
-        try (
-                Connection connection = DBManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
-        ) {
-            preparedStatement.setString(1, taskUUIDAsString);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            Gson gson = new Gson();
-
-            if (resultSet.next()) {
-                String userDiscordID = resultSet.getString("userDiscordID");
-                int taskID = resultSet.getInt("taskID");
-                String taskDAOJson = resultSet.getString("taskDAO");
-
-                TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
-
-                task = new Task(
-                        taskUUIDAsString,
-                        userDiscordID,
-                        taskID,
-                        taskDAO
-                );
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error retrieving task with UUID: " + taskUUIDAsString);
-            throw new RuntimeException("DB Error", e);
-        }
-
-        return task;
-    }
-
-    /**
      * Retrieves all tasks belonging to a specific user, ordered by taskID ASC.
      *
      * @param userDiscordID ID of the task owner
      * @return a list of {@link Task} objects
      */
     @Override
-    public List<Task> getAllUserTasks(String userDiscordID) {
+    public List<Task> readAll(String userDiscordID) {
         List<Task> userTasks = new ArrayList<>();
 
         String sqlStatement =
@@ -202,12 +204,12 @@ public class DBTaskRepository implements TaskRepository {
     /**
      * Updates a user's task (DAO content only — not UUID or taskID).
      *
-     * @param userDiscordID the owner of the task
-     * @param taskID        numeric ID of the task to update
      * @param task          task containing updated DAO information
      */
     @Override
-    public void updateUserTask(String userDiscordID, int taskID, Task task) {
+    public void update(Task task) {
+        String userDiscordID = task.getUserDiscordID();
+        int taskID = task.getTaskID();
         String sqlStatement =
                 "UPDATE tasks SET taskDAO = ? WHERE userDiscordID = ? AND taskID = ?;";
 
@@ -236,11 +238,11 @@ public class DBTaskRepository implements TaskRepository {
     /**
      * Deletes a task using its UUID and owner ID.
      *
-     * @param userDiscordID ID of the user who owns the task
-     * @param task           the task to delete
+     * @param task  the task to delete
      */
     @Override
-    public void deleteUserTask(String userDiscordID, Task task) {
+    public void delete(Task task) {
+        String userDiscordID = task.getUserDiscordID();
         String sqlStatement =
                 "DELETE FROM tasks WHERE taskUUID = ? AND userDiscordID = ?;";
 

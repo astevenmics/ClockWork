@@ -61,30 +61,33 @@ public class DBReminderRepository implements ReminderRepository {
     }
 
     /**
-     * Reads a reminder based on user ID and numeric reminder ID.
+     * Reads a reminder using UUID instead of numeric ID.
      *
-     * @param userDiscordID the Discord ID of the owner
-     * @param reminderID    numeric reminder ID
+     * <p>Useful for retrieving reminders when the UUID is used as the primary identifier.</p>
+     *
+     * @param userDiscordID the reminder owner
+     * @param reminderUUID  the unique reminder UUID
      * @return a Reminder object or null if not found
      */
     @Override
-    public Reminder read(String userDiscordID, int reminderID) {
+    public Reminder findByUUID(String userDiscordID, String reminderUUID) {
 
-        String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? AND reminderID = ?;";
+        String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? AND reminderUUID = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
         ) {
+
             preparedStatement.setString(1, userDiscordID);
-            preparedStatement.setInt(2, reminderID);
+            preparedStatement.setString(2, reminderUUID);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
-                String reminderUUID = resultSet.getString("reminderUUID");
                 String reminderMessage = resultSet.getString("message");
                 long timestamp = resultSet.getLong("targetTimestamp");
+                int reminderID = resultSet.getInt("reminderID");
                 boolean isNotificationSent = resultSet.getBoolean("isNotificationSent");
 
                 return new Reminder(
@@ -105,33 +108,30 @@ public class DBReminderRepository implements ReminderRepository {
     }
 
     /**
-     * Reads a reminder using UUID instead of numeric ID.
+     * Reads a reminder based on user ID and numeric reminder ID.
      *
-     * <p>Useful for retrieving reminders when the UUID is used as the primary identifier.</p>
-     *
-     * @param userDiscordID the reminder owner
-     * @param reminderUUID  the unique reminder UUID
+     * @param userDiscordID the Discord ID of the owner
+     * @param reminderID    numeric reminder ID
      * @return a Reminder object or null if not found
      */
     @Override
-    public Reminder read(String userDiscordID, String reminderUUID) {
+    public Reminder findByID(String userDiscordID, int reminderID) {
 
-        String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? AND reminderUUID = ?;";
+        String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? AND reminderID = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
         ) {
-
             preparedStatement.setString(1, userDiscordID);
-            preparedStatement.setString(2, reminderUUID);
+            preparedStatement.setInt(2, reminderID);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
+                String reminderUUID = resultSet.getString("reminderUUID");
                 String reminderMessage = resultSet.getString("message");
                 long timestamp = resultSet.getLong("targetTimestamp");
-                int reminderID = resultSet.getInt("reminderID");
                 boolean isNotificationSent = resultSet.getBoolean("isNotificationSent");
 
                 return new Reminder(
@@ -194,11 +194,12 @@ public class DBReminderRepository implements ReminderRepository {
     /**
      * Deletes a reminder using UUID and user ID.
      *
-     * @param reminderUUID   UUID of the reminder to delete
-     * @param userDiscordID  Discord ID of the reminder owner
+     * @param reminder Reminder object to be deleted
      */
     @Override
-    public void delete(String reminderUUID, String userDiscordID) {
+    public void delete(Reminder reminder) {
+        String userDiscordID = reminder.getUserDiscordID();
+        String reminderUUID = reminder.getReminderUUID();
 
         String sqlStatement = "DELETE FROM reminders WHERE reminderUUID = ? AND userDiscordID = ?;";
 

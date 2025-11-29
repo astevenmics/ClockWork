@@ -2,6 +2,7 @@ package mist.mystralix.Objects.Reminder;
 
 import mist.mystralix.Database.Reminder.ReminderRepository;
 import mist.mystralix.Listeners.CommandListener.CommandObjects.Reminder.ReminderEmbed;
+import mist.mystralix.Objects.IdentifiableFetcher;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 
@@ -22,7 +23,7 @@ import java.util.List;
  * <p>Following a clean architecture pattern, this class contains no SQL or
  * persistence details—those are delegated entirely to the injected repository.</p>
  */
-public class ReminderService {
+public class ReminderService implements IdentifiableFetcher<Reminder> {
 
     /** Repository responsible for database operations for reminders. */
     private final ReminderRepository REMINDER_REPOSITORY;
@@ -74,7 +75,7 @@ public class ReminderService {
             String userDiscordID,
             int reminderID
     ) {
-        return REMINDER_REPOSITORY.read(userDiscordID, reminderID);
+        return REMINDER_REPOSITORY.findByID(userDiscordID, reminderID);
     }
 
     /**
@@ -88,7 +89,7 @@ public class ReminderService {
             String userDiscordID,
             String reminderUUID
     ) {
-        return REMINDER_REPOSITORY.read(userDiscordID, reminderUUID);
+        return REMINDER_REPOSITORY.findByUUID(userDiscordID, reminderUUID);
     }
 
     /**
@@ -116,10 +117,7 @@ public class ReminderService {
      * @param reminder the reminder to delete
      */
     public void delete(Reminder reminder) {
-        REMINDER_REPOSITORY.delete(
-                reminder.getReminderUUID(),
-                reminder.getUserDiscordID()
-        );
+        REMINDER_REPOSITORY.delete(reminder);
     }
 
     /**
@@ -188,6 +186,12 @@ public class ReminderService {
      */
     public void reminderSentUpdate(Reminder reminder) {
         REMINDER_REPOSITORY.updateIsNotificationSent(reminder);
+    }
+
+
+    @Override
+    public Reminder fetchByUserIDAndObjectID(String userDiscordId, int taskId) {
+        return getUserReminder(userDiscordId, taskId);
     }
 
 }
