@@ -107,12 +107,22 @@ public final class TaskCommand implements SlashCommand {
                 // /task list
                 new SubcommandData("list", "List all tasks, optionally filtered by status.")
                         .addOptions(
-                        new OptionData(OptionType.INTEGER, "type", "Filter tasks by status.", false)
-                                .addChoice(TaskStatus.ALL.getIcon() + " " + TaskStatus.ALL.getStringValue(), TaskStatus.ALL.getIntValue())
-                                .addChoice(TaskStatus.COMPLETED.getIcon() + " " + TaskStatus.COMPLETED.getStringValue(), TaskStatus.COMPLETED.getIntValue())
-                                .addChoice(TaskStatus.INPROGRESS.getIcon() + " " + TaskStatus.INPROGRESS.getStringValue(), TaskStatus.INPROGRESS.getIntValue())
-                                .addChoice(TaskStatus.ARCHIVED.getIcon() + " " + TaskStatus.ARCHIVED.getStringValue(), TaskStatus.ARCHIVED.getIntValue())
-                                .addChoice(TaskStatus.CANCELLED.getIcon() + " " + TaskStatus.CANCELLED.getStringValue(), TaskStatus.CANCELLED.getIntValue())
+                            new OptionData(OptionType.INTEGER, "type", "Filter tasks by status.", false)
+                                    .addChoice(
+                                            TaskStatus.ALL.getIcon() + " " + TaskStatus.ALL.getStringValue(),
+                                            TaskStatus.ALL.getIntValue())
+                                    .addChoice(
+                                            TaskStatus.COMPLETED.getIcon() + " " + TaskStatus.COMPLETED.getStringValue(),
+                                            TaskStatus.COMPLETED.getIntValue())
+                                    .addChoice(
+                                            TaskStatus.INPROGRESS.getIcon() + " " + TaskStatus.INPROGRESS.getStringValue(),
+                                            TaskStatus.INPROGRESS.getIntValue())
+                                    .addChoice(
+                                            TaskStatus.ARCHIVED.getIcon() + " " + TaskStatus.ARCHIVED.getStringValue(),
+                                            TaskStatus.ARCHIVED.getIntValue())
+                                    .addChoice(
+                                            TaskStatus.CANCELLED.getIcon() + " " + TaskStatus.CANCELLED.getStringValue(),
+                                            TaskStatus.CANCELLED.getIntValue())
                 ),
 
                 // /task update
