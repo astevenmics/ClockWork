@@ -1,100 +1,86 @@
 package mist.mystralix.Objects;
 
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-/*
-    Solely responsible for converting text into milliseconds
-*/
+/**
+ * Utility class responsible for converting human-readable duration strings
+ * (e.g., "1d20h", "30m25s") into milliseconds.
+ *
+ * <p>Supported time units:
+ * <ul>
+ *     <li><strong>d</strong> - days</li>
+ *     <li><strong>h</strong> - hours</li>
+ *     <li><strong>m</strong> - minutes</li>
+ *     <li><strong>s</strong> - seconds</li>
+ * </ul>
+ *
+ * <p>Examples:</p>
+ * <pre>
+ *  "1d20h"   → 1 day + 20 hours
+ *  "30m25s"  → 30 minutes + 25 seconds
+ * </pre>
+ */
 public class TimeHandler {
 
-    /*
-        parseDuration
-            - Responsible for converting string-defined time into milliseconds
-            - Parameter:
-                * String durationInString | Contains the user-defined time
-                    - Options:
-                        * d - days
-                        * h - hours
-                        * m - minutes
-                        * s - seconds
-                    - Examples:
-                        * 1d20h
-                        * 30m25s
-    */
-    public static long parseDuration(String durationInString) {
-        /*
-            Initialize totalMilliseconds that will eventually contain the total milliseconds after parsing/converting
-        */
+    /** Regex pattern for matching numeric value + time unit (e.g., "20h", "15 m") */
+    private static final Pattern DURATION_PATTERN = Pattern.compile("(\\d+)\\s*([dhms])");
+
+    /** Constant representing 1 second in milliseconds. */
+    private static final long SECOND = 1_000;
+
+    /** Constant representing 1 minute in milliseconds. */
+    private static final long MINUTE = 60 * SECOND;
+
+    /** Constant representing 1 hour in milliseconds. */
+    private static final long HOUR = 60 * MINUTE;
+
+    /** Constant representing 1 day in milliseconds. */
+    private static final long DAY = 24 * HOUR;
+
+    /**
+     * Converts a duration string (e.g. "1d20h") into the total number of milliseconds.
+     *
+     * @param inputDuration the user-defined duration string to parse
+     * @return total duration in milliseconds, or {@code -1} if parsing fails
+     *
+     * <p>Example:</p>
+     * <pre>
+     *  parseDuration("1h30m")   → 5,400,000
+     *  parseDuration("2d")      → 172,800,000
+     * </pre>
+     */
+    public static long parseDuration(String inputDuration) {
         long totalMilliseconds = 0;
 
-        /*
-            Try-Catch to ensure that any parsing errors are caught
-        */
         try {
-            /*
-                Finds any matches in the durationInString (in lowercase) based on the regex provided in compile()
-            */
-            Matcher matcher = java.util.regex.Pattern
-                    .compile("(\\d+)\\s*([dhms])")
-                    .matcher(durationInString.toLowerCase());
+            // Create a matcher that finds segments like "10h", "25m", etc.
+            Matcher matcher = DURATION_PATTERN.matcher(inputDuration.toLowerCase());
 
-            /*
-                - oneSecondInMilliseconds contains 1,000 (1_000)
-                - oneMinuteInMilliseconds contains 60,000 (1_000 * 60)
-                - oneHourInMilliseconds contains 3,600,000 (1_000 * 60 * 60)
-                - oneDayInMilliseconds contains 86,400,000 (1_000 * 24 * 60 * 60)
-            */
-            long oneSecondInMilliseconds = 1_000;
-            long oneMinuteInMilliseconds = 60 * oneSecondInMilliseconds;
-            long oneHourInMilliseconds = 60 * oneMinuteInMilliseconds;
-            long oneDayInMilliseconds = 24 * oneHourInMilliseconds;
-
-            /*
-                Loops through all matches in the durationInString found by the matcher
-            */
+            // Iterate through every found segment in the string
             while (matcher.find()) {
 
-                /*
-                    - durationValue holds the long-converted value found in matcher.group1
-                    - matcher.group1 returns the numerical value before the letters
-                */
-                long durationValue = Long.parseLong(matcher.group(1));
+                // Numeric part (e.g., "10" from "10h")
+                long value = Long.parseLong(matcher.group(1));
 
-                /*
-                    - Switch-Case statement
-                    - matcher.group2 returns the letters after the numerical value
-                    - Checks whether the letter is d/h/m/s
-                */
-                switch (matcher.group(2)) {
-                    /*
-                        - Multiplies oneDayInMilliseconds with durationValue
-                        - Adds the product to the totalMilliseconds
-                    */
-                    case "d" -> totalMilliseconds += durationValue * oneDayInMilliseconds;
-                    /*
-                        - Multiplies oneHourInMilliseconds with durationValue
-                        - Adds the product to the totalMilliseconds
-                    */
-                    case "h" -> totalMilliseconds += durationValue * oneHourInMilliseconds;
-                    /*
-                        - Multiplies oneMinuteInMilliseconds with durationValue
-                        - Adds the product to the totalMilliseconds
-                    */
-                    case "m" -> totalMilliseconds += durationValue * oneMinuteInMilliseconds;
-                    /*
-                        - Multiplies oneSecondInMilliseconds with durationValue
-                        - Adds the product to the totalMilliseconds
-                    */
-                    case "s" -> totalMilliseconds += durationValue * oneSecondInMilliseconds;
+                // Time unit part (e.g., "h" from "10h")
+                String unit = matcher.group(2);
+
+                // Convert each segment to milliseconds and accumulate the result
+                switch (unit) {
+                    case "d" -> totalMilliseconds += value * DAY;
+                    case "h" -> totalMilliseconds += value * HOUR;
+                    case "m" -> totalMilliseconds += value * MINUTE;
+                    case "s" -> totalMilliseconds += value * SECOND;
                 }
             }
+
         } catch (NumberFormatException e) {
-            System.out.println(e.getMessage());
-            /*
-                Returns -1 upon receiving a NumberFormatException error for checks
-            */
+            // Log the parsing issue and return -1 to indicate invalid input
+            System.out.println("Failed to parse duration: " + e.getMessage());
             return -1;
         }
+
         return totalMilliseconds;
     }
 }
