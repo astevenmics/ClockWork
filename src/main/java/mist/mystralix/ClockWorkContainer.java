@@ -1,11 +1,11 @@
 package mist.mystralix;
 
-import mist.mystralix.Database.Reminder.DBReminderRepository;
-import mist.mystralix.Database.Task.DBTaskRepository;
-import mist.mystralix.Database.Reminder.ReminderRepository;
-import mist.mystralix.Database.Task.TaskRepository;
-import mist.mystralix.Objects.Reminder.ReminderService;
-import mist.mystralix.Objects.Task.TaskService;
+import mist.mystralix.infrastructure.repository.reminder.DBReminderRepository;
+import mist.mystralix.infrastructure.repository.task.DBTaskRepository;
+import mist.mystralix.infrastructure.repository.reminder.ReminderRepository;
+import mist.mystralix.infrastructure.repository.task.TaskRepository;
+import mist.mystralix.application.reminder.ReminderService;
+import mist.mystralix.application.task.TaskService;
 
 /**
  * Central dependency injection container for the ClockWork application.

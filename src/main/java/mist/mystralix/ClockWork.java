@@ -1,12 +1,12 @@
 package mist.mystralix;
 
-import mist.mystralix.Database.DBManager;
-import mist.mystralix.Database.DBSchemaInitializer;
-import mist.mystralix.Listeners.CommandListener.Commands.CommandManager;
-import mist.mystralix.Listeners.MessageListeners.MessageFilter;
-import mist.mystralix.Listeners.MessageListeners.MessageLogger;
-import mist.mystralix.Objects.Reminder.ReminderScheduler;
-import mist.mystralix.Objects.Reminder.ReminderService;
+import mist.mystralix.config.DBManager;
+import mist.mystralix.config.DBSchemaInitializer;
+import mist.mystralix.presentation.commands.manager.CommandManager;
+import mist.mystralix.presentation.listeners.MessageFilter;
+import mist.mystralix.presentation.listeners.MessageLogger;
+import mist.mystralix.application.reminder.ReminderScheduler;
+import mist.mystralix.application.reminder.ReminderService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
