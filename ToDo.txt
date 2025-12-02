@@ -11,25 +11,26 @@
 
 - All - ⏳
     * Improve formatting ⏳
-    * Use Pagination ❌
     * SQLite > Might change to PostgresSQL / MySQL ✅
-    * Turn the whole project into async ❌
-    * Combine ReminderFunctions and TaskFunctions ❌
-    * Combine ReminderRepository and TaskRepository using a BaseRepository ❌
-    * Update MessageLogger ❌
-        - Asynchronous ❌
-        - File-based logger ❌
-        - Daily rotation ❌
-        - Timestamps ❌
-        - Username + ID ❌
-        - Filters: DMs, Guilds, Errors, etc. ❌
-    * ISlashCommandCRUD ❌
-        - DIP ❌
-        - AbstractSlashCommandCRUD ❌
-    * SlashCommand ❌
-        - Use annotations for name, subcommand, description, etc. ❌
-        - @Slash(name = "commandName") ❌
-        - @Sub(name = "subCommand") ❌
+    * Combine ReminderFunctions and TaskFunctions ✅
+    * Combine ReminderRepository and TaskRepository using a BaseRepository ✅
+    * Use Pagination ❌
+    * Final adjustments at the end
+        - Turn the whole project into async ❌
+        - Update MessageLogger ❌
+            * Asynchronous ❌
+            * File-based logger ❌
+            * Daily rotation ❌
+            * Timestamps ❌
+            * Username + ID ❌
+            * Filters: DMs, Guilds, Errors, etc. ❌
+        - ISlashCommandCRUD ❌
+            * DIP ❌
+            * AbstractSlashCommandCRUD ❌
+        - SlashCommand ❌
+            * Use annotations for name, subcommand, description, etc. ❌
+            * @Slash(name = "commandName") ❌
+            * @Sub(name = "subCommand") ❌
 
 - Task Command ⏳
     * Create Dependency Inject for SubCommands ❌
@@ -58,8 +59,30 @@
     * /team [teamID] task assign [taskID] [userID] ❌
     * /team [teamID] task unassign [taskID] [userID] ❌
     * /team [teamID] task view [taskID] ❌
+    * Object Team
+        - String uuid
+        - int id
+        - ArrayList<String> moderators;
+        - ArrayList<String> members;
+        - Task teamTask
+            - String uuid
+            - String taskCreatorDiscordID
+            - int taskID
+            - TaskDAO taskDAO
+                - String title
+                - String description
+                - TaskStatus status
+    * Object Database
+        - Methods
+            * Team findByID(int teamID)
+                - Gets a team's information
+                - For public
+            * ArrayList<Team> findAllByID(String discordUserID)
+                - Gets all the teams that includes the user
+            * void create(Team team)
+            * void update(Team team)
 
-- Create a remind ⏳
+- Create remind ⏳
     * Make it persistent even if the application restarts ✅
     * Scheduler ✅
     * Refactor code
