@@ -76,7 +76,7 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
             String userDiscordID,
             int reminderID
     ) {
-        return REMINDER_REPOSITORY.findByID(userDiscordID, reminderID);
+        return REMINDER_REPOSITORY.findByDiscordIDAndID(userDiscordID, reminderID);
     }
 
     /**
@@ -90,7 +90,7 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
             String userDiscordID,
             String reminderUUID
     ) {
-        return REMINDER_REPOSITORY.findByUUID(userDiscordID, reminderUUID);
+        return REMINDER_REPOSITORY.findByDiscordIDAndUUID(userDiscordID, reminderUUID);
     }
 
     /**
@@ -193,6 +193,11 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
     @Override
     public Reminder fetchByUserIDAndObjectID(String userDiscordId, int taskId) {
         return getUserReminder(userDiscordId, taskId);
+    }
+
+    @Override
+    public Reminder fetchByUserIDAndObjectUUID(String userDiscordId, String objectUUID) {
+        return getUserReminder(userDiscordId, objectUUID);
     }
 
 }

@@ -76,7 +76,7 @@ public class TaskService implements IdentifiableFetcher<Task> {
      * @return the corresponding {@link Task}, or {@code null} if not found
      */
     public Task getUserTask(String userDiscordID, String uuid) {
-        return TASK_REPOSITORY.findByUUID(userDiscordID, uuid);
+        return TASK_REPOSITORY.findByDiscordIDAndUUID(userDiscordID, uuid);
     }
 
     /**
@@ -87,7 +87,7 @@ public class TaskService implements IdentifiableFetcher<Task> {
      * @return the corresponding {@link Task}, or {@code null} if not found
      */
     public Task getUserTask(String userDiscordID, int taskId) {
-        return TASK_REPOSITORY.findByID(userDiscordID, taskId);
+        return TASK_REPOSITORY.findByDiscordIDAndID(userDiscordID, taskId);
     }
 
     /**
@@ -111,5 +111,10 @@ public class TaskService implements IdentifiableFetcher<Task> {
     @Override
     public Task fetchByUserIDAndObjectID(String userDiscordId, int taskId) {
         return getUserTask(userDiscordId, taskId);
+    }
+
+    @Override
+    public Task fetchByUserIDAndObjectUUID(String userDiscordId, String objectUUID) {
+        return getUserTask(userDiscordId, objectUUID);
     }
 }

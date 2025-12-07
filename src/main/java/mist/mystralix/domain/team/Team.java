@@ -1,7 +1,5 @@
 package mist.mystralix.domain.team;
 
-import mist.mystralix.domain.task.Task;
-
 import java.util.ArrayList;
 
 public class Team {
@@ -10,27 +8,39 @@ public class Team {
     private int id;
     private ArrayList<String> moderators;
     private ArrayList<String> members;
-    private Task teamTask;
+    private ArrayList<String> tasksUUID;
 
     public Team(
             String uuid,
             int id,
             ArrayList<String> moderators,
             ArrayList<String> members,
-            Task teamTask
+            ArrayList<String> tasksUUID
     ) {
         this.uuid = uuid;
         this.id = id;
         this.moderators = moderators;
         this.members = members;
-        this.teamTask = teamTask;
+        this.tasksUUID = tasksUUID;
     }
 
-    public String getUuid() {
+    public Team(
+            String uuid,
+            ArrayList<String> moderators,
+            ArrayList<String> members,
+            ArrayList<String> tasksUUID
+    ) {
+        this.uuid = uuid;
+        this.moderators = moderators;
+        this.members = members;
+        this.tasksUUID = tasksUUID;
+    }
+
+    public String getUUID() {
         return uuid;
     }
 
-    public void setUuid(String uuid) {
+    public void setUUID(String uuid) {
         this.uuid = uuid;
     }
 
@@ -58,11 +68,11 @@ public class Team {
         this.members = members;
     }
 
-    public Task getTeamTask() {
-        return teamTask;
+    public ArrayList<String> getTasksUUID() {
+        return tasksUUID;
     }
 
-    public void setTeamTask(Task teamTask) {
-        this.teamTask = teamTask;
+    public void setTaskUUID(ArrayList<String> tasksUUID) {
+        this.tasksUUID = tasksUUID;
     }
 }
