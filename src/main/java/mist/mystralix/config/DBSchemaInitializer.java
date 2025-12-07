@@ -52,6 +52,8 @@ public class DBSchemaInitializer {
      */
     public void initializeDatabaseTable() {
 
+        // TODO: update table names
+        // TODO: Turn taskDAO into JSON
         String tasksTableQuery =
                 "CREATE TABLE IF NOT EXISTS tasks (" +
                         "taskUUID VARCHAR(50) PRIMARY KEY, " +
@@ -61,6 +63,7 @@ public class DBSchemaInitializer {
                         "UNIQUE KEY(taskID)" +
                         ");";
 
+        // TODO: update table names
         String remindersTableQuery =
                 "CREATE TABLE IF NOT EXISTS reminders (" +
                         "reminderUUID VARCHAR(50) PRIMARY KEY, " +
@@ -72,6 +75,16 @@ public class DBSchemaInitializer {
                         "UNIQUE KEY(reminderID)" +
                         ");";
 
+        String teamsTableQuery =
+                "CREATE TABLE IF NOT EXISTS teams (" +
+                        "uuid VARCHAR(50) PRIMARY KEY, " +
+                        "id BIGINT NOT NULL AUTO_INCREMENT, " +
+                        "moderators JSON NOT NULL, " +
+                        "members JSON NOT NULL, " +
+                        "tasks_uuid JSON NOT NULL, " +
+                        "UNIQUE KEY(id)" +
+                        ");";
+
         try (
                 Connection connection = DBManager.getConnection();
                 Statement statement = connection.createStatement()
@@ -79,6 +92,7 @@ public class DBSchemaInitializer {
             // Create tables if missing
             statement.executeUpdate(tasksTableQuery);
             statement.executeUpdate(remindersTableQuery);
+            statement.executeUpdate(teamsTableQuery);
 
         } catch (SQLException e) {
             System.out.println("Error initializing database schema.");

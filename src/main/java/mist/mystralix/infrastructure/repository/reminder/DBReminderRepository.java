@@ -70,7 +70,7 @@ public class DBReminderRepository implements ReminderRepository {
      * @return a Reminder object or null if not found
      */
     @Override
-    public Reminder findByUUID(String userDiscordID, String reminderUUID) {
+    public Reminder findByDiscordIDAndUUID(String userDiscordID, String reminderUUID) {
 
         String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? AND reminderUUID = ?;";
 
@@ -115,7 +115,7 @@ public class DBReminderRepository implements ReminderRepository {
      * @return a Reminder object or null if not found
      */
     @Override
-    public Reminder findByID(String userDiscordID, int reminderID) {
+    public Reminder findByDiscordIDAndID(String userDiscordID, int reminderID) {
 
         String sqlStatement = "SELECT * FROM reminders WHERE userDiscordID = ? AND reminderID = ?;";
 
@@ -149,6 +149,11 @@ public class DBReminderRepository implements ReminderRepository {
             System.out.println("Error reading reminder from database.");
             throw new RuntimeException("DB Error", e);
         }
+    }
+
+    @Override
+    public Reminder findByUUID(String reminderUUID) {
+        return null;
     }
 
     /**

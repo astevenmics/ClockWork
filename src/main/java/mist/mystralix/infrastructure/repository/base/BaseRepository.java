@@ -6,9 +6,11 @@ public interface BaseRepository<T> {
 
     void create(T baseObject);
 
-    T findByUUID(String userDiscordID, String uuid);
+    T findByUUID(String uuid);
 
-    T findByID(String userDiscordID, int id);
+    T findByDiscordIDAndUUID(String userDiscordID, String uuid);
+
+    T findByDiscordIDAndID(String userDiscordID, int id);
 
     void update(T baseObject);
 

@@ -69,7 +69,7 @@ public class DBTaskRepository implements TaskRepository {
      * @return a {@link Task}, or null if not found
      */
     @Override
-    public Task findByUUID(String userDiscordID, String taskUUIDAsString) {
+    public Task findByDiscordIDAndUUID(String userDiscordID, String taskUUIDAsString) {
         Task task = null;
 
         String sqlStatement = "SELECT * FROM tasks WHERE userDiscordID = ? AND taskUUID = ?;";
@@ -117,7 +117,7 @@ public class DBTaskRepository implements TaskRepository {
      * @return a fully constructed {@link Task}, or null if not found
      */
     @Override
-    public Task findByID(String userDiscordID, int taskID) {
+    public Task findByDiscordIDAndID(String userDiscordID, int taskID) {
         Task task = null;
 
         String sqlStatement = "SELECT * FROM tasks WHERE userDiscordID = ? AND taskID = ?;";
@@ -148,6 +148,44 @@ public class DBTaskRepository implements TaskRepository {
 
         } catch (SQLException e) {
             System.out.println("Error retrieving user: " + userDiscordID + ", taskID: " + taskID);
+            throw new RuntimeException("DB Error", e);
+        }
+
+        return task;
+    }
+
+    @Override
+    public Task findByUUID(String taskUUID) {
+        Task task = null;
+
+        String sqlStatement = "SELECT * FROM tasks WHERE taskUUID = ?;";
+
+        try (
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
+        ) {
+            preparedStatement.setString(1, taskUUID);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            Gson gson = new Gson();
+
+            if (resultSet.next()) {
+                int taskID = resultSet.getInt("taskID");
+                String taskDAOJson = resultSet.getString("taskDAO");
+                String userDiscordID = resultSet.getString("userDiscordID");
+
+                TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
+
+                task = new Task(
+                        taskUUID,
+                        userDiscordID,
+                        taskID,
+                        taskDAO
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error retrieving task with ID: " + taskUUID);
             throw new RuntimeException("DB Error", e);
         }
 
