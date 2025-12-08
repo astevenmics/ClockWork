@@ -102,14 +102,17 @@ public class CommandManager extends ListenerAdapter {
      */
     public List<SlashCommandData> getCommandData() {
         return commands.values().stream()
-                .map(command ->
-                        Commands
+                .map(command -> {
+                        SlashCommandData data = Commands
                                 .slash(
                                         command.getName(),
                                         command.getDescription()
-                                )
-                                .addSubcommands(command.getSubcommands())
-                )
+                                );
+
+                        data.addSubcommands(command.getSubcommands());
+                        data.addSubcommandGroups(command.getSubcommandGroupData());
+                        return data;
+                    })
                 .toList();
     }
 }
