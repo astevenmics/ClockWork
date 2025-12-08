@@ -23,22 +23,24 @@ public class TeamService implements IdentifiableFetcher<Team> {
         this.TASK_REPOSITORY = taskRepository;
     }
 
-    public void create(
-            ArrayList<String> moderators,
-            ArrayList<String> members,
-            ArrayList<String> tasks_uuid
+    public Team create(
+            String teamName,
+            ArrayList<String> moderators
     ) {
 
         String uuid = UUID.randomUUID().toString();
 
         Team newTeam = new Team(
                 uuid,
+                teamName,
                 moderators,
-                members,
-                tasks_uuid
+                new ArrayList<>(),
+                new ArrayList<>()
         );
 
         TEAM_REPOSITORY.create(newTeam);
+
+        return TEAM_REPOSITORY.findByUUID(uuid);
     }
 
     public void update(Team team) {
