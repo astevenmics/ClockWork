@@ -79,6 +79,7 @@ public class DBSchemaInitializer {
                 "CREATE TABLE IF NOT EXISTS teams (" +
                         "uuid VARCHAR(50) PRIMARY KEY, " +
                         "id BIGINT NOT NULL AUTO_INCREMENT, " +
+                        "team_name VARCHAR(50) NOT NULL, " +
                         "moderators JSON NOT NULL, " +
                         "members JSON NOT NULL, " +
                         "tasks_uuid JSON NOT NULL, " +
