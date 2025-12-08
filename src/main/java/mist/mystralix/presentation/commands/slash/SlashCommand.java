@@ -4,6 +4,7 @@ import mist.mystralix.presentation.commands.slash.reminder.ReminderCommand;
 import mist.mystralix.presentation.commands.slash.task.TaskCommand;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 /**
  * Represents a top-level Discord slash command definition.
@@ -60,6 +61,10 @@ public interface SlashCommand {
      * @return an array of {@link SubcommandData} describing available subcommands
      */
     SubcommandData[] getSubcommands();
+
+    default SubcommandGroupData[] getSubcommandGroupData() {
+        return new SubcommandGroupData[0];
+    }
 
     /**
      * Executes the command logic when Discord triggers the slash command.
