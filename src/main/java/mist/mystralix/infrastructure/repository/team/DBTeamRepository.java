@@ -11,7 +11,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 public class DBTeamRepository implements TeamRepository {
 
@@ -241,13 +240,13 @@ public class DBTeamRepository implements TeamRepository {
     }
 
     @Override
-    public List<Team> readAll(String userDiscordID) {
+    public ArrayList<Team> readAll(String userDiscordID) {
 
         ArrayList<Team> teams = new ArrayList<>();
 
         String sqlStatement = "SELECT * FROM teams " +
                 "WHERE JSON_CONTAINS(moderators, ?) " +
-                "OR JSON_CONTAINS(members, ?)";
+                "OR JSON_CONTAINS(members, ?) ORDER BY id ASC";
 
         try(
                 Connection connection = DBManager.getConnection();

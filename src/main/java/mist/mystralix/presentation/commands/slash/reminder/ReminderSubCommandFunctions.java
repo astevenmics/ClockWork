@@ -235,8 +235,14 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         User user = event.getUser();
         String userDiscordID = user.getId();
 
-        ArrayList<Reminder> userReminders =
-                (ArrayList<Reminder>) REMINDER_SERVICE.getAllUserReminders(userDiscordID);
+        ArrayList<Reminder> userReminders = REMINDER_SERVICE.getAllUserReminders(userDiscordID);
+
+        if (userReminders.isEmpty()) {
+            return REMINDER_EMBED.createErrorEmbed(
+                    user,
+                    "You currently do not have any reminders! Use the /remind command to start."
+            );
+        }
 
         return REMINDER_EMBED.createListEmbed(user, userReminders);
     }

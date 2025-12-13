@@ -233,7 +233,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         );
         TaskStatus selected = TaskStatus.getTaskStatus(option);
 
-        ArrayList<Task> tasks = new ArrayList<>(TASK_SERVICE.getUserTasks(user));
+        ArrayList<Task> tasks = TASK_SERVICE.getUserTasks(user);
 
         // No tasks at all
         if (tasks.isEmpty()) {

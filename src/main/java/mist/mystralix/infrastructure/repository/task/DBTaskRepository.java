@@ -10,7 +10,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * MySQL repository implementation for task-related persistence operations.
@@ -199,8 +198,8 @@ public class DBTaskRepository implements TaskRepository {
      * @return a list of {@link Task} objects
      */
     @Override
-    public List<Task> readAll(String userDiscordID) {
-        List<Task> userTasks = new ArrayList<>();
+    public ArrayList<Task> readAll(String userDiscordID) {
+        ArrayList<Task> userTasks = new ArrayList<>();
 
         String sqlStatement =
                 "SELECT * FROM tasks WHERE userDiscordID = ? ORDER BY taskID ASC;";

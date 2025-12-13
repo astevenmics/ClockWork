@@ -1,14 +1,14 @@
 package mist.mystralix.application.reminder;
 
+import mist.mystralix.domain.reminder.Reminder;
 import mist.mystralix.infrastructure.repository.reminder.ReminderRepository;
 import mist.mystralix.presentation.embeds.ReminderEmbed;
 import mist.mystralix.utils.IdentifiableFetcher;
-import mist.mystralix.domain.reminder.Reminder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 
+import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * Service layer responsible for all business logic related to Reminder objects.
@@ -99,7 +99,7 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
      * @param userDiscordID the owner's Discord ID
      * @return a list of reminders; never {@code null}
      */
-    public List<Reminder> getAllUserReminders(String userDiscordID) {
+    public ArrayList<Reminder> getAllUserReminders(String userDiscordID) {
         return REMINDER_REPOSITORY.readAll(userDiscordID);
     }
 

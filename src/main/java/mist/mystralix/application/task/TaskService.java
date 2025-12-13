@@ -1,12 +1,12 @@
 package mist.mystralix.application.task;
 
-import mist.mystralix.infrastructure.repository.task.TaskRepository;
-import mist.mystralix.utils.IdentifiableFetcher;
 import mist.mystralix.domain.task.Task;
 import mist.mystralix.domain.task.TaskDAO;
+import mist.mystralix.infrastructure.repository.task.TaskRepository;
+import mist.mystralix.utils.IdentifiableFetcher;
 import net.dv8tion.jda.api.entities.User;
 
-import java.util.List;
+import java.util.ArrayList;
 
 /**
  * Application-layer service responsible for executing task-related use cases.
@@ -65,7 +65,7 @@ public class TaskService implements IdentifiableFetcher<Task> {
      * @param user the Discord user whose tasks should be listed
      * @return a list of {@link Task} objects belonging to the user
      */
-    public List<Task> getUserTasks(User user) {
+    public ArrayList<Task> getUserTasks(User user) {
         return TASK_REPOSITORY.readAll(user.getId());
     }
 

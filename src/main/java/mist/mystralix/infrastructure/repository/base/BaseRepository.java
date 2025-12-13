@@ -1,6 +1,6 @@
 package mist.mystralix.infrastructure.repository.base;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public interface BaseRepository<T> {
 
@@ -16,6 +16,6 @@ public interface BaseRepository<T> {
 
     void delete(T baseObject);
 
-    List<T> readAll(String userDiscordID);
+    ArrayList<T> readAll(String userDiscordID);
 
 }
