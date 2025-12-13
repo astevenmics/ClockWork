@@ -15,7 +15,8 @@ public class DBManager {
         HikariConfig config = new HikariConfig();
 
         String dbPort = System.getenv("DB_PORT");
-        config.setJdbcUrl("jdbc:mysql://localhost:" + dbPort + "/clockwork");
+        String dbName = System.getenv("DB_NAME");
+        config.setJdbcUrl("jdbc:mysql://localhost:" + dbPort + "/" + dbName);
         config.setUsername("root");
         config.setPassword(System.getenv("DB_PASSWORD"));
 
