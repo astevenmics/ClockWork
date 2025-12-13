@@ -49,22 +49,22 @@
     * /team add [user] ❌
     * /team remove [user] ❌
     * /team accept [teamID] ❌
+    * /team reject [teamID] ❌
     * /team leave [teamID] ❌
-    * /team [teamID] list ❌
-    * /team [teamID] tasks ❌
-    * /team [teamID] task create ❌
-    * /team [teamID] task delete ❌
-    * /team [teamID] task update ❌
-    * /team [teamID] task list ❌
-    * /team [teamID] task assign [taskID] [userID] ❌
-    * /team [teamID] task unassign [taskID] [userID] ❌
-    * /team [teamID] task view [taskID] ❌
+    * /team view [teamID] ❌
+    * /team task [teamID] create [title] [description] ❌
+    * /team task [teamID] delete [taskID] ❌
+    * /team task [teamID] update [taskID] [title/description/status] ❌
+    * /team task [teamID] list ❌
+    * /team task [teamID] assign [taskID] [userID] ❌
+    * /team task [teamID] unassign [taskID] [userID] ❌
+    * /team task [teamID] view [taskID] ❌
     * Object Team
         - String uuid
         - int id
         - ArrayList<String> moderators;
         - ArrayList<String> members;
-        - Task teamTask
+        - ArrayList<String> tasksUUID;
             - String uuid
             - String taskCreatorDiscordID
             - int taskID
