@@ -2,7 +2,7 @@ package mist.mystralix.domain.task;
 
 public class Task {
 
-    private final String taskUUID;
+    private final String uuid;
 
     private final String userDiscordID;
 
@@ -11,29 +11,29 @@ public class Task {
     private final TaskDAO taskDAO;
 
     public Task(
-            String taskUUID,
+            String uuid,
             String userDiscordID,
             int taskID,
             TaskDAO taskDAO
     ) {
-        this.taskUUID = taskUUID;
+        this.uuid = uuid;
         this.userDiscordID = userDiscordID;
         this.taskID = taskID;
         this.taskDAO = taskDAO;
     }
 
     public Task(
-            String taskUUID,
+            String uuid,
             String userDiscordID,
             TaskDAO taskDAO
     ) {
-        this.taskUUID = taskUUID;
+        this.uuid = uuid;
         this.userDiscordID = userDiscordID;
         this.taskDAO = taskDAO;
     }
 
-    public String getTaskUUID() {
-        return taskUUID;
+    public String getUUID() {
+        return uuid;
     }
 
     public String getUserDiscordID() {
@@ -47,4 +47,5 @@ public class Task {
     public TaskDAO getTaskDAO() {
         return taskDAO;
     }
+
 }

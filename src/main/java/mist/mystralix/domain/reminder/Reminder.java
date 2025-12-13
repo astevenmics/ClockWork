@@ -2,7 +2,7 @@ package mist.mystralix.domain.reminder;
 
 public class Reminder {
 
-    private String reminderUUID;
+    private String uuid;
 
     private String userDiscordID;
 
@@ -15,14 +15,14 @@ public class Reminder {
     private boolean notificationSent;
 
     public Reminder(
-            String reminderUUID,
+            String uuid,
             String userDiscordID,
             int reminderID,
             String message,
             long targetTimestamp,
             boolean notificationSent
     ) {
-        this.reminderUUID = reminderUUID;
+        this.uuid = uuid;
         this.userDiscordID = userDiscordID;
         this.reminderID = reminderID;
         this.message = message;
@@ -31,17 +31,17 @@ public class Reminder {
     }
 
     public Reminder(
-            String reminderUUID,
+            String uuid,
             String userDiscordID,
             String message,
             long targetTimestamp,
             boolean notificationSent
     ) {
-        this(reminderUUID, userDiscordID, 0, message, targetTimestamp, notificationSent);
+        this(uuid, userDiscordID, 0, message, targetTimestamp, notificationSent);
     }
 
-    public String getReminderUUID() {
-        return reminderUUID;
+    public String getUUID() {
+        return uuid;
     }
 
     public String getUserDiscordID() {
@@ -64,8 +64,8 @@ public class Reminder {
         return notificationSent;
     }
 
-    public void setReminderUUID(String reminderUUID) {
-        this.reminderUUID = reminderUUID;
+    public void setUUID(String uuid) {
+        this.uuid = uuid;
     }
 
     public void setUserDiscordID(String userDiscordID) {

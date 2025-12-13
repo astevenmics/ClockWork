@@ -6,14 +6,14 @@ public enum Constants {
 
     TABLES(List.of(
             "CREATE TABLE IF NOT EXISTS tasks (" +
-                    "taskUUID VARCHAR(50) PRIMARY KEY, " +
+                    "uuid VARCHAR(50) PRIMARY KEY, " +
                     "userDiscordID VARCHAR(50) NOT NULL, " +
                     "taskID BIGINT NOT NULL AUTO_INCREMENT, " +
                     "taskDAO VARCHAR(8192) NOT NULL, " +
                     "UNIQUE KEY(taskID)" +
                     ");",
             "CREATE TABLE IF NOT EXISTS reminders (" +
-                    "reminderUUID VARCHAR(50) PRIMARY KEY, " +
+                    "uuid VARCHAR(50) PRIMARY KEY, " +
                     "userDiscordID VARCHAR(50) NOT NULL, " +
                     "reminderID BIGINT NOT NULL AUTO_INCREMENT, " +
                     "message VARCHAR(8192) NOT NULL, " +
