@@ -3,7 +3,6 @@ package mist.mystralix.presentation.commands.slash.team;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
-import mist.mystralix.presentation.commands.slash.task.TaskSubCommandFunctions;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
