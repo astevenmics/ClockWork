@@ -55,6 +55,8 @@ public class ReminderScheduler {
      *
      * @param jda the active JDA instance used for retrieving users and sending DMs
      */
+
+    // TODO: update to cancel when updated and re-schedule
     public void scheduleReminders(JDA jda) {
         HashSet<Reminder> allReminders = REMINDER_SERVICE.getAllActiveReminders();
 
@@ -91,6 +93,8 @@ public class ReminderScheduler {
      * @param user     the user who should receive the reminder
      * @param reminder the reminder data to schedule
      */
+
+    // TODO: update to cancel when updated and re-schedule
     public void scheduleReminder(User user, Reminder reminder) {
 
         long reminderTargetTimestamp = reminder.getTargetTimestamp();
