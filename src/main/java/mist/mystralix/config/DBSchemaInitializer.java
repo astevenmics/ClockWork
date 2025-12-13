@@ -4,52 +4,9 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-/**
- * Responsible for initializing and validating the database schema required
- * for the application to function.
- *
- * <p>This class ensures that the following tables exist:</p>
- * <ul>
- *     <li><strong>tasks</strong> – stores user task entries</li>
- *     <li><strong>reminders</strong> – stores scheduled user reminders</li>
- * </ul>
- *
- * <p>If the tables do not exist, they are created automatically using
- * {@code CREATE TABLE IF NOT EXISTS} statements. This allows the bot to start
- * without requiring manual database setup.</p>
- *
- * <p>This class should typically be called once at application startup.</p>
- */
+// TODO: Use Constants
 public class DBSchemaInitializer {
 
-    /**
-     * Initializes the required database tables if they do not already exist.
-     *
-     * <p>This method creates both the {@code tasks} and {@code reminders} tables with
-     * strict column definitions and auto-incrementing numeric IDs for user-friendly
-     * reference.</p>
-     *
-     * <h3>Table: tasks</h3>
-     * <pre>
-     * taskUUID          VARCHAR(50) PRIMARY KEY
-     * userDiscordID     VARCHAR(50) NOT NULL
-     * taskID            BIGINT AUTO_INCREMENT UNIQUE
-     * taskDAO           VARCHAR(8192) NOT NULL
-     * </pre>
-     *
-     * <h3>Table: reminders</h3>
-     * <pre>
-     * reminderUUID       VARCHAR(50) PRIMARY KEY
-     * userDiscordID      VARCHAR(50) NOT NULL
-     * reminderID         BIGINT AUTO_INCREMENT UNIQUE
-     * message            VARCHAR(8192) NOT NULL
-     * targetTimestamp    BIGINT NOT NULL
-     * isNotificationSent BOOLEAN NOT NULL (default FALSE)
-     * </pre>
-     *
-     * <p>Errors during table creation are wrapped into a {@link RuntimeException}
-     * to prevent the bot from starting in an invalid state.</p>
-     */
     public void initializeDatabaseTable() {
 
         // TODO: update table names

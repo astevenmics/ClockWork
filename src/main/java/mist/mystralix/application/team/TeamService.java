@@ -11,7 +11,6 @@ import java.util.UUID;
 
 public class TeamService implements IdentifiableFetcher<Team> {
 
-    /** Repository responsible for database operations for reminders. */
     private final TeamRepository TEAM_REPOSITORY;
     private final TaskRepository TASK_REPOSITORY;
 

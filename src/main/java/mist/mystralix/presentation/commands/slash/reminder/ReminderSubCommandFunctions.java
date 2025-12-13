@@ -1,14 +1,12 @@
 package mist.mystralix.presentation.commands.slash.reminder;
 
-import mist.mystralix.presentation.embeds.IMessageEmbedBuilder;
-import mist.mystralix.application.validation.InputValidation;
-import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
-import mist.mystralix.utils.IdentifiableFetcher;
-import mist.mystralix.domain.reminder.Reminder;
 import mist.mystralix.application.reminder.ReminderScheduler;
 import mist.mystralix.application.reminder.ReminderService;
-import mist.mystralix.utils.TimeHandler;
+import mist.mystralix.application.validation.InputValidation;
+import mist.mystralix.domain.reminder.Reminder;
+import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.ReminderEmbed;
+import mist.mystralix.utils.TimeHandler;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -17,55 +15,17 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Function;
 
-/**
- * Implements all business logic for the reminder-related subcommands.
- *
- * <p>This class processes the functional behavior for:</p>
- * <ul>
- *     <li>/reminder create</li>
- *     <li>/reminder delete</li>
- *     <li>/reminder update</li>
- *     <li>/reminder view</li>
- *     <li>/reminder list</li>
- * </ul>
- *
- * <p>Each subcommand interacts with {@link ReminderService} for persistence and
- * reminder state management. Output formatting is delegated to {@link ReminderEmbed}.
- * Shared validation and lookup steps are centralized in {@link InputValidation#validate(SlashCommandInteraction, IdentifiableFetcher, IMessageEmbedBuilder, String, Function)}.</p>
- */
 public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
-    /** Service layer used for database operations and reminder dispatching. */
     private final ReminderService REMINDER_SERVICE;
 
-    /** Shared embed builder utility used for consistent visual responses. */
     private final ReminderEmbed REMINDER_EMBED = new ReminderEmbed();
 
-    /**
-     * Constructs a handler for all reminder subcommands.
-     *
-     * @param reminderService the dependency providing CRUD and scheduling operations
-     */
     public ReminderSubCommandFunctions(ReminderService reminderService) {
         this.REMINDER_SERVICE = reminderService;
     }
 
-    /**
-     * Handles /reminder create.
-     *
-     * <p>This method performs:</p>
-     * <ul>
-     *     <li>Input validation for message and time</li>
-     *     <li>Duration parsing using {@link TimeHandler#parseDuration(String)}</li>
-     *     <li>Reminder creation and persistence</li>
-     *     <li>Scheduling the reminder using {@link ReminderScheduler}</li>
-     *     <li>Returning a formatted embed summarizing the created reminder</li>
-     * </ul>
-     *
-     * <p>If the time format is invalid or duration is too short, an error embed is returned.</p>
-     */
     @Override
     public MessageEmbed create(SlashCommandInteraction event) {
 
@@ -73,7 +33,6 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping message = event.getOption("message");
         OptionMapping targetTime = event.getOption("time");
 
-        // Required field validation
         if (message == null || targetTime == null) {
             return REMINDER_EMBED.createMissingParametersEmbed(
                     user, "Neither message nor time were provided"
@@ -83,7 +42,6 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         String reminderMessage = message.getAsString();
         String reminderTargetTimestampAsString = targetTime.getAsString();
 
-        // Parse duration string into milliseconds
         long reminderAsLong = TimeHandler.parseDuration(reminderTargetTimestampAsString);
         if (reminderAsLong <= 0) {
             return REMINDER_EMBED.createErrorEmbed(
@@ -97,15 +55,12 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
-        // Compute final timestamp
         long targetTimestamp = System.currentTimeMillis() + reminderAsLong;
 
-        // Create reminder metadata
         String userDiscordID = user.getId();
         String reminderUUID = UUID.randomUUID().toString();
         boolean isNotificationSent = false;
 
-        // Persist reminder
         REMINDER_SERVICE.createReminder(
                 reminderUUID,
                 userDiscordID,
@@ -114,13 +69,11 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 isNotificationSent
         );
 
-        // Retrieve stored domain object
         Reminder newlyCreatedReminder = REMINDER_SERVICE.getUserReminder(
                 userDiscordID,
                 reminderUUID
         );
 
-        // Schedule reminder execution
         new ReminderScheduler(REMINDER_SERVICE)
                 .scheduleReminder(user, newlyCreatedReminder);
 
@@ -131,14 +84,6 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         );
     }
 
-    /**
-     * Handles /reminder delete.
-     *
-     * <p>The shared CRUD logic is delegated to
-     * {@link InputValidation#validate(SlashCommandInteraction, IdentifiableFetcher, IMessageEmbedBuilder, String, Function)}.</p>
-     *
-     * <p>If the reminder exists, it is removed from persistent storage and an embed confirming the deletion is returned.</p>
-     */
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
         return InputValidation.validate(
@@ -153,19 +98,6 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         );
     }
 
-    /**
-     * Handles /reminder update.
-     *
-     * <p>The shared lookup and validation logic is handled by {@link InputValidation#validate(SlashCommandInteraction, IdentifiableFetcher, IMessageEmbedBuilder, String, Function)}.</p>
-     *
-     * <p>Supports updating:</p>
-     * <ul>
-     *     <li>Reminder message</li>
-     *     <li>Reminder timestamp (via duration string)</li>
-     * </ul>
-     *
-     * <p>Invalid duration inputs will return an error embed.</p>
-     */
     @Override
     public MessageEmbed update(SlashCommandInteraction event) {
         return InputValidation.validate(
@@ -176,12 +108,10 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 reminder -> {
                     User user = event.getUser();
         
-                    // Optional message update
                     Optional.ofNullable(
                             event.getOption("message", () -> null, OptionMapping::getAsString)
                     ).ifPresent(reminder::setMessage);
         
-                    // Optional time update
                     String timeString = event.getOption("time", () -> null, OptionMapping::getAsString);
         
                     if (timeString != null) {
@@ -203,11 +133,6 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         );
     }
 
-    /**
-     * Handles /reminder view.
-     *
-     * <p>Retrieves a single reminder and displays its details formatted as an embed.</p>
-     */
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
         return InputValidation.validate(
@@ -224,11 +149,6 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         );
     }
 
-    /**
-     * Handles /reminder list.
-     *
-     * <p>Retrieves all reminders associated with the requesting user and displays them in an aggregated list embed.</p>
-     */
     @Override
     public MessageEmbed readAll(SlashCommandInteraction event) {
 

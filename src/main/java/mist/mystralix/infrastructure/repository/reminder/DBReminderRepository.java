@@ -10,23 +10,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-/**
- * MySQL-backed implementation of {@link ReminderRepository}.
- *
- * <p>This class performs CRUD operations for reminders, converting result rows
- * into {@link Reminder} domain objects and handling SQL statements and
- * connection management.</p>
- *
- * <p>All DB connections are retrieved from {@link DBManager}, ensuring
- * connection pooling through HikariCP.</p>
- */
 public class DBReminderRepository implements ReminderRepository {
 
-    /**
-     * Inserts a new reminder into the database.
-     *
-     * @param reminder the reminder object containing all relevant fields
-     */
     @Override
     public void create(Reminder reminder) {
 
@@ -60,15 +45,6 @@ public class DBReminderRepository implements ReminderRepository {
         }
     }
 
-    /**
-     * Reads a reminder using UUID instead of numeric ID.
-     *
-     * <p>Useful for retrieving reminders when the UUID is used as the primary identifier.</p>
-     *
-     * @param userDiscordID the reminder owner
-     * @param reminderUUID  the unique reminder UUID
-     * @return a Reminder object or null if not found
-     */
     @Override
     public Reminder findByDiscordIDAndUUID(String userDiscordID, String reminderUUID) {
 
@@ -107,13 +83,6 @@ public class DBReminderRepository implements ReminderRepository {
         }
     }
 
-    /**
-     * Reads a reminder based on user ID and numeric reminder ID.
-     *
-     * @param userDiscordID the Discord ID of the owner
-     * @param reminderID    numeric reminder ID
-     * @return a Reminder object or null if not found
-     */
     @Override
     public Reminder findByDiscordIDAndID(String userDiscordID, int reminderID) {
 
@@ -156,11 +125,6 @@ public class DBReminderRepository implements ReminderRepository {
         return null;
     }
 
-    /**
-     * Updates a reminder's message or timestamp.
-     *
-     * @param reminder the updated reminder object
-     */
     @Override
     public void update(Reminder reminder) {
 
@@ -196,11 +160,6 @@ public class DBReminderRepository implements ReminderRepository {
         }
     }
 
-    /**
-     * Deletes a reminder using UUID and user ID.
-     *
-     * @param reminder Reminder object to be deleted
-     */
     @Override
     public void delete(Reminder reminder) {
         String userDiscordID = reminder.getUserDiscordID();
@@ -227,12 +186,6 @@ public class DBReminderRepository implements ReminderRepository {
         }
     }
 
-    /**
-     * Reads all reminders belonging to a specific user.
-     *
-     * @param userDiscordID owner ID
-     * @return a list of reminder objects
-     */
     @Override
     public ArrayList<Reminder> readAll(String userDiscordID) {
 
@@ -274,11 +227,6 @@ public class DBReminderRepository implements ReminderRepository {
         }
     }
 
-    /**
-     * Retrieves ALL active reminders (not yet notified).
-     *
-     * <p>Used by the reminder scheduler on bot startup.</p>
-     */
     @Override
     public HashSet<Reminder> getAllActiveReminders() {
 
@@ -318,11 +266,6 @@ public class DBReminderRepository implements ReminderRepository {
         return reminders;
     }
 
-    /**
-     * Marks a reminder as "notification sent".
-     *
-     * @param reminder the reminder instance to update
-     */
     @Override
     public void updateIsNotificationSent(Reminder reminder) {
 

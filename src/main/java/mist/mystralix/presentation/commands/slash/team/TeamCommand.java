@@ -12,7 +12,6 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 public class TeamCommand implements SlashCommand {
 
-    /** Service providing all team CRUD operations. */
     private final TeamService TEAM_SERVICE;
 
     public TeamCommand(TeamService teamService) {
@@ -203,7 +202,6 @@ public class TeamCommand implements SlashCommand {
             return;
         }
 
-        // Prevent timeout by acknowledging interaction
         event.deferReply().queue();
 
         MessageEmbed messageEmbed;
@@ -242,7 +240,6 @@ public class TeamCommand implements SlashCommand {
             return;
         }
 
-        // Send the rendered embed
         event.getHook().editOriginalEmbeds(messageEmbed).queue();
 
     }

@@ -9,70 +9,24 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
-/**
- * Slash command handler for all /task-related operations.
- *
- * <p>This class defines the command structure (subcommands, options, descriptions)
- * and delegates execution to {@link TaskSubCommandFunctions}, which contains the
- * business logic for each action.</p>
- *
- * <p>Registered as: <b>/task</b></p>
- * <p>Available subcommands:</p>
- * <ul>
- *     <li>/task add</li>
- *     <li>/task delete</li>
- *     <li>/task update</li>
- *     <li>/task cancel</li>
- *     <li>/task list</li>
- *     <li>/task view</li>
- * </ul>
- *
- * <p>This class is marked <code>final</code> because it is not designed for inheritance.
- * Command behavior should remain consistent and centralized.</p>
- */
 public final class TaskCommand implements SlashCommand {
 
-    /** Service providing all task CRUD operations. */
     private final TaskService TASK_SERVICE;
 
-    /**
-     * Constructs a new TaskCommand with dependency-injected TaskService.
-     *
-     * @param taskService the domain service responsible for all task logic
-     */
     public TaskCommand(TaskService taskService) {
         this.TASK_SERVICE = taskService;
     }
 
-    /**
-     * @return the Slash Command name (root command): {@code "task"}.
-     */
     @Override
     public String getName() {
         return "task";
     }
 
-    /**
-     * @return a human-readable description used by Discord when displaying the command.
-     */
     @Override
     public String getDescription() {
         return "All task-related features: adding, deleting, updating, and more.";
     }
 
-    /**
-     * Defines the full subcommand structure for /task.
-     *
-     * <p>Each {@link SubcommandData} describes:</p>
-     * <ul>
-     *   <li>Subcommand name (e.g., "add")</li>
-     *   <li>Description</li>
-     *   <li>Arguments / Options</li>
-     *   <li>Choices (for task status enums)</li>
-     * </ul>
-     *
-     * @return an array of definition objects that Discord uses during command registration.
-     */
     @Override
     public SubcommandData[] getSubcommands() {
         return new SubcommandData[] {
@@ -182,20 +136,6 @@ public final class TaskCommand implements SlashCommand {
         };
     }
 
-    /**
-     * Executes the correct subcommand logic based on the name retrieved from the event.
-     *
-     * <p>Execution flow:</p>
-     * <ol>
-     *     <li>Validate that a subcommand name exists</li>
-     *     <li>Defer the reply (avoids "interaction failed")</li>
-     *     <li>Create a {@link TaskSubCommandFunctions} handler</li>
-     *     <li>Dispatch to the correct method using a switch expression</li>
-     *     <li>Handle any null embed (unexpected condition)</li>
-     * </ol>
-     *
-     * @param event the incoming SlashCommandInteraction from Discord
-     */
     @Override
     public void execute(SlashCommandInteraction event) {
 
@@ -205,10 +145,8 @@ public final class TaskCommand implements SlashCommand {
             return;
         }
 
-        // Prevent timeout by acknowledging interaction
         event.deferReply().queue();
 
-        // Handler containing implementations of each subcommand
         TaskSubCommandFunctions subCommandHandler = new TaskSubCommandFunctions(TASK_SERVICE);
 
         MessageEmbed messageEmbed = switch (subCommand) {
@@ -228,7 +166,6 @@ public final class TaskCommand implements SlashCommand {
             return;
         }
 
-        // Send the rendered embed
         event.getHook().editOriginalEmbeds(messageEmbed).queue();
     }
 }

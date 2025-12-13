@@ -11,28 +11,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-/**
- * MySQL repository implementation for task-related persistence operations.
- *
- * <p>This class serializes {@link TaskDAO} objects using Gson and stores them
- * inside the 'tasks' table. It is responsible for CRUD operations:
- * <ul>
- *     <li>Add a task</li>
- *     <li>Retrieve a task by ID or UUID</li>
- *     <li>Retrieve all tasks for a user</li>
- *     <li>Update a task's content</li>
- *     <li>Delete a task</li>
- * </ul>
- *
- * <p>All database connections are provided through {@link DBManager}.</p>
- */
 public class DBTaskRepository implements TaskRepository {
 
-    /**
-     * Inserts a new task row into the database.
-     *
-     * @param task          task containing uuid, userDiscordID, and DAO information
-     */
     @Override
     public void create(Task task) {
         String taskUUIDAsString = task.getTaskUUID();
@@ -61,12 +41,6 @@ public class DBTaskRepository implements TaskRepository {
         }
     }
 
-    /**
-     * Retrieves a task using only its UUID.
-     *
-     * @param taskUUIDAsString unique task UUID
-     * @return a {@link Task}, or null if not found
-     */
     @Override
     public Task findByDiscordIDAndUUID(String userDiscordID, String taskUUIDAsString) {
         Task task = null;
@@ -105,16 +79,6 @@ public class DBTaskRepository implements TaskRepository {
         return task;
     }
 
-    /**
-     * Retrieves a task using both userDiscordID and taskID.
-     *
-     * <p>Useful when the user references tasks by their
-     * user-friendly numeric ID (e.g., "/task view id:3").</p>
-     *
-     * @param userDiscordID ID of the task owner
-     * @param taskID        numeric task ID
-     * @return a fully constructed {@link Task}, or null if not found
-     */
     @Override
     public Task findByDiscordIDAndID(String userDiscordID, int taskID) {
         Task task = null;
@@ -191,12 +155,6 @@ public class DBTaskRepository implements TaskRepository {
         return task;
     }
 
-    /**
-     * Retrieves all tasks belonging to a specific user, ordered by taskID ASC.
-     *
-     * @param userDiscordID ID of the task owner
-     * @return a list of {@link Task} objects
-     */
     @Override
     public ArrayList<Task> readAll(String userDiscordID) {
         ArrayList<Task> userTasks = new ArrayList<>();
@@ -238,11 +196,6 @@ public class DBTaskRepository implements TaskRepository {
         return userTasks;
     }
 
-    /**
-     * Updates a user's task (DAO content only — not UUID or taskID).
-     *
-     * @param task          task containing updated DAO information
-     */
     @Override
     public void update(Task task) {
         String userDiscordID = task.getUserDiscordID();
@@ -272,11 +225,6 @@ public class DBTaskRepository implements TaskRepository {
         }
     }
 
-    /**
-     * Deletes a task using its UUID and owner ID.
-     *
-     * @param task  the task to delete
-     */
     @Override
     public void delete(Task task) {
         String userDiscordID = task.getUserDiscordID();
