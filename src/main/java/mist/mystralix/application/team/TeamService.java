@@ -47,6 +47,10 @@ public class TeamService implements IdentifiableFetcher<Team> {
         TEAM_REPOSITORY.update(team);
     }
 
+    public ArrayList<Team> getUserTeams(String userDiscordID) {
+        return TEAM_REPOSITORY.readAll(userDiscordID);
+    }
+
     public ArrayList<Task> getTeamTasks(String userDiscordID, int objectID) {
         Team team = fetchByUserIDAndObjectID(userDiscordID, objectID);
         ArrayList<String> tasksUUID = team.getTasksUUID();

@@ -29,7 +29,32 @@ public class TeamEmbed implements IMessageEmbedBuilder {
 
     @Override
     public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
-        return null;
+        // Validate list contents
+        if (list.isEmpty() || !(list.getFirst() instanceof Team)) {
+            return null;
+        }
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Teams");
+        embed.setColor(Color.WHITE);
+
+        // TODO: Pagination support for large task lists
+        for (Object obj : list) {
+            if (!(obj instanceof Team team)) continue;
+
+            embed.addField(
+                    "#" + team.getId() + " | " + team.getTeamName(),
+                            "Status: ",
+                    true
+            );
+        }
+
+        embed.setFooter(
+                user.getEffectiveName() + " | Task List",
+                user.getEffectiveAvatarUrl()
+        );
+
+        return embed.build();
     }
 
     @Override

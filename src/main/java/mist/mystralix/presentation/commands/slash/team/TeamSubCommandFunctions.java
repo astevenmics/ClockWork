@@ -56,6 +56,10 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed readAll(SlashCommandInteraction event) {
-        return null;
+        User user = event.getUser();
+
+        ArrayList<Team> userTeams = TEAM_SERVICE.getUserTeams(user.getId());
+
+        return TEAM_EMBED.createListEmbed(user, userTeams);
     }
 }

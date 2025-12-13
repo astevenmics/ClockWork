@@ -107,7 +107,8 @@ public class TeamCommand implements SlashCommand {
                                 "Team ID of the team you want to view",
                                 true
                         )
-                )
+                ),
+                new SubcommandData("list", "View all teams you are in")
         };
     }
 
@@ -213,7 +214,7 @@ public class TeamCommand implements SlashCommand {
         if (subcommandGroup) {
             messageEmbed = switch (subCommand) {
                 case "create" -> subCommandHandler.create(event);
-//                case "delete" -> subCommandHandler.cancelTask(event);
+                case "delete" -> subCommandHandler.create(event);
                 case "update" -> subCommandHandler.delete(event);
                 case "list" -> subCommandHandler.readAll(event);
                 case "assign" -> subCommandHandler.update(event);
@@ -223,13 +224,14 @@ public class TeamCommand implements SlashCommand {
             };
         } else {
             messageEmbed = switch (subCommand) {
-                case "create" -> subCommandHandler.create(event);
-//                case "add" -> subCommandHandler.cancelTask(event);
+                case "create" -> subCommandHandler.create(event); // done
+                case "add" -> subCommandHandler.create(event);
                 case "remove" -> subCommandHandler.delete(event);
                 case "accept" -> subCommandHandler.readAll(event);
                 case "reject" -> subCommandHandler.update(event);
                 case "leave" -> subCommandHandler.read(event);
                 case "view" -> subCommandHandler.read(event);
+                case "list" -> subCommandHandler.readAll(event); // done
                 default -> null;
             };
         }
