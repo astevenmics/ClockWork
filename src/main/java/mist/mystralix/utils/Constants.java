@@ -9,7 +9,7 @@ public enum Constants {
                     "uuid VARCHAR(50) PRIMARY KEY, " +
                     "userDiscordID VARCHAR(50) NOT NULL, " +
                     "taskID BIGINT NOT NULL AUTO_INCREMENT, " +
-                    "taskDAO VARCHAR(8192) NOT NULL, " +
+                    "taskDAO JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
                     "UNIQUE KEY(taskID)" +
                     ");",
             "CREATE TABLE IF NOT EXISTS reminders (" +
@@ -21,7 +21,6 @@ public enum Constants {
                     "isNotificationSent BOOLEAN NOT NULL DEFAULT FALSE, " +
                     "UNIQUE KEY(reminderID)" +
                     ");",
-
             "CREATE TABLE IF NOT EXISTS teams (" +
                     "uuid VARCHAR(50) PRIMARY KEY, " +
                     "id BIGINT NOT NULL AUTO_INCREMENT, " +
