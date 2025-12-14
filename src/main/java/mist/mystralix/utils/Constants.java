@@ -26,9 +26,10 @@ public enum Constants {
                     "uuid VARCHAR(50) PRIMARY KEY, " +
                     "id BIGINT NOT NULL AUTO_INCREMENT, " +
                     "team_name VARCHAR(50) NOT NULL, " +
-                    "moderators JSON NOT NULL, " +
-                    "members JSON NOT NULL, " +
-                    "tasks_uuid JSON NOT NULL, " +
+                    "moderators JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
+                    "members JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
+                    "tasks_uuid JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
+                    "team_invitations JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
                     "UNIQUE KEY(id)" +
                     ");"
     )),
