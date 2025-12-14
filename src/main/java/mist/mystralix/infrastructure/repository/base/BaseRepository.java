@@ -6,6 +6,8 @@ public interface BaseRepository<T> {
 
     void create(T baseObject);
 
+    T findByID(int uuid);
+
     T findByUUID(String uuid);
 
     T findByDiscordIDAndUUID(String userDiscordID, String uuid);

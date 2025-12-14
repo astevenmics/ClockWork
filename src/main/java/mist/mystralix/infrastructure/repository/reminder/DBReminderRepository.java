@@ -121,6 +121,11 @@ public class DBReminderRepository implements ReminderRepository {
     }
 
     @Override
+    public Reminder findByID(int uuid) {
+        return null;
+    }
+
+    @Override
     public Reminder findByUUID(String uuid) {
         return null;
     }

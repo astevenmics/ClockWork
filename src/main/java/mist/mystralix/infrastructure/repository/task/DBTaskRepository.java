@@ -118,6 +118,11 @@ public class DBTaskRepository implements TaskRepository {
     }
 
     @Override
+    public Task findByID(int uuid) {
+        return null;
+    }
+
+    @Override
     public Task findByUUID(String uuid) {
         Task task = null;
 
