@@ -34,6 +34,7 @@ public class TeamService implements IdentifiableFetcher<Team> {
                 teamName,
                 moderators,
                 new ArrayList<>(),
+                new ArrayList<>(),
                 new ArrayList<>()
         );
 
@@ -60,6 +61,10 @@ public class TeamService implements IdentifiableFetcher<Team> {
         }
 
         return tasks;
+    }
+
+    public Team findByID(int id) {
+        return TEAM_REPOSITORY.findByID(id);
     }
 
     @Override

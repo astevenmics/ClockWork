@@ -39,6 +39,75 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         return TEAM_EMBED.createMessageEmbed(user, "New Team", team);
     }
 
+    public MessageEmbed add(SlashCommandInteraction event) {
+
+        User user = event.getUser();
+
+        MessageEmbed messageEmbed, invitationEmbed;
+        OptionMapping userOption = event.getOption("user");
+        OptionMapping idOption = event.getOption("id");
+        if (userOption == null || idOption == null) {
+            // TODO: Update return embed for errors
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    "Please provide a team ID and mention a user"
+            );
+        }
+
+        User userToAdd = userOption.getAsUser();
+        int id = idOption.getAsInt();
+
+        Team team = TEAM_SERVICE.findByID(id);
+        if(team == null) {
+            // Team does not exist
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    "Team does not exist"
+            );
+        }
+
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+        ArrayList<String> teamInvitations = team.getTeamInvitations();
+
+        if(!team.getModerators().contains(user.getId())) {
+            // You are not allowed/permitted to add users in this team
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    "You need to be either the owner/moderator of a team to invite a user"
+            );
+        }
+
+        if(moderators.contains(userToAdd.getId()) || members.contains(userToAdd.getId())) {
+            // User already in the team
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    "The user " + userToAdd.getAsMention() + " is already part of the team."
+            );
+        }
+
+        if(teamInvitations.contains(userToAdd.getId())) {
+            // User already invited
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    "The user " + userToAdd.getAsMention() + " has already been invited."
+            );
+        }
+
+        invitationEmbed = TEAM_EMBED.createInvitationToUserEmbed(user, userToAdd, team);
+        messageEmbed = TEAM_EMBED.createInvitationEmbed(user, userToAdd, team);
+
+        userToAdd.openPrivateChannel().queue(channel -> channel.sendMessageEmbeds(invitationEmbed).queue());
+
+        // Pending invitation
+        teamInvitations.add(userToAdd.getId());
+        team.setTeamInvitations(teamInvitations);
+
+        TEAM_SERVICE.update(team);
+
+        return messageEmbed;
+    }
+
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
         return null;
