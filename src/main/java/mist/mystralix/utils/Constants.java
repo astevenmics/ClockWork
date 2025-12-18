@@ -33,7 +33,17 @@ public enum Constants {
                     "UNIQUE KEY(id)" +
                     ");"
     )),
-    TEST("");
+    MISSING_PARAMETERS("Please provide all the necessary parameters."),
+    OBJECT_NOT_FOUND("The %s does not exist."),
+    REMINDER_INVALID_TIME_INPUT("Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m..."),
+    REMINDER_MINIMUM_TIME_INPUT("Time target/duration must be at least 1 minute."),
+    NO_OBJECT_FOUND("No object found of %s with ID: %s"),
+    USER_ALREADY_INVITED("The user, %s, has already been invited."),
+    USER_ALREADY_PART_OF_THE_TEAM("The user, %s, is already part of the %s team"),
+    USER_NOT_PART_OF_THE_TEAM("The mentioned user is not a part of the team."),
+    TEAM_CO_MODERATORS_ERROR("You are not able to remove co-moderators from the team."),
+    TEAM_MODERATOR_OR_HIGHER_REQUIRED("You must be a team moderator or higher to execute this command."),
+    TEAM_LEADER_REQUIRED("You must be the team leader to execute this command.");
 
     private final Object VALUE;
 

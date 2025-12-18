@@ -6,6 +6,7 @@ import mist.mystralix.application.validation.InputValidation;
 import mist.mystralix.domain.reminder.Reminder;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.ReminderEmbed;
+import mist.mystralix.utils.Constants;
 import mist.mystralix.utils.TimeHandler;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -35,7 +36,8 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
         if (message == null || targetTime == null) {
             return REMINDER_EMBED.createMissingParametersEmbed(
-                    user, "Neither message nor time were provided"
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
             );
         }
 
@@ -46,12 +48,12 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         if (reminderAsLong <= 0) {
             return REMINDER_EMBED.createErrorEmbed(
                     user,
-                    "Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m..."
+                    Constants.REMINDER_INVALID_TIME_INPUT.getValue(String.class)
             );
         } else if (reminderAsLong < 60_000L) {
             return REMINDER_EMBED.createErrorEmbed(
                     user,
-                    "Time target/duration must be at least 1 minute."
+                    Constants.REMINDER_MINIMUM_TIME_INPUT.getValue(String.class)
             );
         }
 
@@ -119,7 +121,8 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         
                         if (duration <= 0) {
                             return REMINDER_EMBED.createErrorEmbed(
-                                    user, "Invalid time format. Example: 1d, 1h20m"
+                                    user,
+                                    Constants.REMINDER_INVALID_TIME_INPUT.getValue(String.class)
                             );
                         }
         

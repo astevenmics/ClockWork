@@ -7,6 +7,7 @@ import mist.mystralix.domain.task.Task;
 import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TaskEmbed;
+import mist.mystralix.utils.Constants;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -36,7 +37,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         if (title == null || description == null) {
             return TASK_EMBED.createMissingParametersEmbed(
                     user,
-                    "Neither title nor description were provided"
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
             );
         }
 
@@ -85,7 +86,13 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
         Task task = TASK_SERVICE.getUserTask(user.getId(), taskID);
         if (task == null) {
-            return TASK_EMBED.createErrorEmbed(user, "No task found");
+            return TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "task"
+                    )
+            );
         }
 
         String newTitle = event.getOption("title",

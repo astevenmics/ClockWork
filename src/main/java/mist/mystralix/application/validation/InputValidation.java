@@ -1,6 +1,7 @@
 package mist.mystralix.application.validation;
 
 import mist.mystralix.presentation.embeds.IMessageEmbedBuilder;
+import mist.mystralix.utils.Constants;
 import mist.mystralix.utils.IdentifiableFetcher;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -24,21 +25,28 @@ public class InputValidation {
         OptionMapping option = event.getOption(idOptionName);
 
         if (option == null) {
-            return embedBuilder.createMissingParametersEmbed(user, "No " + idOptionName + " provided");
+            return embedBuilder.createMissingParametersEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
         }
 
         int objectID = option.getAsInt();
 
-        T task = service.fetchByUserIDAndObjectID(userDiscordID, objectID);
+        T object = service.fetchByUserIDAndObjectID(userDiscordID, objectID);
 
-        if (task == null) {
+        if (object == null) {
             return embedBuilder.createErrorEmbed(
                     user,
-                    "No object found of " + idOptionName + " with ID " + objectID
+                    String.format(
+                            Constants.NO_OBJECT_FOUND.getValue(String.class),
+                            idOptionName,
+                            objectID
+                    )
             );
         }
 
-        return action.apply(task);
+        return action.apply(object);
     }
 
 }

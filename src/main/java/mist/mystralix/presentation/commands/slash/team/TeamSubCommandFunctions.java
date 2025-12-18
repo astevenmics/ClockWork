@@ -4,6 +4,7 @@ import mist.mystralix.application.team.TeamService;
 import mist.mystralix.domain.team.Team;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TeamEmbed;
+import mist.mystralix.utils.Constants;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -28,8 +29,10 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         User user = event.getUser();
         OptionMapping optionName = event.getOption("team_name");
         if (optionName == null) {
-            // TODO: Update return embed for errors
-            return null;
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
         }
 
 
@@ -50,11 +53,12 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             // TODO: Update return embed for errors
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "Please provide a team ID and mention a user"
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
             );
         }
 
         User userToAdd = userOption.getAsUser();
+        String userToAddMention = userToAdd.getAsMention();
         int id = idOption.getAsInt();
 
         Team team = TEAM_SERVICE.findByID(id);
@@ -62,7 +66,10 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             // Team does not exist
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "Team does not exist"
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
             );
         }
 
@@ -75,7 +82,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             // You are not allowed/permitted to add users in this team
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "You need to be either the leader/moderator of the team to invite a user"
+                    Constants.TEAM_MODERATOR_OR_HIGHER_REQUIRED.getValue(String.class)
             );
         }
 
@@ -83,7 +90,11 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             // User already in the team
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "The user " + userToAdd.getAsMention() + " is already part of the team."
+                    String.format(
+                            Constants.USER_ALREADY_PART_OF_THE_TEAM.getValue(String.class),
+                            userToAddMention,
+                            team.getTeamName()
+                    )
             );
         }
 
@@ -91,7 +102,10 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             // User already invited
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "The user " + userToAdd.getAsMention() + " has already been invited."
+                    String.format(
+                            Constants.USER_ALREADY_INVITED.getValue(String.class),
+                            userToAddMention
+                    )
             );
         }
 
@@ -119,7 +133,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         if (idOption == null || userOption == null) {
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "Please answer the required parameters."
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
             );
         }
 
@@ -128,7 +142,10 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         if(team == null) {
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "Team does not exist."
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
             );
         }
 
@@ -142,14 +159,14 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         if(teamLeaderID.equals(userToRemoveId) || moderators.contains(userToRemoveId)) {
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "You are not able to remove co-moderators from the team."
+                    Constants.TEAM_CO_MODERATORS_ERROR.getValue(String.class)
             );
         }
 
         if(!moderators.contains(userToRemove.getId()) && !members.contains(userToRemove.getId())) {
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "The mentioned user is not a member of the team."
+                    Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class)
             );
         }
 
@@ -162,7 +179,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         } else {
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "You need to be, at least, a team moderator to remove a user from the team."
+                    Constants.TEAM_MODERATOR_OR_HIGHER_REQUIRED.getValue(String.class)
             );
         }
 
@@ -188,7 +205,10 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         OptionMapping optionName = event.getOption("id");
         if (optionName == null) {
-            return null;
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
         }
         int teamId = optionName.getAsInt();
 
@@ -197,16 +217,19 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             // Team does not exist
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "Team does not exist"
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
             );
         }
         String teamLeaderId = team.getTeamLeader();
 
+        // Only team leader can delete the team
         if(!teamLeaderId.equals(user.getId())) {
-            // You are not allowed/permitted to add users in this team
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    "You need to be either the team leader to execute this command"
+                    Constants.TEAM_LEADER_REQUIRED.getValue(String.class)
             );
         }
 
