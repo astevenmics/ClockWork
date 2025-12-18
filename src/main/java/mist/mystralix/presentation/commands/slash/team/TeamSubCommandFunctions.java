@@ -50,7 +50,6 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping userOption = event.getOption("user");
         OptionMapping idOption = event.getOption("id");
         if (userOption == null || idOption == null) {
-            // TODO: Update return embed for errors
             return TEAM_EMBED.createErrorEmbed(
                     user,
                     Constants.MISSING_PARAMETERS.getValue(String.class)
@@ -91,7 +90,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             return TEAM_EMBED.createErrorEmbed(
                     user,
                     String.format(
-                            Constants.USER_ALREADY_PART_OF_THE_TEAM.getValue(String.class),
+                            Constants.USER_MENTIONED_ALREADY_PART_OF_THE_TEAM.getValue(String.class),
                             userToAddMention,
                             team.getTeamName()
                     )
@@ -188,6 +187,62 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         return TEAM_EMBED.createRemovedMemberEmbed(user, userToRemove, team);
     }
 
+    public MessageEmbed accept(SlashCommandInteraction event) {
+        User user = event.getUser();
+        String userId = user.getId();
+
+        OptionMapping idOption = event.getOption("id");
+        if(idOption == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        Team team = TEAM_SERVICE.findByID(idOption.getAsInt());
+
+        // TODO: Remove duplicate code
+        if(team == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
+            );
+        }
+
+        String teamLeaderID = team.getTeamLeader();
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+        if(teamLeaderID.equals(userId) || moderators.contains(userId) || members.contains(userId)) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_ALREADY_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        ArrayList<String> teamInvitations = team.getTeamInvitations();
+        if(!teamInvitations.contains(userId)) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.TEAM_NO_PENDING_INVITATION.getValue(String.class)
+            );
+        }
+
+        teamInvitations.remove(userId);
+        members.add(userId);
+        TEAM_SERVICE.update(team);
+
+        return TEAM_EMBED.invitationAcceptedEmbed(
+                user,
+                team
+        );
+    }
+
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
         return null;
@@ -234,7 +289,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         }
 
         TEAM_SERVICE.delete(team);
-        return TEAM_EMBED.createMessageEmbed(user, "Team has been deleted", team);
+        return TEAM_EMBED.createMessageEmbed(user, team.getTeamName() + " team has been deleted", team);
     }
 
     @Override

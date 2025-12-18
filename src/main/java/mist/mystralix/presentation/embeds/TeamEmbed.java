@@ -118,12 +118,32 @@ public class TeamEmbed implements IMessageEmbedBuilder {
                 "You have been invited to be part of the **"
                 + team.getTeamName() + "** team by " + user.getAsMention()
                 + "!\nYou can either accept or reject the request.\n"
-                + "**/team accept " + team.getId() + "** in the server to accept."
+                + "**/team accept " + team.getId() + "** in the server to accept.\n"
                 + "**/team reject " + team.getId() + "** in the server to reject."
         );
         embed.setFooter(
                 userToAdd.getEffectiveName() + " | Team Invitation",
                 userToAdd.getEffectiveAvatarUrl()
+        );
+
+        return embed.build();
+    }
+
+    public MessageEmbed invitationAcceptedEmbed(
+            User user,
+            Team team
+    ) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Team Invitation Accepted | Team #" + team.getId());
+        embed.setColor(Color.WHITE);
+        embed.setDescription(
+                "You have accepted the team invitation from **" + team.getTeamName() + "**"
+                        + "!\n\nTo view more information about the team:\n"
+                        + "**/team view " + team.getId() + "**"
+        );
+        embed.setFooter(
+                user.getEffectiveName() + " | Team Invitation Accepted",
+                user.getEffectiveAvatarUrl()
         );
 
         return embed.build();
