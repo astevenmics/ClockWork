@@ -78,6 +78,34 @@ public class TeamEmbed implements IMessageEmbedBuilder {
         return embed.build();
     }
 
+    public MessageEmbed createRemovedMemberEmbed(
+            User user,
+            User userRemoved,
+            Team team
+    ) {
+
+        int teamUserCount =
+                team.getModerators().size() +   // Team Members
+                team.getMembers().size() +      // Team Moderators
+                1;                              // Team Leader
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Team #" + team.getId());
+        embed.setColor(Color.RED);
+        embed.setDescription(
+                "User: " + userRemoved.getAsMention()
+                        + ", has been removed from the "
+                        + team.getTeamName() + "team by "
+                        + user.getAsMention()
+        );
+        embed.setFooter(
+                "Team User Count: " + teamUserCount + " | Teams",
+                user.getEffectiveAvatarUrl()
+        );
+
+        return embed.build();
+    }
+
     public MessageEmbed createInvitationToUserEmbed(
             User user,
             User userToAdd,

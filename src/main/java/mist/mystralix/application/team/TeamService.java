@@ -24,8 +24,7 @@ public class TeamService implements IdentifiableFetcher<Team> {
 
     public Team create(
             String teamName,
-            String teamLeaderId,
-            ArrayList<String> moderators
+            String teamLeaderId
     ) {
 
         String uuid = UUID.randomUUID().toString();
@@ -34,7 +33,7 @@ public class TeamService implements IdentifiableFetcher<Team> {
                 uuid,
                 teamName,
                 teamLeaderId,
-                moderators,
+                new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>(),
                 new ArrayList<>()

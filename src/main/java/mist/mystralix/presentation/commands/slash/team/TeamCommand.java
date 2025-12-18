@@ -231,9 +231,9 @@ public class TeamCommand implements SlashCommand {
         } else {
             messageEmbed = switch (subCommand) {
                 case "create" -> subCommandHandler.create(event); // done
-                case "delete" -> subCommandHandler.delete(event);
+                case "delete" -> subCommandHandler.delete(event); // partially done
                 case "add" -> subCommandHandler.add(event); // done
-                case "remove" -> subCommandHandler.delete(event);
+                case "remove" -> subCommandHandler.remove(event);
                 case "accept" -> subCommandHandler.readAll(event);
                 case "reject" -> subCommandHandler.update(event);
                 case "leave" -> subCommandHandler.read(event);
