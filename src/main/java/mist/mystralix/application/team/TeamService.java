@@ -24,6 +24,7 @@ public class TeamService implements IdentifiableFetcher<Team> {
 
     public Team create(
             String teamName,
+            String teamLeaderId,
             ArrayList<String> moderators
     ) {
 
@@ -32,6 +33,7 @@ public class TeamService implements IdentifiableFetcher<Team> {
         Team newTeam = new Team(
                 uuid,
                 teamName,
+                teamLeaderId,
                 moderators,
                 new ArrayList<>(),
                 new ArrayList<>(),
@@ -45,6 +47,10 @@ public class TeamService implements IdentifiableFetcher<Team> {
 
     public void update(Team team) {
         TEAM_REPOSITORY.update(team);
+    }
+
+    public void delete(Team team) {
+        TEAM_REPOSITORY.delete(team);
     }
 
     public ArrayList<Team> getUserTeams(String userDiscordID) {

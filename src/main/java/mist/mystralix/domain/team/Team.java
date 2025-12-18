@@ -7,6 +7,7 @@ public class Team {
     private String uuid;
     private int id;
     private String teamName;
+    private String teamLeader;
     private ArrayList<String> moderators;
     private ArrayList<String> members;
     private ArrayList<String> tasksUUID;
@@ -16,6 +17,7 @@ public class Team {
             String uuid,
             int id,
             String teamName,
+            String teamLeader,
             ArrayList<String> moderators,
             ArrayList<String> members,
             ArrayList<String> tasksUUID,
@@ -24,6 +26,7 @@ public class Team {
         this.uuid = uuid;
         this.id = id;
         this.teamName = teamName;
+        this.teamLeader = teamLeader;
         this.moderators = moderators;
         this.members = members;
         this.tasksUUID = tasksUUID;
@@ -33,6 +36,7 @@ public class Team {
     public Team(
             String uuid,
             String teamName,
+            String teamLeader,
             ArrayList<String> moderators,
             ArrayList<String> members,
             ArrayList<String> tasksUUID,
@@ -40,6 +44,7 @@ public class Team {
     ) {
         this.uuid = uuid;
         this.teamName = teamName;
+        this.teamLeader = teamLeader;
         this.moderators = moderators;
         this.members = members;
         this.tasksUUID = tasksUUID;
@@ -68,6 +73,14 @@ public class Team {
 
     public void setTeamName(String teamName) {
         this.teamName = teamName;
+    }
+
+    public String getTeamLeader() {
+        return teamLeader;
+    }
+
+    public void setTeamLeader(String teamLeader) {
+        this.teamLeader = teamLeader;
     }
 
     public ArrayList<String> getModerators() {

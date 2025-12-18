@@ -40,6 +40,15 @@ public class TeamCommand implements SlashCommand {
                             true
                         ).setRequiredLength(1, 32)
                 ),
+                new SubcommandData("delete", "Delete a team")
+                    .addOptions(
+                        new OptionData(
+                            OptionType.INTEGER,
+                            "id",
+                            "Team ID of the team you want to delete",
+                                true
+                        )
+                ),
                 new SubcommandData("add", "Add a user in a team")
                     .addOptions(
                         new OptionData(
@@ -222,6 +231,7 @@ public class TeamCommand implements SlashCommand {
         } else {
             messageEmbed = switch (subCommand) {
                 case "create" -> subCommandHandler.create(event); // done
+                case "delete" -> subCommandHandler.delete(event);
                 case "add" -> subCommandHandler.add(event); // done
                 case "remove" -> subCommandHandler.delete(event);
                 case "accept" -> subCommandHandler.readAll(event);

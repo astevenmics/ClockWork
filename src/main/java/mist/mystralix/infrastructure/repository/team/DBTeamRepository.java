@@ -20,8 +20,8 @@ public class DBTeamRepository implements TeamRepository {
     public void create(Team baseObject) {
         String sqlStatement =
                 "INSERT INTO teams " +
-                "(uuid, team_name, moderators, members, tasks_uuid) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                "(uuid, team_name, team_leader, moderators, members, tasks_uuid) " +
+                "VALUES (?, ?, ?, ?, ?, ?)";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -30,15 +30,17 @@ public class DBTeamRepository implements TeamRepository {
 
             Gson gson = new Gson();
             String teamName = baseObject.getTeamName();
+            String teamLeader = baseObject.getTeamLeader();
             String moderators = gson.toJson(baseObject.getModerators());
             String members = gson.toJson(baseObject.getMembers());
             String tasksUUID = gson.toJson(baseObject.getTasksUUID());
 
             preparedStatement.setString(1, baseObject.getUUID());
             preparedStatement.setString(2, teamName);
-            preparedStatement.setString(3, moderators);
-            preparedStatement.setString(4, members);
-            preparedStatement.setString(5, tasksUUID);
+            preparedStatement.setString(3, teamLeader);
+            preparedStatement.setString(4, moderators);
+            preparedStatement.setString(5, members);
+            preparedStatement.setString(6, tasksUUID);
 
             preparedStatement.executeUpdate();
 
@@ -74,6 +76,7 @@ public class DBTeamRepository implements TeamRepository {
             if (resultSet.next()) {
                 int id = resultSet.getInt("uuid");
                 String name = resultSet.getString("team_name");
+                String teamLeader = resultSet.getString("team_leader");
                 ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
                 ArrayList<String> members = gson.fromJson(resultSet.getString("members"), LIST_TYPE);
                 ArrayList<String> tasksUUID = gson.fromJson(resultSet.getString("tasks_uuid"), LIST_TYPE);
@@ -83,6 +86,7 @@ public class DBTeamRepository implements TeamRepository {
                         uuid,
                         id,
                         name,
+                        teamLeader,
                         moderators,
                         members,
                         tasksUUID,
@@ -121,6 +125,7 @@ public class DBTeamRepository implements TeamRepository {
             if (resultSet.next()) {
                 String uuid = resultSet.getString("id");
                 String name = resultSet.getString("team_name");
+                String teamLeader = resultSet.getString("team_leader");
                 ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
                 ArrayList<String> members = gson.fromJson(resultSet.getString("members"), LIST_TYPE);
                 ArrayList<String> tasksUUID = gson.fromJson(resultSet.getString("tasks_uuid"), LIST_TYPE);
@@ -130,6 +135,7 @@ public class DBTeamRepository implements TeamRepository {
                         uuid,
                         id,
                         name,
+                        teamLeader,
                         moderators,
                         members,
                         tasksUUID,
@@ -163,6 +169,7 @@ public class DBTeamRepository implements TeamRepository {
             if (resultSet.next()) {
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("team_name");
+                String teamLeader = resultSet.getString("team_leader");
                 ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
                 ArrayList<String> members = gson.fromJson(resultSet.getString("members"), LIST_TYPE);
                 ArrayList<String> tasksUUID = gson.fromJson(resultSet.getString("tasks_uuid"), LIST_TYPE);
@@ -172,6 +179,7 @@ public class DBTeamRepository implements TeamRepository {
                         uuid,
                         id,
                         name,
+                        teamLeader,
                         moderators,
                         members,
                         tasksUUID,
@@ -205,6 +213,7 @@ public class DBTeamRepository implements TeamRepository {
             if (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
                 String name = resultSet.getString("team_name");
+                String teamLeader = resultSet.getString("team_leader");
                 ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
                 ArrayList<String> members = gson.fromJson(resultSet.getString("members"), LIST_TYPE);
                 ArrayList<String> tasksUUID = gson.fromJson(resultSet.getString("tasks_uuid"), LIST_TYPE);
@@ -214,6 +223,7 @@ public class DBTeamRepository implements TeamRepository {
                         uuid,
                         id,
                         name,
+                        teamLeader,
                         moderators,
                         members,
                         tasksUUID,
@@ -263,6 +273,10 @@ public class DBTeamRepository implements TeamRepository {
             throw new RuntimeException("DB Error", e);
         }
 
+    }
+
+    public void updateTeamLeader(Team baseObject) {
+        // do something
     }
 
     @Override
@@ -316,6 +330,7 @@ public class DBTeamRepository implements TeamRepository {
                 String uuid = resultSet.getString("uuid");
                 int id = resultSet.getInt("id");
                 String name = resultSet.getString("team_name");
+                String teamLeader = resultSet.getString("team_leader");
 
                 ArrayList<String> moderators = gson.fromJson(
                         resultSet.getString("moderators"),
@@ -339,6 +354,7 @@ public class DBTeamRepository implements TeamRepository {
                         uuid,
                         id,
                         name,
+                        teamLeader,
                         moderators,
                         members,
                         tasksUUID,

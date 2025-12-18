@@ -34,7 +34,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         ArrayList<String> moderators = new ArrayList<>();
         moderators.add(user.getId());
 
-        Team team = TEAM_SERVICE.create(name, moderators);
+        Team team = TEAM_SERVICE.create(name, user.getId(), moderators);
 
         return TEAM_EMBED.createMessageEmbed(user, "New Team", team);
     }
@@ -120,7 +120,35 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
-        return null;
+
+        User user = event.getUser();
+
+        OptionMapping optionName = event.getOption("id");
+        if (optionName == null) {
+            return null;
+        }
+        int teamId = optionName.getAsInt();
+
+        Team team = TEAM_SERVICE.findByID(teamId);
+        if(team == null) {
+            // Team does not exist
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    "Team does not exist"
+            );
+        }
+        String teamLeaderId = team.getTeamLeader();
+
+        if(!teamLeaderId.equals(user.getId())) {
+            // You are not allowed/permitted to add users in this team
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    "You need to be either the team leader to execute this command"
+            );
+        }
+
+        TEAM_SERVICE.delete(team);
+        return TEAM_EMBED.createMessageEmbed(user, "Team has been deleted", team);
     }
 
     @Override
