@@ -36,7 +36,14 @@ public class TeamEmbed implements IMessageEmbedBuilder {
     public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
         // Validate list contents
         if (list.isEmpty() || !(list.getFirst() instanceof Team)) {
-            return null;
+            return new EmbedBuilder()
+                    .setTitle("No Teams Found")
+                    .setDescription("You are not currently in any teams!")
+                    .setFooter(
+                            "Type /team to view all available commands!",
+                            user.getEffectiveAvatarUrl()
+                    )
+                    .build();
         }
 
         EmbedBuilder embed = new EmbedBuilder();
@@ -47,10 +54,21 @@ public class TeamEmbed implements IMessageEmbedBuilder {
         for (Object obj : list) {
             if (!(obj instanceof Team team)) continue;
 
+            int teamUserCount =
+                    team.getModerators().size() +           // Team Members
+                            team.getMembers().size() +      // Team Moderators
+                            1;                              // Team Leader
+
             embed.addField(
-                    "#" + team.getId() + " | " + team.getTeamName(),
-                            "Status: ",
-                    true
+                    "Team #" + teamUserCount,
+                    String.format(
+                            """
+                            Name: **%s**
+                            User Count: **%d**
+                            """,
+                            team.getTeamName(),
+                            teamUserCount
+                    ), true
             );
         }
 

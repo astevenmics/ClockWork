@@ -308,19 +308,18 @@ public class DBTeamRepository implements TeamRepository {
 
         ArrayList<Team> teams = new ArrayList<>();
 
-        String sqlStatement = "SELECT * FROM teams " +
-                "WHERE JSON_CONTAINS(moderators, ?) " +
-                "OR JSON_CONTAINS(members, ?) ORDER BY id ASC";
+        String sqlStatement = "SELECT * FROM teams WHERE team_leader = ?" +
+                "OR JSON_CONTAINS(moderators, JSON_ARRAY(?)) " +
+                "OR JSON_CONTAINS(members, JSON_ARRAY(?)) ORDER BY id ASC";
 
         try(
                 Connection connection = DBManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
                 ) {
 
-            String jsonParameter = "[\"" + userDiscordID + "\"]";
-
-            preparedStatement.setString(1, jsonParameter);
-            preparedStatement.setString(2, jsonParameter);
+            preparedStatement.setString(1, userDiscordID);
+            preparedStatement.setString(2, userDiscordID);
+            preparedStatement.setString(3, userDiscordID);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
