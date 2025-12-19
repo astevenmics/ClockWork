@@ -1,9 +1,14 @@
 package mist.mystralix.presentation.embeds;
 
+import mist.mystralix.application.loops.Loops;
 import mist.mystralix.domain.team.Team;
+import mist.mystralix.utils.Constants;
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
+import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -179,6 +184,65 @@ public class TeamEmbed implements IMessageEmbedBuilder {
         );
 
         return embed.build();
+    }
+
+    public MessageEmbed createTeamInfoEmbed(
+            User user,
+            Team team,
+            SlashCommandInteraction event
+    ) {
+
+        Guild serverGuild = event.getGuild();
+        if(serverGuild == null) {
+            return createErrorEmbed(
+                    user,
+                    "An error has occurred. Please try again."
+            );
+        }
+
+        StringBuilder teamModerators = Loops.createTeamUsersStringBuilder(
+                serverGuild,
+                team.getModerators(),
+                Constants.TEAM_NO_MODERATORS.getValue(String.class)
+        );
+        StringBuilder teamMembers = Loops.createTeamUsersStringBuilder(
+                serverGuild,
+                team.getMembers(),
+                Constants.TEAM_NO_MEMBERS.getValue(String.class)
+        );
+
+        Member teamLeader = serverGuild.getMember(User.fromId(team.getTeamLeader()));
+        String teamLeaderMention = teamLeader != null ? teamLeader.getAsMention() : team.getTeamLeader();
+
+        int teamUserCount =
+                team.getModerators().size() +   // Team Members
+                team.getMembers().size() +      // Team Moderators
+                1;                              // Team Leader
+
+        return new EmbedBuilder()
+                .setTitle("Team Info | Team #" + team.getId())
+                .setColor(Color.GREEN)
+                .setDescription(
+                        String.format(
+                            """
+                            **Name**: %s
+                            **Leader**: %s
+                            **Moderators**: %s
+                            **Members**: %s
+                            **User Count**: %d
+                            """,
+                            team.getTeamName(),
+                            teamLeaderMention,
+                            teamModerators,
+                            teamMembers,
+                            teamUserCount
+                        )
+                )
+                .setFooter(
+                        user.getEffectiveName() + " | Team Info",
+                        user.getEffectiveAvatarUrl()
+                )
+                .build();
     }
 
     @Override

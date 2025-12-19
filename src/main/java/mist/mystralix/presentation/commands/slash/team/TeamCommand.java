@@ -234,8 +234,8 @@ public class TeamCommand implements SlashCommand {
                 case "add" -> subCommandHandler.add(event); // done
                 case "remove" -> subCommandHandler.remove(event); // done
                 case "invitation" -> subCommandHandler.handleInvitation(event); // done
-                case "leave" -> subCommandHandler.leave(event);
-                case "view" -> subCommandHandler.read(event);
+                case "leave" -> subCommandHandler.leave(event); // done
+                case "view" -> subCommandHandler.read(event); // done
                 case "list" -> subCommandHandler.readAll(event); // done
                 default -> null;
             };

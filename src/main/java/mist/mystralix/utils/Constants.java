@@ -43,6 +43,8 @@ public enum Constants {
     USER_MENTIONED_ALREADY_PART_OF_THE_TEAM("The user, %s, is already part of the %s team"),
     USER_MENTIONED_NOT_PART_OF_THE_TEAM("The mentioned user is not a part of the **%s** team."),
     USER_NOT_PART_OF_THE_TEAM("You are not a part of the **%s** team."),
+    TEAM_NO_MODERATORS("No moderators"),
+    TEAM_NO_MEMBERS("No members"),
     TEAM_LEADER_CANNOT_LEAVE("You cannot leave the team while you're still the leader.\nYou must appoint someone else as the leader before departing."),
     TEAM_NO_PENDING_INVITATION("You do not have any pending invitations for this team"),
     TEAM_CO_MODERATORS_ERROR("You are not able to remove co-moderators from the team."),

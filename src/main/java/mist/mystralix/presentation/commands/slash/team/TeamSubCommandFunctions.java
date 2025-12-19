@@ -310,7 +310,48 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
-        return null;
+
+        User user = event.getUser();
+        String userId = user.getId();
+
+        OptionMapping idOption = event.getOption("id");
+        if(idOption == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        Team team = TEAM_SERVICE.findByID(idOption.getAsInt());
+        if(team == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
+            );
+        }
+
+        String teamLeaderID = team.getTeamLeader();
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+
+        if(!teamLeaderID.equals(userId) && !moderators.contains(userId) && !members.contains(userId)) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        return TEAM_EMBED.createTeamInfoEmbed(
+                user,
+                team,
+                event
+        );
     }
 
     @Override
