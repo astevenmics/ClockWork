@@ -165,6 +165,22 @@ public class TeamEmbed implements IMessageEmbedBuilder {
         return embed.build();
     }
 
+    public MessageEmbed createLeftTeamEmbed(
+            User user,
+            Team team
+    ) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Team Leave  | Team #" + team.getId());
+        embed.setColor(Color.RED);
+        embed.setDescription("You have successfully left the **" + team.getTeamName() + "** team.");
+        embed.setFooter(
+                user.getEffectiveName() + " | User Left Team",
+                user.getEffectiveAvatarUrl()
+        );
+
+        return embed.build();
+    }
+
     @Override
     public MessageEmbed createErrorEmbed(User user, String message) {
         EmbedBuilder embed = new EmbedBuilder();

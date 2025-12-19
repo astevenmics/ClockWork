@@ -165,7 +165,10 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         if(!moderators.contains(userToRemove.getId()) && !members.contains(userToRemove.getId())) {
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class)
+                    String.format(
+                            Constants.USER_MENTIONED_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
             );
         }
 
@@ -247,6 +250,62 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         return isInvitationAccepted ?
                 TEAM_EMBED.invitationAcceptedEmbed(user, team) :
                 TEAM_EMBED.invitationRejectedEmbed(user, team);
+    }
+
+
+    public MessageEmbed leave(SlashCommandInteraction event) {
+        User user = event.getUser();
+        String userId = user.getId();
+
+        OptionMapping idOption = event.getOption("id");
+        if(idOption == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        Team team = TEAM_SERVICE.findByID(idOption.getAsInt());
+
+        if(team == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
+            );
+        }
+
+        String teamLeaderID = team.getTeamLeader();
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+
+        if(teamLeaderID.equals(userId)) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.TEAM_LEADER_CANNOT_LEAVE.getValue(String.class)
+            );
+        }
+
+        if(!moderators.contains(userId) && !members.contains(userId)) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        moderators.remove(userId);
+        members.remove(userId);
+        TEAM_SERVICE.update(team);
+
+        return TEAM_EMBED.createLeftTeamEmbed(
+                user,
+                team
+        );
     }
 
     @Override
