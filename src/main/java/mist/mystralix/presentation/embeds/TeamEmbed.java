@@ -118,8 +118,8 @@ public class TeamEmbed implements IMessageEmbedBuilder {
                 "You have been invited to be part of the **"
                 + team.getTeamName() + "** team by " + user.getAsMention()
                 + "!\nYou can either accept or reject the request.\n"
-                + "**/team accept " + team.getId() + "** in the server to accept.\n"
-                + "**/team reject " + team.getId() + "** in the server to reject."
+                + "**/team invitation " + team.getId() + " Accept** in the server to accept.\n"
+                + "**/team invitation " + team.getId() + " Reject** in the server to reject."
         );
         embed.setFooter(
                 userToAdd.getEffectiveName() + " | Team Invitation",
@@ -143,6 +143,22 @@ public class TeamEmbed implements IMessageEmbedBuilder {
         );
         embed.setFooter(
                 user.getEffectiveName() + " | Team Invitation Accepted",
+                user.getEffectiveAvatarUrl()
+        );
+
+        return embed.build();
+    }
+
+    public MessageEmbed invitationRejectedEmbed(
+            User user,
+            Team team
+    ) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Team Invitation Rejected | Team #" + team.getId());
+        embed.setColor(Color.ORANGE);
+        embed.setDescription("You have rejected the team invitation from **" + team.getTeamName() + "**");
+        embed.setFooter(
+                user.getEffectiveName() + " | Team Invitation Rejected",
                 user.getEffectiveAvatarUrl()
         );
 

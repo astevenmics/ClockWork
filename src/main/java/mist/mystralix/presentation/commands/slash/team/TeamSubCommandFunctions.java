@@ -187,12 +187,13 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         return TEAM_EMBED.createRemovedMemberEmbed(user, userToRemove, team);
     }
 
-    public MessageEmbed accept(SlashCommandInteraction event) {
+    public MessageEmbed handleInvitation(SlashCommandInteraction event) {
         User user = event.getUser();
         String userId = user.getId();
 
         OptionMapping idOption = event.getOption("id");
-        if(idOption == null) {
+        OptionMapping decisionOption = event.getOption("decision");
+        if(idOption == null || decisionOption == null) {
             return TEAM_EMBED.createErrorEmbed(
                     user,
                     Constants.MISSING_PARAMETERS.getValue(String.class)
@@ -233,14 +234,19 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
+        // Decision is either "accept" or "reject"
+        String decision = decisionOption.getAsString();
+        boolean isInvitationAccepted = decision.equals("accept");
+        if(isInvitationAccepted) {
+            members.add(userId);
+        }
         teamInvitations.remove(userId);
-        members.add(userId);
         TEAM_SERVICE.update(team);
 
-        return TEAM_EMBED.invitationAcceptedEmbed(
-                user,
-                team
-        );
+
+        return isInvitationAccepted ?
+                TEAM_EMBED.invitationAcceptedEmbed(user, team) :
+                TEAM_EMBED.invitationRejectedEmbed(user, team);
     }
 
     @Override

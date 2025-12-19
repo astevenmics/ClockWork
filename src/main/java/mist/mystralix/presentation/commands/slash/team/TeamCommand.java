@@ -79,24 +79,23 @@ public class TeamCommand implements SlashCommand {
                             true
                         )
                 ),
-                new SubcommandData("accept", "Accept a team invitation using team ID")
+                new SubcommandData("invitation", "Respond to the invitation sent to you be a team.")
                     .addOptions(
                         new OptionData(
                             OptionType.INTEGER,
                             "id",
-                            "Team ID of the team you want to accept",
+                            "Team ID of the team you received the invitation from.",
                             true
-                        )
-                ),
-                new SubcommandData("reject", "Reject a team invitation using team ID")
-                    .addOptions(
-                        new OptionData(
-                            OptionType.INTEGER,
-                            "id",
-                            "Team ID of the team you want to reject",
-                            true
-                        )
-                ),
+                        ),
+                          new OptionData(
+                                  OptionType.STRING,
+                                  "decision",
+                                  "Accept/Reject the invitation",
+                                  true
+                          )
+                                  .addChoice("Accept", "accept")
+                                  .addChoice("Reject", "reject")
+                    ),
                 new SubcommandData("leave", "Leave a team using team ID")
                     .addOptions(
                         new OptionData(
@@ -234,8 +233,7 @@ public class TeamCommand implements SlashCommand {
                 case "delete" -> subCommandHandler.delete(event); // done
                 case "add" -> subCommandHandler.add(event); // done
                 case "remove" -> subCommandHandler.remove(event); // done
-                case "accept" -> subCommandHandler.accept(event); // done
-                case "reject" -> subCommandHandler.update(event);
+                case "invitation" -> subCommandHandler.handleInvitation(event); // done
                 case "leave" -> subCommandHandler.read(event);
                 case "view" -> subCommandHandler.read(event);
                 case "list" -> subCommandHandler.readAll(event); // done
