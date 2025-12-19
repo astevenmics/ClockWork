@@ -45,13 +45,14 @@
     * /task delete [task id] ✅
 
 - Team Command ❌
-    * /team create ❌
-    * /team add [user] ❌
-    * /team remove [user] ❌
-    * /team accept [teamID] ❌
-    * /team reject [teamID] ❌
-    * /team leave [teamID] ❌
-    * /team view [teamID] ❌
+    * /team create [teamName] ✅
+    * /team delete [teamID] ✅
+    * /team add [teamID] [user] ✅
+    * /team remove [teamID] [user] ✅
+    * /team invitation [teamID] [accept/reject] ✅
+    * /team leave [teamID] ✅
+    * /team view [teamID] ✅
+    * /team list ⏳
     * /team task [teamID] create [title] [description] ❌
     * /team task [teamID] delete [taskID] ❌
     * /team task [teamID] update [taskID] [title/description/status] ❌
