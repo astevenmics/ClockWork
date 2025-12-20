@@ -101,10 +101,10 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         teamTasksUUID.add(uuid);
         TEAM_SERVICE.update(team);
 
-        return TEAM_TASK_EMBED.createMessageEmbed(
+        return TEAM_TASK_EMBED.createTeamTaskCreatedEmbed(
                 user,
-                "New Team Task",
-                teamTask
+                teamTask,
+                event
         );
     }
 

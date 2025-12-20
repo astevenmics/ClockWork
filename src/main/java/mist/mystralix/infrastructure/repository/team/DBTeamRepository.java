@@ -74,7 +74,7 @@ public class DBTeamRepository implements TeamRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
             Gson gson = new Gson();
             if (resultSet.next()) {
-                int id = resultSet.getInt("uuid");
+                int id = resultSet.getInt("id");
                 String name = resultSet.getString("team_name");
                 String teamLeader = resultSet.getString("team_leader");
                 ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
