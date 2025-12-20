@@ -38,9 +38,9 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
 
     public Reminder getUserReminder(
             String userDiscordID,
-            int reminderID
+            int id
     ) {
-        return REMINDER_REPOSITORY.findByDiscordIDAndID(userDiscordID, reminderID);
+        return REMINDER_REPOSITORY.findByDiscordIDAndID(userDiscordID, id);
     }
 
     public Reminder getUserReminder(

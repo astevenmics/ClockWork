@@ -69,7 +69,7 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
                 .setColor(Color.GREEN)
                 .addField("Task Title", teamTask.getTaskDAO().getTitle(), false)
                 .addField("Task Description", teamTask.getTaskDAO().getDescription(), false)
-                .addField("Task ID", String.valueOf(teamTask.getTaskID()), true)
+                .addField("Task ID", String.valueOf(teamTask.getId()), true)
                 .addField("Team ID", String.valueOf(teamTask.getTeamID()), true)
                 .addField("Status", teamTaskStatus.getIcon() + " " + teamTaskStatus.getStringValue(), true)
                 .addField("Assigned Users", assignedUsersMessage.toString(), false)
