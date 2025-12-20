@@ -1,6 +1,5 @@
 package mist.mystralix.presentation.commands.slash.team;
 
-import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.team.TeamTaskService;
 import mist.mystralix.domain.enums.TaskStatus;
@@ -17,16 +16,13 @@ public class TeamCommand implements SlashCommand {
 
     private final TeamTaskService TEAM_TASK_SERVICE;
     private final TeamService TEAM_SERVICE;
-    private final TaskService TASK_SERVICE;
 
     public TeamCommand(
             TeamTaskService teamTaskService,
-            TeamService teamService,
-            TaskService taskService
+            TeamService teamService
     ) {
         this.TEAM_TASK_SERVICE = teamTaskService;
         this.TEAM_SERVICE = teamService;
-        this.TASK_SERVICE = taskService;
     }
 
     @Override
@@ -228,13 +224,12 @@ public class TeamCommand implements SlashCommand {
         TeamSubCommandFunctions teamSubCommandFunctions = new TeamSubCommandFunctions(TEAM_SERVICE);
         TeamTaskSubCommandFunctions teamTaskSubCommandFunctions = new TeamTaskSubCommandFunctions(
                 TEAM_TASK_SERVICE,
-                TEAM_SERVICE,
-                TASK_SERVICE
+                TEAM_SERVICE
         );
 
         if (subcommandGroup) {
             messageEmbed = switch (subCommand) {
-                case "create" -> teamTaskSubCommandFunctions.create(event);
+                case "create" -> teamTaskSubCommandFunctions.create(event); // Partially Done
                 case "delete" -> teamTaskSubCommandFunctions.create(event);
                 case "update" -> teamTaskSubCommandFunctions.delete(event);
                 case "list" -> teamTaskSubCommandFunctions.readAll(event);
@@ -253,6 +248,8 @@ public class TeamCommand implements SlashCommand {
                 case "leave" -> teamSubCommandFunctions.leave(event); // done
                 case "view" -> teamSubCommandFunctions.read(event); // done
                 case "list" -> teamSubCommandFunctions.readAll(event); // done
+                case "position" -> teamSubCommandFunctions.readAll(event);
+                case "transfer" -> teamSubCommandFunctions.readAll(event);
                 default -> null;
             };
         }

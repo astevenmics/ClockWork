@@ -33,6 +33,7 @@ public class TeamTask extends Task {
             String userDiscordID,
             TaskDAO taskDAO,
             String teamUUID,
+            int teamID,
             ArrayList<String> assignedUsers
     ) {
         super(
@@ -41,6 +42,7 @@ public class TeamTask extends Task {
                 taskDAO
         );
         this.teamUUID = teamUUID;
+        this.teamID = teamID;
         this.assignedUsers = assignedUsers;
     }
 
