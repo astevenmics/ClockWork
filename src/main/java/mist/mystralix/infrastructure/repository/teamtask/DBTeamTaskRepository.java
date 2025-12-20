@@ -27,7 +27,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
 
         try (
                 Connection connection = DBManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
             ) {
 
             Gson gson = new Gson();
@@ -61,7 +61,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
 
         try (
                 Connection connection = DBManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
         ) {
             preparedStatement.setInt(1, id);
 
@@ -107,7 +107,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
 
         try (
                 Connection connection = DBManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
                 ) {
             preparedStatement.setString(1, uuid);
 
