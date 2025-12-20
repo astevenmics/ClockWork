@@ -6,7 +6,7 @@ public interface BaseRepository<T> {
 
     void create(T baseObject);
 
-    T findByID(int uuid);
+    T findByID(int id);
 
     T findByUUID(String uuid);
 

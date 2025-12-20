@@ -20,7 +20,7 @@ public class DBTaskRepository implements TaskRepository {
         TaskDAO taskDAO = task.getTaskDAO();
 
         String sqlStatement =
-                "INSERT INTO tasks (uuid, userDiscordID, taskDAO) VALUES (?, ?, ?);";
+                "INSERT INTO tasks (uuid, user_discord_id, task_dao) VALUES (?, ?, ?);";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -45,7 +45,7 @@ public class DBTaskRepository implements TaskRepository {
     public Task findByDiscordIDAndUUID(String userDiscordID, String uuidAsString) {
         Task task = null;
 
-        String sqlStatement = "SELECT * FROM tasks WHERE userDiscordID = ? AND uuid = ?;";
+        String sqlStatement = "SELECT * FROM tasks WHERE user_discord_id = ? AND uuid = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -58,8 +58,8 @@ public class DBTaskRepository implements TaskRepository {
             Gson gson = new Gson();
 
             if (resultSet.next()) {
-                int taskID = resultSet.getInt("taskID");
-                String taskDAOJson = resultSet.getString("taskDAO");
+                int taskID = resultSet.getInt("id");
+                String taskDAOJson = resultSet.getString("task_dao");
 
                 TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
 
@@ -83,7 +83,7 @@ public class DBTaskRepository implements TaskRepository {
     public Task findByDiscordIDAndID(String userDiscordID, int taskID) {
         Task task = null;
 
-        String sqlStatement = "SELECT * FROM tasks WHERE userDiscordID = ? AND taskID = ?;";
+        String sqlStatement = "SELECT * FROM tasks WHERE user_discord_id = ? AND id = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -97,7 +97,7 @@ public class DBTaskRepository implements TaskRepository {
 
             if (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
-                String taskDAOJson = resultSet.getString("taskDAO");
+                String taskDAOJson = resultSet.getString("task_dao");
 
                 TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
 
@@ -138,9 +138,9 @@ public class DBTaskRepository implements TaskRepository {
             Gson gson = new Gson();
 
             if (resultSet.next()) {
-                int taskID = resultSet.getInt("taskID");
-                String taskDAOJson = resultSet.getString("taskDAO");
-                String userDiscordID = resultSet.getString("userDiscordID");
+                int taskID = resultSet.getInt("id");
+                String taskDAOJson = resultSet.getString("task_dao");
+                String userDiscordID = resultSet.getString("user_discord_id");
 
                 TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
 
@@ -165,7 +165,7 @@ public class DBTaskRepository implements TaskRepository {
         ArrayList<Task> userTasks = new ArrayList<>();
 
         String sqlStatement =
-                "SELECT * FROM tasks WHERE userDiscordID = ? ORDER BY taskID ASC;";
+                "SELECT * FROM tasks WHERE user_discord_id = ? ORDER BY id ASC;";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -178,8 +178,8 @@ public class DBTaskRepository implements TaskRepository {
 
             while (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
-                int taskID = resultSet.getInt("taskID");
-                String taskDAOJson = resultSet.getString("taskDAO");
+                int taskID = resultSet.getInt("id");
+                String taskDAOJson = resultSet.getString("task_dao");
 
                 TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
 
@@ -206,7 +206,7 @@ public class DBTaskRepository implements TaskRepository {
         String userDiscordID = task.getUserDiscordID();
         int taskID = task.getTaskID();
         String sqlStatement =
-                "UPDATE tasks SET taskDAO = ? WHERE userDiscordID = ? AND taskID = ?;";
+                "UPDATE tasks SET task_dao = ? WHERE user_discord_id = ? AND id = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -234,7 +234,7 @@ public class DBTaskRepository implements TaskRepository {
     public void delete(Task task) {
         String userDiscordID = task.getUserDiscordID();
         String sqlStatement =
-                "DELETE FROM tasks WHERE uuid = ? AND userDiscordID = ?;";
+                "DELETE FROM tasks WHERE uuid = ? AND user_discord_id = ?;";
 
         String uuid = task.getUUID();
 

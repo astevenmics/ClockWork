@@ -7,19 +7,19 @@ public enum Constants {
     TABLES(List.of(
             "CREATE TABLE IF NOT EXISTS tasks (" +
                     "uuid VARCHAR(50) PRIMARY KEY, " +
-                    "userDiscordID VARCHAR(50) NOT NULL, " +
-                    "taskID BIGINT NOT NULL AUTO_INCREMENT, " +
-                    "taskDAO JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
-                    "UNIQUE KEY(taskID)" +
+                    "user_discord_id VARCHAR(50) NOT NULL, " +
+                    "id BIGINT NOT NULL AUTO_INCREMENT, " +
+                    "task_dao JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
+                    "UNIQUE KEY(id)" +
                     ");",
             "CREATE TABLE IF NOT EXISTS reminders (" +
                     "uuid VARCHAR(50) PRIMARY KEY, " +
-                    "userDiscordID VARCHAR(50) NOT NULL, " +
-                    "reminderID BIGINT NOT NULL AUTO_INCREMENT, " +
+                    "user_discord_id VARCHAR(50) NOT NULL, " +
+                    "id BIGINT NOT NULL AUTO_INCREMENT, " +
                     "message VARCHAR(8192) NOT NULL, " +
-                    "targetTimestamp BIGINT NOT NULL, " +
-                    "isNotificationSent BOOLEAN NOT NULL DEFAULT FALSE, " +
-                    "UNIQUE KEY(reminderID)" +
+                    "target_timestamp BIGINT NOT NULL, " +
+                    "is_notification_sent BOOLEAN NOT NULL DEFAULT FALSE, " +
+                    "UNIQUE KEY(id)" +
                     ");",
             "CREATE TABLE IF NOT EXISTS teams (" +
                     "uuid VARCHAR(50) PRIMARY KEY, " +
@@ -34,9 +34,9 @@ public enum Constants {
                     ");",
             "CREATE TABLE IF NOT EXISTS team_task (" +
                     "uuid VARCHAR(50) PRIMARY KEY, " +
-                    "userDiscordID VARCHAR(50) NOT NULL, " +
+                    "user_discord_id VARCHAR(50) NOT NULL, " +
                     "id BIGINT NOT NULL AUTO_INCREMENT, " +
-                    "taskDAO JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
+                    "task_dao JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
                     "team_uuid VARCHAR(50) NOT NULL, " +
                     "team_id VARCHAR(50) NOT NULL, " +
                     "assigned_users JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
