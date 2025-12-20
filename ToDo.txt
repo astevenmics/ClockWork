@@ -53,7 +53,9 @@
     * /team leave [teamID] ✅
     * /team view [teamID] ✅
     * /team list ⏳
-    * /team task [teamID] create [title] [description] ❌
+    * /team position [teamID] [user] [promote/demote] ❌
+    * /team transfer [teamID] [user] ❌
+    * /team task [teamID] create [title] [description] ⏳
     * /team task [teamID] delete [taskID] ❌
     * /team task [teamID] update [taskID] [title/description/status] ❌
     * /team task [teamID] list ❌
