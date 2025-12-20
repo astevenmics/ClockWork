@@ -114,6 +114,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
                 String userDiscordID = resultSet.getString("user_discord_id");
+                int id = resultSet.getInt("id");
                 String taskDAOAsJSON = resultSet.getString("task_dao");
                 String teamUUID = resultSet.getString("team_uuid");
                 int teamID = resultSet.getInt("team_id");
@@ -126,6 +127,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
                 teamTask = new TeamTask(
                         uuid,
                         userDiscordID,
+                        id,
                         taskDAO,
                         teamUUID,
                         teamID,
@@ -157,6 +159,26 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
 
     @Override
     public void delete(TeamTask baseObject) {
+        String sql =
+                """
+                        DELETE FROM team_task WHERE uuid = ?;
+                        """;
+        String teamTaskUUID = baseObject.getUUID();
+
+        try (
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
+            preparedStatement.setString(1, teamTaskUUID);
+
+            int rowsDeleted = preparedStatement.executeUpdate();
+            if (rowsDeleted == 0) {
+                System.out.println("No team task deleted. UUID not found: " + teamTaskUUID);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting team task with UUID: " + teamTaskUUID);
+            throw new RuntimeException("DB Error", e);
+        }
 
     }
 

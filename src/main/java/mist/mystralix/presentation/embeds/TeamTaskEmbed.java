@@ -2,6 +2,7 @@ package mist.mystralix.presentation.embeds;
 
 import mist.mystralix.application.loops.Loops;
 import mist.mystralix.domain.enums.TaskStatus;
+import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.domain.task.TeamTask;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -17,7 +18,34 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
 
     @Override
     public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
-        return null;
+
+        if (!(object instanceof TeamTask teamTask)) {
+            return null;
+        }
+
+        TaskDAO taskDAO = teamTask.getTaskDAO();
+
+        return new EmbedBuilder()
+                .setTitle(title)
+                .setDescription(
+                        String.format(
+                                """
+                                        ID: **%d**
+                                        Title: **%s**
+                                        Description: **%s**
+                                        Status: %s **%s**
+                                        """,
+                                teamTask.getId(),
+                                taskDAO.getTitle(),
+                                taskDAO.getDescription(),
+                                taskDAO.getTaskStatus().getIcon(),
+                                taskDAO.getTaskStatus().getStringValue()
+
+                        )
+                )
+                .setColor(Color.WHITE)
+                .setFooter(user.getEffectiveName(), user.getEffectiveAvatarUrl())
+                .build();
     }
 
     @Override

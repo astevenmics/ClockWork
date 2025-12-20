@@ -21,7 +21,7 @@ public class TeamTaskService implements IdentifiableFetcher<TeamTask> {
         this.TEAM_REPOSITORY = teamRepository;
     }
 
-    public TeamTask create(
+    public void create(
             String uuid,
             String userDiscordID,
             String teamUUID,
@@ -38,7 +38,24 @@ public class TeamTaskService implements IdentifiableFetcher<TeamTask> {
                         new ArrayList<>()
                 )
         );
+    }
+
+    public TeamTask getById(
+            int id
+    ) {
+        return TEAM_TASK_REPOSITORY.findByID(id);
+    }
+
+    public TeamTask getByUUID(
+            String uuid
+    ) {
         return TEAM_TASK_REPOSITORY.findByUUID(uuid);
+    }
+
+    public void delete(
+            TeamTask teamTask
+    ) {
+        TEAM_TASK_REPOSITORY.delete(teamTask);
     }
 
     @Override

@@ -229,8 +229,8 @@ public class TeamCommand implements SlashCommand {
 
         if (subcommandGroup) {
             messageEmbed = switch (subCommand) {
-                case "create" -> teamTaskSubCommandFunctions.create(event); // Partially Done
-                case "delete" -> teamTaskSubCommandFunctions.create(event);
+                case "create" -> teamTaskSubCommandFunctions.create(event); // done
+                case "delete" -> teamTaskSubCommandFunctions.delete(event);
                 case "update" -> teamTaskSubCommandFunctions.delete(event);
                 case "list" -> teamTaskSubCommandFunctions.readAll(event);
                 case "assign" -> teamTaskSubCommandFunctions.update(event);

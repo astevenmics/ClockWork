@@ -85,7 +85,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         }
 
         String uuid = UUID.randomUUID().toString();
-        TeamTask teamTask = TEAM_TASK_SERVICE.create(
+        TEAM_TASK_SERVICE.create(
                 uuid,
                 userId,
                 team.getUUID(),
@@ -103,7 +103,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
         return TEAM_TASK_EMBED.createTeamTaskCreatedEmbed(
                 user,
-                teamTask,
+                TEAM_TASK_SERVICE.getByUUID(uuid),
                 event
         );
     }
@@ -120,7 +120,86 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed delete(SlashCommandInteraction event) {
-        return null;
+
+        User user = event.getUser();
+        String userId = user.getId();
+        OptionMapping teamOption = event.getOption("team");
+        OptionMapping taskOption = event.getOption("task");
+
+        if (teamOption == null || taskOption == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        int teamId = teamOption.getAsInt();
+        int teamTaskId = taskOption.getAsInt();
+
+        Team team = TEAM_SERVICE.findByID(teamId);
+        if (team == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
+            );
+        }
+
+        String teamLeaderId = team.getTeamLeader();
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+
+        if (!teamLeaderId.equals(userId) && !moderators.contains(userId) && !members.contains(userId)) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        if (!teamLeaderId.equals(user.getId()) && !team.getModerators().contains(user.getId())) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    Constants.TEAM_MODERATOR_OR_HIGHER_REQUIRED.getValue(String.class)
+            );
+        }
+
+        TeamTask teamTask = TEAM_TASK_SERVICE.getById(teamTaskId);
+        if (teamTask == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "Team Task"
+                    )
+            );
+        }
+
+        if (!team.getTasksUUID().contains(teamTask.getUUID())) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.TEAM_TASK_NOT_PART_OF_TEAM.getValue(String.class),
+                            teamTaskId,
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        ArrayList<String> teamTasksUUID = team.getTasksUUID();
+        teamTasksUUID.remove(teamTask.getUUID());
+        TEAM_SERVICE.update(team);
+        TEAM_TASK_SERVICE.delete(teamTask);
+
+        return TEAM_TASK_EMBED.createMessageEmbed(
+                user,
+                "Team Task Deleted",
+                teamTask
+        );
     }
 
     @Override

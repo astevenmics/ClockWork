@@ -59,7 +59,8 @@ public enum Constants {
     TEAM_NO_PENDING_INVITATION("You do not have any pending invitations for this team"),
     TEAM_CO_MODERATORS_ERROR("You are not able to remove co-moderators from the team."),
     TEAM_MODERATOR_OR_HIGHER_REQUIRED("You must be a team moderator or higher to execute this command."),
-    TEAM_LEADER_REQUIRED("You must be the team leader to execute this command.");
+    TEAM_LEADER_REQUIRED("You must be the team leader to execute this command."),
+    TEAM_TASK_NOT_PART_OF_TEAM("Team Task #%d is not part of the %s team.");
 
     private final Object VALUE;
 
