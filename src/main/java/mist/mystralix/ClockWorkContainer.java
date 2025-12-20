@@ -32,7 +32,7 @@ public class ClockWorkContainer {
         this.taskService = new TaskService(taskRepository);
         this.reminderService = new ReminderService(reminderRepository);
         this.teamService = new TeamService(teamRepository, taskRepository);
-        this.teamTaskService = new TeamTaskService(teamTaskRepository, teamRepository, taskRepository);
+        this.teamTaskService = new TeamTaskService(teamTaskRepository, teamRepository);
 
     }
 

@@ -1,23 +1,53 @@
 package mist.mystralix.application.team;
 
-import mist.mystralix.infrastructure.repository.task.TaskRepository;
+import mist.mystralix.domain.task.TaskDAO;
+import mist.mystralix.domain.task.TeamTask;
 import mist.mystralix.infrastructure.repository.team.TeamRepository;
 import mist.mystralix.infrastructure.repository.teamtask.TeamTaskRepository;
+import mist.mystralix.utils.IdentifiableFetcher;
 
-public class TeamTaskService {
+import java.util.ArrayList;
+
+public class TeamTaskService implements IdentifiableFetcher<TeamTask> {
 
     private final TeamTaskRepository TEAM_TASK_REPOSITORY;
     private final TeamRepository TEAM_REPOSITORY;
-    private final TaskRepository TASK_REPOSITORY;
 
     public TeamTaskService(
             TeamTaskRepository teamTaskRepository,
-            TeamRepository teamRepository,
-            TaskRepository taskRepository
+            TeamRepository teamRepository
     ) {
         this.TEAM_TASK_REPOSITORY = teamTaskRepository;
         this.TEAM_REPOSITORY = teamRepository;
-        this.TASK_REPOSITORY = taskRepository;
     }
 
+    public TeamTask create(
+            String uuid,
+            String userDiscordID,
+            String teamUUID,
+            int teamID,
+            TaskDAO taskDAO
+    ) {
+        TEAM_TASK_REPOSITORY.create(
+                new TeamTask(
+                        uuid,
+                        userDiscordID,
+                        taskDAO,
+                        teamUUID,
+                        teamID,
+                        new ArrayList<>()
+                )
+        );
+        return TEAM_TASK_REPOSITORY.findByUUID(uuid);
+    }
+
+    @Override
+    public TeamTask fetchByUserIDAndObjectID(String userDiscordId, int objectID) {
+        return null;
+    }
+
+    @Override
+    public TeamTask fetchByUserIDAndObjectUUID(String userDiscordId, String objectUUID) {
+        return null;
+    }
 }

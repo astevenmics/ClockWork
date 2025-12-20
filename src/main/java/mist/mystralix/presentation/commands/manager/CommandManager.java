@@ -31,8 +31,7 @@ public class CommandManager extends ListenerAdapter {
         registerCommand(new ReminderCommand(reminderService));
         registerCommand(new TeamCommand(
                 teamTaskService,
-                teamService,
-                taskService
+                teamService
         ));
     }
 
