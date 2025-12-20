@@ -6,19 +6,19 @@ public class Task {
 
     private final String userDiscordID;
 
-    private int taskID;
+    private int id;
 
     private final TaskDAO taskDAO;
 
     public Task(
             String uuid,
             String userDiscordID,
-            int taskID,
+            int id,
             TaskDAO taskDAO
     ) {
         this.uuid = uuid;
         this.userDiscordID = userDiscordID;
-        this.taskID = taskID;
+        this.id = id;
         this.taskDAO = taskDAO;
     }
 
@@ -40,8 +40,8 @@ public class Task {
         return userDiscordID;
     }
 
-    public int getTaskID() {
-        return taskID;
+    public int getId() {
+        return id;
     }
 
     public TaskDAO getTaskDAO() {

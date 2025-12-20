@@ -34,8 +34,8 @@ public class TaskService implements IdentifiableFetcher<Task> {
         return TASK_REPOSITORY.findByDiscordIDAndUUID(userDiscordID, uuid);
     }
 
-    public Task getUserTask(String userDiscordID, int taskId) {
-        return TASK_REPOSITORY.findByDiscordIDAndID(userDiscordID, taskId);
+    public Task getUserTask(String userDiscordID, int id) {
+        return TASK_REPOSITORY.findByDiscordIDAndID(userDiscordID, id);
     }
 
     public void updateUserTask(Task task) {
@@ -47,8 +47,8 @@ public class TaskService implements IdentifiableFetcher<Task> {
     }
 
     @Override
-    public Task fetchByUserIDAndObjectID(String userDiscordId, int taskId) {
-        return getUserTask(userDiscordId, taskId);
+    public Task fetchByUserIDAndObjectID(String userDiscordId, int id) {
+        return getUserTask(userDiscordId, id);
     }
 
     @Override

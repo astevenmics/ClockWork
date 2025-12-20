@@ -103,8 +103,8 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
 
 
     @Override
-    public Reminder fetchByUserIDAndObjectID(String userDiscordId, int taskId) {
-        return getUserReminder(userDiscordId, taskId);
+    public Reminder fetchByUserIDAndObjectID(String userDiscordId, int id) {
+        return getUserReminder(userDiscordId, id);
     }
 
     @Override

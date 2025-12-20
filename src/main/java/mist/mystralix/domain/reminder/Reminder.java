@@ -6,7 +6,7 @@ public class Reminder {
 
     private String userDiscordID;
 
-    private int reminderID;
+    private int id;
 
     private String message;
 
@@ -17,14 +17,14 @@ public class Reminder {
     public Reminder(
             String uuid,
             String userDiscordID,
-            int reminderID,
+            int id,
             String message,
             long targetTimestamp,
             boolean notificationSent
     ) {
         this.uuid = uuid;
         this.userDiscordID = userDiscordID;
-        this.reminderID = reminderID;
+        this.id = id;
         this.message = message;
         this.targetTimestamp = targetTimestamp;
         this.notificationSent = notificationSent;
@@ -48,8 +48,8 @@ public class Reminder {
         return userDiscordID;
     }
 
-    public int getReminderID() {
-        return reminderID;
+    public int getId() {
+        return id;
     }
 
     public String getMessage() {
@@ -72,8 +72,8 @@ public class Reminder {
         this.userDiscordID = userDiscordID;
     }
 
-    public void setReminderID(int reminderID) {
-        this.reminderID = reminderID;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setMessage(String message) {

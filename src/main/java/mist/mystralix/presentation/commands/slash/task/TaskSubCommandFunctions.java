@@ -82,9 +82,9 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
     public MessageEmbed update(SlashCommandInteraction event) {
         User user = event.getUser();
 
-        int taskID = event.getOption("id", () -> 0, OptionMapping::getAsInt);
+        int id = event.getOption("id", () -> 0, OptionMapping::getAsInt);
 
-        Task task = TASK_SERVICE.getUserTask(user.getId(), taskID);
+        Task task = TASK_SERVICE.getUserTask(user.getId(), id);
         if (task == null) {
             return TASK_EMBED.createErrorEmbed(
                     user,

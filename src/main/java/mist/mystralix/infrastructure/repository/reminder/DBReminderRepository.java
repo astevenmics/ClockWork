@@ -63,13 +63,13 @@ public class DBReminderRepository implements ReminderRepository {
             if (resultSet.next()) {
                 String reminderMessage = resultSet.getString("message");
                 long timestamp = resultSet.getLong("target_timestamp");
-                int reminderID = resultSet.getInt("id");
+                int id = resultSet.getInt("id");
                 boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
 
                 return new Reminder(
                         uuid,
                         userDiscordID,
-                        reminderID,
+                        id,
                         reminderMessage,
                         timestamp,
                         isNotificationSent
@@ -84,7 +84,7 @@ public class DBReminderRepository implements ReminderRepository {
     }
 
     @Override
-    public Reminder findByDiscordIDAndID(String userDiscordID, int reminderID) {
+    public Reminder findByDiscordIDAndID(String userDiscordID, int id) {
 
         String sqlStatement = "SELECT * FROM reminders WHERE user_discord_id = ? AND id = ?;";
 
@@ -93,7 +93,7 @@ public class DBReminderRepository implements ReminderRepository {
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
         ) {
             preparedStatement.setString(1, userDiscordID);
-            preparedStatement.setInt(2, reminderID);
+            preparedStatement.setInt(2, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -106,7 +106,7 @@ public class DBReminderRepository implements ReminderRepository {
                 return new Reminder(
                         uuid,
                         userDiscordID,
-                        reminderID,
+                        id,
                         reminderMessage,
                         timestamp,
                         isNotificationSent
@@ -133,7 +133,7 @@ public class DBReminderRepository implements ReminderRepository {
     @Override
     public void update(Reminder reminder) {
 
-        int reminderID = reminder.getReminderID();
+        int id = reminder.getId();
         String message = reminder.getMessage();
         long targetTimestamp = reminder.getTargetTimestamp();
         String userDiscordID = reminder.getUserDiscordID();
@@ -160,7 +160,7 @@ public class DBReminderRepository implements ReminderRepository {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error updating reminder ID: " + reminderID + " for user: " + userDiscordID);
+            System.out.println("Error updating reminder ID: " + id + " for user: " + userDiscordID);
             throw new RuntimeException("DB Error", e);
         }
     }
@@ -208,7 +208,7 @@ public class DBReminderRepository implements ReminderRepository {
             while (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
                 String reminderMessage = resultSet.getString("message");
-                int reminderID = resultSet.getInt("id");
+                int id = resultSet.getInt("id");
                 long targetTimestamp = resultSet.getLong("target_timestamp");
                 boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
 
@@ -216,7 +216,7 @@ public class DBReminderRepository implements ReminderRepository {
                         new Reminder(
                             uuid,
                             userDiscordID,
-                            reminderID,
+                                id,
                             reminderMessage,
                             targetTimestamp,
                             isNotificationSent
@@ -247,7 +247,7 @@ public class DBReminderRepository implements ReminderRepository {
             while (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
                 String userDiscordID = resultSet.getString("user_discord_id");
-                int reminderID = resultSet.getInt("id");
+                int id = resultSet.getInt("id");
                 String reminderMessage = resultSet.getString("message");
                 long targetTimestamp = resultSet.getLong("target_timestamp");
                 boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
@@ -256,7 +256,7 @@ public class DBReminderRepository implements ReminderRepository {
                     new Reminder(
                         uuid,
                         userDiscordID,
-                        reminderID,
+                            id,
                         reminderMessage,
                         targetTimestamp,
                         isNotificationSent
@@ -274,7 +274,7 @@ public class DBReminderRepository implements ReminderRepository {
     @Override
     public void updateIsNotificationSent(Reminder reminder) {
 
-        int reminderID = reminder.getReminderID();
+        int id = reminder.getId();
         String userDiscordID = reminder.getUserDiscordID();
         String uuid = reminder.getUUID();
         boolean isNotificationSent = true;
@@ -297,7 +297,7 @@ public class DBReminderRepository implements ReminderRepository {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error updating reminder ID: " + reminderID + " for user: " + userDiscordID);
+            System.out.println("Error updating reminder ID: " + id + " for user: " + userDiscordID);
             throw new RuntimeException("DB Error", e);
         }
     }
