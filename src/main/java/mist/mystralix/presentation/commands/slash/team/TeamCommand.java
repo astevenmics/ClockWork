@@ -1,8 +1,11 @@
 package mist.mystralix.presentation.commands.slash.team;
 
+import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.team.TeamService;
+import mist.mystralix.application.team.TeamTaskService;
 import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
+import mist.mystralix.presentation.commands.slash.team.task.TeamTaskSubCommandFunctions;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
@@ -12,10 +15,18 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 public class TeamCommand implements SlashCommand {
 
+    private final TeamTaskService TEAM_TASK_SERVICE;
     private final TeamService TEAM_SERVICE;
+    private final TaskService TASK_SERVICE;
 
-    public TeamCommand(TeamService teamService) {
+    public TeamCommand(
+            TeamTaskService teamTaskService,
+            TeamService teamService,
+            TaskService taskService
+    ) {
+        this.TEAM_TASK_SERVICE = teamTaskService;
         this.TEAM_SERVICE = teamService;
+        this.TASK_SERVICE = taskService;
     }
 
     @Override
@@ -214,29 +225,34 @@ public class TeamCommand implements SlashCommand {
 
         MessageEmbed messageEmbed;
 
-        TeamSubCommandFunctions subCommandHandler = new TeamSubCommandFunctions(TEAM_SERVICE);
+        TeamSubCommandFunctions teamSubCommandFunctions = new TeamSubCommandFunctions(TEAM_SERVICE);
+        TeamTaskSubCommandFunctions teamTaskSubCommandFunctions = new TeamTaskSubCommandFunctions(
+                TEAM_TASK_SERVICE,
+                TEAM_SERVICE,
+                TASK_SERVICE
+        );
 
         if (subcommandGroup) {
             messageEmbed = switch (subCommand) {
-                case "create" -> subCommandHandler.create(event);
-                case "delete" -> subCommandHandler.create(event);
-                case "update" -> subCommandHandler.delete(event);
-                case "list" -> subCommandHandler.readAll(event);
-                case "assign" -> subCommandHandler.update(event);
-                case "unassign" -> subCommandHandler.read(event);
-                case "view" -> subCommandHandler.read(event);
+                case "create" -> teamTaskSubCommandFunctions.create(event);
+                case "delete" -> teamTaskSubCommandFunctions.create(event);
+                case "update" -> teamTaskSubCommandFunctions.delete(event);
+                case "list" -> teamTaskSubCommandFunctions.readAll(event);
+                case "assign" -> teamTaskSubCommandFunctions.update(event);
+                case "unassign" -> teamTaskSubCommandFunctions.read(event);
+                case "view" -> teamTaskSubCommandFunctions.read(event);
                 default -> null;
             };
         } else {
             messageEmbed = switch (subCommand) {
-                case "create" -> subCommandHandler.create(event); // done
-                case "delete" -> subCommandHandler.delete(event); // done
-                case "add" -> subCommandHandler.add(event); // done
-                case "remove" -> subCommandHandler.remove(event); // done
-                case "invitation" -> subCommandHandler.handleInvitation(event); // done
-                case "leave" -> subCommandHandler.leave(event); // done
-                case "view" -> subCommandHandler.read(event); // done
-                case "list" -> subCommandHandler.readAll(event); // done
+                case "create" -> teamSubCommandFunctions.create(event); // done
+                case "delete" -> teamSubCommandFunctions.delete(event); // done
+                case "add" -> teamSubCommandFunctions.add(event); // done
+                case "remove" -> teamSubCommandFunctions.remove(event); // done
+                case "invitation" -> teamSubCommandFunctions.handleInvitation(event); // done
+                case "leave" -> teamSubCommandFunctions.leave(event); // done
+                case "view" -> teamSubCommandFunctions.read(event); // done
+                case "list" -> teamSubCommandFunctions.readAll(event); // done
                 default -> null;
             };
         }

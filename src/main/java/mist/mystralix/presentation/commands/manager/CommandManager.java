@@ -4,6 +4,7 @@ import mist.mystralix.ClockWorkContainer;
 import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.team.TeamService;
+import mist.mystralix.application.team.TeamTaskService;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
 import mist.mystralix.presentation.commands.slash.reminder.ReminderCommand;
 import mist.mystralix.presentation.commands.slash.task.TaskCommand;
@@ -21,13 +22,18 @@ public class CommandManager extends ListenerAdapter {
     private final HashMap<String, SlashCommand> commands = new HashMap<>();
 
     public CommandManager(ClockWorkContainer clockWorkContainer) {
+        TeamTaskService teamTaskService = clockWorkContainer.getTeamTaskService();
         TaskService taskService = clockWorkContainer.getTaskService();
         ReminderService reminderService = clockWorkContainer.getReminderService();
         TeamService teamService = clockWorkContainer.getTeamService();
 
         registerCommand(new TaskCommand(taskService));
         registerCommand(new ReminderCommand(reminderService));
-        registerCommand(new TeamCommand(teamService));
+        registerCommand(new TeamCommand(
+                teamTaskService,
+                teamService,
+                taskService
+        ));
     }
 
     private void registerCommand(SlashCommand command) {

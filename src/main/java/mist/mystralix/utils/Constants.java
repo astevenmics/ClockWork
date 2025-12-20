@@ -31,6 +31,16 @@ public enum Constants {
                     "tasks_uuid JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
                     "team_invitations JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
                     "UNIQUE KEY(id)" +
+                    ");",
+            "CREATE TABLE IF NOT EXISTS team_task (" +
+                    "uuid VARCHAR(50) PRIMARY KEY, " +
+                    "userDiscordID VARCHAR(50) NOT NULL, " +
+                    "id BIGINT NOT NULL AUTO_INCREMENT, " +
+                    "taskDAO JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
+                    "team_uuid VARCHAR(50) NOT NULL, " +
+                    "team_id VARCHAR(50) NOT NULL, " +
+                    "assigned_users JSON NOT NULL DEFAULT (JSON_ARRAY()), " +
+                    "UNIQUE KEY(id)" +
                     ");"
     )),
     MISSING_PARAMETERS("Please provide all the necessary parameters."),
