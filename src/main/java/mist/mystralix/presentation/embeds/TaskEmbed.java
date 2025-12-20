@@ -25,7 +25,7 @@ public class TaskEmbed implements IMessageEmbedBuilder {
         String taskStatus = taskDAO.getTaskStatus().getIcon() + " " + taskDAO.getTaskStatus().getStringValue();
 
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle(title + " | Task #" + task.getTaskID());
+        embed.setTitle(title + " | Task #" + task.getId());
         embed.setColor(taskDAO.getTaskStatus().getColorValue());
         embed.setDescription(
                 "Title: " + taskTitle + "\n" +
@@ -63,7 +63,7 @@ public class TaskEmbed implements IMessageEmbedBuilder {
             String taskStatus = dao.getTaskStatus().getIcon() + " " + dao.getTaskStatus().getStringValue();
 
             embed.addField(
-                    "#" + task.getTaskID() + " | " + taskTitle,
+                    "#" + task.getId() + " | " + taskTitle,
                     "Description: " + taskDesc + "\n" +
                             "Status: " + taskStatus,
                     true

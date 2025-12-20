@@ -17,7 +17,7 @@ public class ReminderEmbed implements IMessageEmbedBuilder {
         if (!(object instanceof Reminder reminder)) return null;
 
         String reminderMessage = reminder.getMessage();
-        int reminderID = reminder.getReminderID();
+        int reminderID = reminder.getId();
 
         Instant targetInstant = Instant.ofEpochMilli(reminder.getTargetTimestamp());
         String discordReminderTargetTimestamp = TimeFormat.DATE_TIME_LONG.format(targetInstant);
@@ -55,7 +55,7 @@ public class ReminderEmbed implements IMessageEmbedBuilder {
             if (!(objectReminder instanceof Reminder reminder)) continue;
 
             String reminderMessage = reminder.getMessage();
-            int reminderID = reminder.getReminderID();
+            int reminderID = reminder.getId();
 
             Instant instant = Instant.ofEpochMilli(reminder.getTargetTimestamp());
             String discordTimestamp = TimeFormat.DATE_TIME_LONG.format(instant);
