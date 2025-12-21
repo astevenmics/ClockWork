@@ -60,7 +60,7 @@ public class TeamEmbed implements IMessageEmbedBuilder {
                             1;                              // Team Leader
 
             embed.addField(
-                    "Team #" + teamUserCount,
+                    "Team #" + team.getId(),
                     String.format(
                             """
                             Name: **%s**

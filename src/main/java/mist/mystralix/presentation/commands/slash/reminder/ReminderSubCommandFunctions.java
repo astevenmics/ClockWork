@@ -2,7 +2,7 @@ package mist.mystralix.presentation.commands.slash.reminder;
 
 import mist.mystralix.application.reminder.ReminderScheduler;
 import mist.mystralix.application.reminder.ReminderService;
-import mist.mystralix.application.validation.InputValidation;
+import mist.mystralix.application.validator.InputValidation;
 import mist.mystralix.domain.reminder.Reminder;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.ReminderEmbed;

@@ -1,4 +1,4 @@
-package mist.mystralix.application.validation;
+package mist.mystralix.application.validator;
 
 import mist.mystralix.presentation.embeds.IMessageEmbedBuilder;
 import mist.mystralix.utils.Constants;
