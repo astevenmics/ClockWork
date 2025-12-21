@@ -15,6 +15,7 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 
 import java.util.ArrayList;
+import java.util.Optional;
 import java.util.UUID;
 
 public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
@@ -115,7 +116,100 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed update(SlashCommandInteraction event) {
-        return null;
+        User user = event.getUser();
+        String userId = user.getId();
+
+        OptionMapping teamIdOption = event.getOption("team");
+        OptionMapping taskIdOption = event.getOption("id");
+        OptionMapping titleOption = event.getOption("title");
+        OptionMapping descriptionOption = event.getOption("description");
+        OptionMapping statusOption = event.getOption("type");
+
+        if (teamIdOption == null || taskIdOption == null || titleOption == null && descriptionOption == null && statusOption == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        Team team = TEAM_SERVICE.findByID(teamIdOption.getAsInt());
+        if (team == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "Team"
+                    )
+            );
+        }
+
+        String teamLeaderId = team.getTeamLeader();
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+        ArrayList<String> teamTasksUUID = team.getTasksUUID();
+
+        if (!teamLeaderId.equals(userId) && !moderators.contains(userId) && !members.contains(userId)) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        if (!teamLeaderId.equals(user.getId()) && !moderators.contains(user.getId())) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    Constants.TEAM_MODERATOR_OR_HIGHER_REQUIRED.getValue(String.class)
+            );
+        }
+
+        TeamTask teamTask = TEAM_TASK_SERVICE.getById(taskIdOption.getAsInt());
+        if (teamTask == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "Team Task"
+                    )
+            );
+        }
+
+        if (!teamTasksUUID.contains(teamTask.getUUID())) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.TEAM_TASK_NOT_PART_OF_TEAM.getValue(String.class),
+                            teamTask.getId(),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        String newTitle = event.getOption("title",
+                () -> null,
+                OptionMapping::getAsString
+        );
+        String newDesc = event.getOption("description",
+                () -> null,
+                OptionMapping::getAsString
+        );
+        int statusInt = event.getOption("type",
+                () -> 0,
+                OptionMapping::getAsInt
+        );
+
+        TaskStatus newStatus = TaskStatus.getTaskStatus(statusInt);
+        TaskDAO dao = teamTask.getTaskDAO();
+
+        Optional.ofNullable(newTitle).ifPresent(dao::setTitle);
+        Optional.ofNullable(newDesc).ifPresent(dao::setDescription);
+        Optional.ofNullable(newStatus).ifPresent(dao::setTaskStatus);
+
+        TEAM_TASK_SERVICE.updateTeamTask(teamTask);
+
+        return TEAM_TASK_EMBED.createMessageEmbed(user, "Updated Task", teamTask);
     }
 
     @Override

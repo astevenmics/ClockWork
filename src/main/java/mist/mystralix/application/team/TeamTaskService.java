@@ -58,6 +58,10 @@ public class TeamTaskService implements IdentifiableFetcher<TeamTask> {
         TEAM_TASK_REPOSITORY.delete(teamTask);
     }
 
+    public void updateTeamTask(TeamTask teamTask) {
+        TEAM_TASK_REPOSITORY.update(teamTask);
+    }
+
     @Override
     public TeamTask fetchByUserIDAndObjectID(String userDiscordId, int objectID) {
         return null;

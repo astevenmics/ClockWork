@@ -230,8 +230,8 @@ public class TeamCommand implements SlashCommand {
         if (subcommandGroup) {
             messageEmbed = switch (subCommand) {
                 case "create" -> teamTaskSubCommandFunctions.create(event); // done
-                case "delete" -> teamTaskSubCommandFunctions.delete(event);
-                case "update" -> teamTaskSubCommandFunctions.delete(event);
+                case "delete" -> teamTaskSubCommandFunctions.delete(event); // done
+                case "update" -> teamTaskSubCommandFunctions.update(event); // done
                 case "list" -> teamTaskSubCommandFunctions.readAll(event);
                 case "assign" -> teamTaskSubCommandFunctions.update(event);
                 case "unassign" -> teamTaskSubCommandFunctions.read(event);
@@ -250,6 +250,7 @@ public class TeamCommand implements SlashCommand {
                 case "list" -> teamSubCommandFunctions.readAll(event); // done
                 case "position" -> teamSubCommandFunctions.readAll(event);
                 case "transfer" -> teamSubCommandFunctions.readAll(event);
+                case "name" -> teamSubCommandFunctions.readAll(event);
                 default -> null;
             };
         }

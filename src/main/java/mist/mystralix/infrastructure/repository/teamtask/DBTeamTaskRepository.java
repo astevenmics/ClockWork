@@ -155,6 +155,37 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
     @Override
     public void update(TeamTask baseObject) {
 
+        String sql =
+                """
+                        UPDATE team_task
+                        SET task_dao = ?, assigned_users = ?
+                        WHERE uuid = ?;
+                        """;
+
+        String teamTaskUUID = baseObject.getUUID();
+
+        try (
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
+
+            Gson gson = new Gson();
+            String taskDAOAsJSON = gson.toJson(baseObject.getTaskDAO());
+            String assignedUsersAsJSON = gson.toJson(baseObject.getAssignedUsers());
+
+            preparedStatement.setString(1, taskDAOAsJSON);
+            preparedStatement.setString(2, assignedUsersAsJSON);
+            preparedStatement.setString(3, teamTaskUUID);
+
+            int rowsUpdated = preparedStatement.executeUpdate();
+            if (rowsUpdated == 0) {
+                System.out.println("No team task updated. UUID not found: " + teamTaskUUID);
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error updating team task with UUID: " + teamTaskUUID);
+            throw new RuntimeException("DB Error", e);
+        }
     }
 
     @Override
