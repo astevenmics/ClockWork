@@ -361,6 +361,47 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed readAll(SlashCommandInteraction event) {
-        return null;
+
+        User user = event.getUser();
+        String userId = user.getId();
+
+        OptionMapping teamOption = event.getOption("team");
+
+        if (teamOption == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        int teamID = teamOption.getAsInt();
+        Team team = TEAM_SERVICE.findByID(teamID);
+        if (team == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
+            );
+        }
+
+        if (
+                !team.getTeamLeader().equals(userId) &&
+                        !team.getModerators().contains(userId) &&
+                        !team.getMembers().contains(userId)
+        ) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        return TEAM_TASK_EMBED.createListEmbed(
+                user,
+                TEAM_TASK_SERVICE.findAllByTeamID(teamID)
+        );
     }
 }

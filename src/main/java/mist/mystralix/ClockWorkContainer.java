@@ -1,13 +1,13 @@
 package mist.mystralix;
 
+import mist.mystralix.application.reminder.ReminderService;
+import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.team.TeamTaskService;
 import mist.mystralix.infrastructure.repository.reminder.DBReminderRepository;
-import mist.mystralix.infrastructure.repository.task.DBTaskRepository;
 import mist.mystralix.infrastructure.repository.reminder.ReminderRepository;
+import mist.mystralix.infrastructure.repository.task.DBTaskRepository;
 import mist.mystralix.infrastructure.repository.task.TaskRepository;
-import mist.mystralix.application.reminder.ReminderService;
-import mist.mystralix.application.task.TaskService;
 import mist.mystralix.infrastructure.repository.team.DBTeamRepository;
 import mist.mystralix.infrastructure.repository.team.TeamRepository;
 import mist.mystralix.infrastructure.repository.teamtask.DBTeamTaskRepository;
@@ -32,7 +32,7 @@ public class ClockWorkContainer {
         this.taskService = new TaskService(taskRepository);
         this.reminderService = new ReminderService(reminderRepository);
         this.teamService = new TeamService(teamRepository, taskRepository);
-        this.teamTaskService = new TeamTaskService(teamTaskRepository, teamRepository);
+        this.teamTaskService = new TeamTaskService(teamTaskRepository);
 
     }
 

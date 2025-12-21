@@ -217,4 +217,53 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
     public ArrayList<TeamTask> readAll(String userDiscordID) {
         return null;
     }
+
+    @Override
+    public ArrayList<TeamTask> findAllByTeamId(int teamId) {
+
+        String sql =
+                """
+                        SELECT * FROM team_task WHERE team_id = ? ORDER BY id ASC;
+                        """;
+        ArrayList<TeamTask> teamTasks = new ArrayList<>();
+
+        try (
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sql)
+        ) {
+
+            preparedStatement.setInt(1, teamId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                String uuid = resultSet.getString("uuid");
+                String userDiscordID = resultSet.getString("user_discord_id");
+                int id = resultSet.getInt("id");
+                String taskDAOAsJSON = resultSet.getString("task_dao");
+                String teamUUID = resultSet.getString("team_uuid");
+                String assignedUsersAsJSON = resultSet.getString("assigned_users");
+
+                Gson gson = new Gson();
+                TaskDAO taskDAO = gson.fromJson(taskDAOAsJSON, TaskDAO.class);
+                ArrayList<String> assignedUsers = gson.fromJson(assignedUsersAsJSON, LIST_TYPE);
+
+                teamTasks.add(
+                        new TeamTask(
+                                uuid,
+                                userDiscordID,
+                                id,
+                                taskDAO,
+                                teamUUID,
+                                teamId,
+                                assignedUsers
+                        )
+                );
+            }
+
+        } catch (SQLException e) {
+            System.out.println("Error finding team tasks with team id: " + teamId);
+            throw new RuntimeException("DB Error", e);
+        }
+
+        return teamTasks;
+    }
 }

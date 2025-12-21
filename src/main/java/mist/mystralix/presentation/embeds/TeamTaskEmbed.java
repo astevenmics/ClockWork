@@ -50,7 +50,49 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
 
     @Override
     public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
-        return null;
+        // TODO: Pagination, limit 3 TeamTask per page
+        if (list.isEmpty() || !(list.getFirst() instanceof TeamTask)) {
+            return new EmbedBuilder()
+                    .setTitle("There are currently no tasks for this team.")
+                    .setFooter(
+                            "Type /team to view all available commands!",
+                            user.getEffectiveAvatarUrl()
+                    )
+                    .build();
+        }
+
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Team Tasks |" + list.size() + " Tasks");
+        embed.setColor(Color.WHITE);
+
+        // TODO: Pagination support for large task lists
+        for (Object obj : list) {
+            if (!(obj instanceof TeamTask teamTask)) continue;
+
+            TaskDAO taskDAO = teamTask.getTaskDAO();
+
+            embed.addField(
+                    "Team Task #" + teamTask.getId(),
+                    String.format(
+                            """
+                                    **Title**: **%s**
+                                    **Status**: %s **%s**
+                                    **Assigned Users**: **%d**
+                                    """,
+                            taskDAO.getTitle(),
+                            taskDAO.getTaskStatus().getIcon(),
+                            taskDAO.getTaskStatus().getStringValue(),
+                            teamTask.getAssignedUsers().size()
+                    ), true
+            );
+        }
+
+        embed.setFooter(
+                user.getEffectiveName() + " | Team Task List",
+                user.getEffectiveAvatarUrl()
+        );
+
+        return embed.build();
     }
 
     @Override
