@@ -111,7 +111,70 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed read(SlashCommandInteraction event) {
-        return null;
+
+        User user = event.getUser();
+        String userId = user.getId();
+
+        OptionMapping teamOption = event.getOption("team");
+        OptionMapping taskOption = event.getOption("task");
+
+        if (teamOption == null || taskOption == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        Team team = TEAM_SERVICE.findByID(teamOption.getAsInt());
+        if (team == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
+            );
+        }
+
+        if (
+                !team.getTeamLeader().equals(userId) &&
+                        !team.getModerators().contains(userId) &&
+                        !team.getMembers().contains(userId)
+        ) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        TeamTask teamTask = TEAM_TASK_SERVICE.getById(taskOption.getAsInt());
+        if (teamTask == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "teamTask"
+                    )
+            );
+        }
+
+        if (!team.getTasksUUID().contains(teamTask.getUUID())) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.TEAM_TASK_NOT_PART_OF_TEAM.getValue(String.class),
+                            teamTask.getId(),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        return TEAM_TASK_EMBED.createMessageEmbed(
+                user,
+                "Team Information",
+                teamTask
+        );
     }
 
     @Override
@@ -120,7 +183,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         String userId = user.getId();
 
         OptionMapping teamIdOption = event.getOption("team");
-        OptionMapping taskIdOption = event.getOption("id");
+        OptionMapping taskIdOption = event.getOption("task");
         OptionMapping titleOption = event.getOption("title");
         OptionMapping descriptionOption = event.getOption("description");
         OptionMapping statusOption = event.getOption("type");

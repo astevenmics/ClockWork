@@ -146,7 +146,7 @@ public class TeamCommand implements SlashCommand {
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
                                         new OptionData(
                                                 OptionType.INTEGER,
-                                                "id",
+                                                "task",
                                                 "ID of the task to update.",
                                                 true
                                         ),
