@@ -1,7 +1,8 @@
 package mist.mystralix.presentation.commands.slash.task;
 
+import mist.mystralix.application.helper.TaskHelper;
 import mist.mystralix.application.task.TaskService;
-import mist.mystralix.application.validation.InputValidation;
+import mist.mystralix.application.validator.InputValidation;
 import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.domain.task.Task;
 import mist.mystralix.domain.task.TaskDAO;
@@ -14,7 +15,6 @@ import net.dv8tion.jda.api.interactions.commands.OptionMapping;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -95,25 +95,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
-        String newTitle = event.getOption("title",
-                () -> null,
-                OptionMapping::getAsString
-        );
-        String newDesc  = event.getOption("description",
-                () -> null,
-                OptionMapping::getAsString
-        );
-        int statusInt   = event.getOption("type",
-                () -> 0,
-                OptionMapping::getAsInt
-        );
-
-        TaskStatus newStatus = TaskStatus.getTaskStatus(statusInt);
-        TaskDAO dao = task.getTaskDAO();
-
-        Optional.ofNullable(newTitle).ifPresent(dao::setTitle);
-        Optional.ofNullable(newDesc).ifPresent(dao::setDescription);
-        Optional.ofNullable(newStatus).ifPresent(dao::setTaskStatus);
+        TaskHelper.updateTaskDAO(event, task.getTaskDAO());
 
         TASK_SERVICE.updateUserTask(task);
 
