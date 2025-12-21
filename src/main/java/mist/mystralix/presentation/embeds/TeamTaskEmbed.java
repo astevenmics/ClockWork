@@ -61,8 +61,9 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
                     .build();
         }
 
+        int teamId = 0;
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Team Tasks |" + list.size() + " Tasks");
+        embed.setTitle("Team Tasks | " + list.size() + " Tasks");
         embed.setColor(Color.WHITE);
 
         // TODO: Pagination support for large task lists
@@ -85,10 +86,11 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
                             teamTask.getAssignedUsers().size()
                     ), true
             );
+            teamId = teamTask.getTeamID();
         }
 
         embed.setFooter(
-                user.getEffectiveName() + " | Team Task List",
+                user.getEffectiveName() + " | Team #" + teamId,
                 user.getEffectiveAvatarUrl()
         );
 
@@ -148,6 +150,81 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
                         user.getEffectiveAvatarUrl()
                 )
                 .setTimestamp(Instant.now())
+                .build();
+    }
+
+    public MessageEmbed createTeamAssignedUsersUpdateEmbed(
+            User user,
+            boolean isAssign,
+            User userToHandle,
+            TeamTask teamTask
+    ) {
+        String title = isAssign ?
+                "Team Task #" + teamTask.getId() + " | User Assigned" :
+                "Team Task #" + teamTask.getId() + " | User Unassigned";
+        Color color = isAssign ?
+                Color.GREEN : Color.RED;
+        String fieldMessage = isAssign ?
+                "User Assigned: " : "User Unassigned: ";
+        String footerMessage = isAssign ?
+                "Assigned by " : "Unassigned by ";
+
+        TaskDAO taskDAO = teamTask.getTaskDAO();
+        TaskStatus taskStatus = teamTask.getTaskDAO().getTaskStatus();
+
+        return new EmbedBuilder()
+                .setTitle(title)
+                .setColor(color)
+                .setDescription(
+                        String.format(
+                                """
+                                        **Title**: **%s**
+                                        **Description**: **%s**
+                                        **Status**: %s **%s**
+                                        **Assigned Users**: **%d**
+                                        """,
+                                taskDAO.getTitle(),
+                                taskDAO.getDescription(),
+                                taskStatus.getIcon(),
+                                taskStatus.getStringValue(),
+                                teamTask.getAssignedUsers().size()
+                        )
+                )
+                .addField(fieldMessage, userToHandle.getAsMention(), false)
+                .setFooter(footerMessage + user.getEffectiveName(), user.getEffectiveAvatarUrl())
+                .build();
+    }
+
+    public MessageEmbed createTeamViewEmbed(
+            User user,
+            TeamTask teamTask,
+            SlashCommandInteraction event
+    ) {
+        Guild serverGuild = event.getGuild();
+        if (serverGuild == null) {
+            return createErrorEmbed(
+                    user,
+                    "An error has occurred. Please try again."
+            );
+        }
+
+        TaskDAO taskDAO = teamTask.getTaskDAO();
+        TaskStatus taskStatus = taskDAO.getTaskStatus();
+
+        StringBuilder teamMembers = Loops.createTeamUsersStringBuilder(
+                serverGuild,
+                teamTask.getAssignedUsers(),
+                "No assigned users."
+        );
+
+        return new EmbedBuilder()
+                .setTitle("Team Task #" + teamTask.getId())
+                .setColor(Color.BLUE)
+                .addField("Title:", taskDAO.getTitle(), true)
+                .addField("Status:", taskStatus.getIcon() + " " + taskStatus.getStringValue(), true)
+                .addField("Description:", taskDAO.getDescription(), false)
+                .addField("Assigned Users:", teamMembers.toString(), false)
+                .setFooter(user.getEffectiveName() + " | Team Viewing", user.getEffectiveAvatarUrl())
                 .build();
     }
 }

@@ -170,10 +170,10 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
-        return TEAM_TASK_EMBED.createMessageEmbed(
+        return TEAM_TASK_EMBED.createTeamViewEmbed(
                 user,
-                "Team Information",
-                teamTask
+                teamTask,
+                event
         );
     }
 
@@ -403,5 +403,131 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
                 user,
                 TEAM_TASK_SERVICE.findAllByTeamID(teamID)
         );
+    }
+
+    public MessageEmbed handleAssignment(SlashCommandInteraction event) {
+        // TODO: Improve handling
+        User user = event.getUser();
+        String userId = user.getId();
+
+        OptionMapping teamOption = event.getOption("team");
+        OptionMapping taskOption = event.getOption("task");
+        OptionMapping userOption = event.getOption("user");
+
+        if (event.getSubcommandName() == null || teamOption == null || taskOption == null || userOption == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    event.getUser(),
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        int teamId = teamOption.getAsInt();
+        int teamTaskId = taskOption.getAsInt();
+        User userToHandle = userOption.getAsUser();
+        String userToHandleId = userToHandle.getId();
+        boolean isAssign = event.getSubcommandName().equals("assign");
+
+
+        Team team = TEAM_SERVICE.findByID(teamId);
+        if (team == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
+            );
+        }
+
+        String teamLeaderId = team.getTeamLeader();
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+
+        if (!teamLeaderId.equals(userId) && !moderators.contains(userId) && !members.contains(userId)) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        if (!teamLeaderId.equals(user.getId()) && !team.getModerators().contains(user.getId())) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    Constants.TEAM_MODERATOR_OR_HIGHER_REQUIRED.getValue(String.class)
+            );
+        }
+
+        if (!moderators.contains(userToHandleId) && !members.contains(userToHandleId)) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_MENTIONED_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        TeamTask teamTask = TEAM_TASK_SERVICE.getById(teamTaskId);
+        if (teamTask == null) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "Team Task"
+                    )
+            );
+        }
+
+        if (!team.getTasksUUID().contains(teamTask.getUUID())) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.TEAM_TASK_NOT_PART_OF_TEAM.getValue(String.class),
+                            teamTaskId,
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        ArrayList<String> assignedUsers = teamTask.getAssignedUsers();
+
+        if (assignedUsers.contains(userToHandleId) && isAssign) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_MENTIONED_ALREADY_ASSIGNED_FOR_THE_TEAM_TASK.getValue(String.class),
+                            userToHandle.getAsMention(),
+                            team.getTeamName()
+                    )
+            );
+        } else if (!assignedUsers.contains(userToHandleId) && !isAssign) {
+            return TEAM_TASK_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_MENTIONED_IS_NOT_ASSIGNED_FOR_THE_TEAM_TASK.getValue(String.class),
+                            userToHandle.getAsMention(),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        if (isAssign) {
+            assignedUsers.add(userToHandleId);
+        } else {
+            assignedUsers.remove(userToHandleId);
+        }
+        TEAM_TASK_SERVICE.updateTeamTask(teamTask);
+
+
+        return TEAM_TASK_EMBED.createTeamAssignedUsersUpdateEmbed(
+                user,
+                isAssign,
+                userToHandle,
+                teamTask
+        );
+
     }
 }

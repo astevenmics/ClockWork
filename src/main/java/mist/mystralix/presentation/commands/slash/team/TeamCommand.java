@@ -233,8 +233,7 @@ public class TeamCommand implements SlashCommand {
                 case "delete" -> teamTaskSubCommandFunctions.delete(event); // done
                 case "update" -> teamTaskSubCommandFunctions.update(event); // done
                 case "list" -> teamTaskSubCommandFunctions.readAll(event); // done
-                case "assign" -> teamTaskSubCommandFunctions.update(event);
-                case "unassign" -> teamTaskSubCommandFunctions.read(event);
+                case "assign", "unassign" -> teamTaskSubCommandFunctions.handleAssignment(event); // done
                 case "view" -> teamTaskSubCommandFunctions.read(event); // done
                 default -> null;
             };
