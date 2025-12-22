@@ -3,6 +3,7 @@ package mist.mystralix.presentation.commands.slash.team;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.validationresult.TeamValidationResult;
 import mist.mystralix.application.validator.TeamValidator;
+import mist.mystralix.application.validator.UserValidator;
 import mist.mystralix.domain.team.Team;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TeamEmbed;
@@ -16,9 +17,6 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 public class TeamSubCommandFunctions implements ISlashCommandCRUD {
-
-    // TODO: Add check if user mentioned is the same as the user
-    // TODO: Add check if the user mentioned is a bot
 
     private final TeamService TEAM_SERVICE;
     private final TeamEmbed TEAM_EMBED = new TeamEmbed();
@@ -61,6 +59,11 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         User userToAdd = userOption.getAsUser();
         String userToAddMention = userToAdd.getAsMention();
         int id = idOption.getAsInt();
+
+        MessageEmbed userErrorEmbed = UserValidator.validatorUser(user, userToAdd, TEAM_EMBED);
+        if (userErrorEmbed != null) {
+            return userErrorEmbed;
+        }
 
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndPermission(
                 user,
@@ -134,6 +137,11 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         Team team = TEAM_SERVICE.findByID(teamId);
         User userToRemove = userOption.getAsUser();
         String userToRemoveId = userToRemove.getId();
+
+        MessageEmbed userErrorEmbed = UserValidator.validatorUser(user, userToRemove, TEAM_EMBED);
+        if (userErrorEmbed != null) {
+            return userErrorEmbed;
+        }
 
         String teamLeaderID = team.getTeamLeader();
         ArrayList<String> moderators = team.getModerators();
@@ -331,6 +339,11 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         User userToHandle = userToHandleOption.getAsUser();
 
+        MessageEmbed userErrorEmbed = UserValidator.validatorUser(user, userToHandle, TEAM_EMBED);
+        if (userErrorEmbed != null) {
+            return userErrorEmbed;
+        }
+
         if (!moderators.contains(userToHandle.getId()) && !members.contains(userToHandle.getId())) {
             return TEAM_EMBED.createErrorEmbed(
                     user,
@@ -406,6 +419,11 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         User userMentioned = Objects.requireNonNull(event.getOption("user")).getAsUser();
         ArrayList<String> moderators = team.getModerators();
         ArrayList<String> members = team.getMembers();
+
+        MessageEmbed userErrorEmbed = UserValidator.validatorUser(user, userMentioned, TEAM_EMBED);
+        if (userErrorEmbed != null) {
+            return userErrorEmbed;
+        }
 
         if (!moderators.contains(userMentioned.getId()) && !members.contains(userMentioned.getId())) {
             return TEAM_EMBED.createErrorEmbed(user,

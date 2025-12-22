@@ -45,7 +45,7 @@
     * /task delete [task id] ✅
 
 - Team Command ⏳
-    * TODO: Add checks if the mentioned user is a bot or the user itself
+    * TODO: Add checks if the mentioned user is a bot or the user itself ✅
     * /team create [teamName] ✅
     * /team delete [teamID] ✅
     * /team add [teamID] [user] ⏳

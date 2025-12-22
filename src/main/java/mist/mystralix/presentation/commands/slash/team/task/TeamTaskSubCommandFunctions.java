@@ -7,6 +7,7 @@ import mist.mystralix.application.team.TeamTaskService;
 import mist.mystralix.application.validationresult.TeamTaskValidationResult;
 import mist.mystralix.application.validator.TeamTaskValidator;
 import mist.mystralix.application.validator.TeamValidator;
+import mist.mystralix.application.validator.UserValidator;
 import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.domain.task.TeamTask;
@@ -201,6 +202,11 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         User userToHandle = userOption.getAsUser();
         String userToHandleId = userToHandle.getId();
         boolean isAssign = event.getSubcommandName().equals("assign");
+
+        MessageEmbed userErrorEmbed = UserValidator.validatorUser(user, userToHandle, TEAM_TASK_EMBED);
+        if (userErrorEmbed != null) {
+            return userErrorEmbed;
+        }
 
         if (TeamTaskValidator.isUserMentionedNotPartOfTeam(result.team(), userToHandleId)) {
             return TEAM_TASK_EMBED.createErrorEmbed(user,

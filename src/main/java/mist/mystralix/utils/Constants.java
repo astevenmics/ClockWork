@@ -50,6 +50,8 @@ public enum Constants {
     NO_OBJECT_FOUND("No object found of %s with ID: %s"),
     USER_ALREADY_INVITED("The user, %s, has already been invited."),
     USER_ALREADY_PART_OF_THE_TEAM("You are already part of the **%s** team"),
+    USER_MENTIONED_CANNOT_BE_USER("You cannot mention yourself in this command. Please choose a different user."),
+    USER_MENTIONED_CANNOT_BE_BOT("You cannot mention a bot in this command. Please choose a user."),
     USER_MENTIONED_ALREADY_PART_OF_THE_TEAM("The user, %s, is already part of the %s team"),
     USER_MENTIONED_ALREADY_HAS_THE_POSITION_IN_THE_TEAM("The user, %s, is already a %s in the %s team"),
     USER_MENTIONED_ALREADY_ASSIGNED_FOR_THE_TEAM_TASK("The user, %s, is assigned for this team task."),
