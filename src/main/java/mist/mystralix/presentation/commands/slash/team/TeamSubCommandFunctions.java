@@ -525,4 +525,57 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
                 currentName
         );
     }
+
+    public MessageEmbed transferTeam(SlashCommandInteraction event) {
+        User user = event.getUser();
+
+        OptionMapping teamOption = event.getOption("id");
+        OptionMapping userOption = event.getOption("user");
+
+        if (teamOption == null || userOption == null) {
+            return TEAM_EMBED.createErrorEmbed(user, Constants.MISSING_PARAMETERS.getValue(String.class));
+        }
+
+        Team team = TEAM_SERVICE.findByID(teamOption.getAsInt());
+        if (team == null) {
+            return TEAM_EMBED.createErrorEmbed(user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    ));
+        }
+
+        User userMentioned = userOption.getAsUser();
+        String teamLeader = team.getTeamLeader();
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+
+        if (!teamLeader.equals(user.getId()) && !moderators.contains(user.getId()) && !members.contains(user.getId())) {
+            return TEAM_EMBED.createErrorEmbed(user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    ));
+        }
+
+        if (!team.getTeamLeader().equals(user.getId())) {
+            return TEAM_EMBED.createErrorEmbed(user, Constants.TEAM_LEADER_REQUIRED.getValue(String.class));
+        }
+
+        if (!moderators.contains(userMentioned.getId()) && !members.contains(userMentioned.getId())) {
+            return TEAM_EMBED.createErrorEmbed(user,
+                    String.format(
+                            Constants.USER_MENTIONED_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    ));
+        }
+
+        team.setTeamLeader(userMentioned.getId());
+        moderators.remove(userMentioned.getId());
+        members.remove(userMentioned.getId());
+        moderators.add(user.getId());
+        TEAM_SERVICE.update(team);
+
+        return TEAM_EMBED.createTeamTransferredEmbed(user, userMentioned, team);
+    }
 }

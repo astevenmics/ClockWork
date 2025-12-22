@@ -345,4 +345,25 @@ public class TeamEmbed implements IMessageEmbedBuilder {
                 .build();
     }
 
+    public MessageEmbed createTeamTransferredEmbed(
+            User user,
+            User userMentioned,
+            Team team
+    ) {
+        return new EmbedBuilder()
+                .setColor(Color.PINK)
+                .setTitle("Team Transfer | Team #" + team.getId())
+                .setDescription(
+                        String.format(
+                                """
+                                        You have successfully transferred **%s** team to %s.
+                                        Your current role in the team now is **Moderator**
+                                        """,
+                                team.getTeamName(),
+                                userMentioned.getAsMention()
+                        ))
+                .setFooter("Team Transfer changed by: " + user.getEffectiveName(), user.getEffectiveAvatarUrl())
+                .build();
+    }
+
 }

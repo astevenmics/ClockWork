@@ -150,6 +150,21 @@ public class TeamCommand implements SlashCommand {
                                 true
                         )
                 ),
+                new SubcommandData("transfer", "Transfer team leadership to a user")
+                        .addOptions(
+                        new OptionData(
+                                OptionType.INTEGER,
+                                "id",
+                                "Team ID of the team you want to leave",
+                                true
+                        ),
+                        new OptionData(
+                                OptionType.USER,
+                                "user",
+                                "Mention a user to transfer team leadership",
+                                true
+                        )
+                ),
                 new SubcommandData("view", "View a team using team ID")
                     .addOptions(
                         new OptionData(
@@ -285,7 +300,7 @@ public class TeamCommand implements SlashCommand {
                 case "view" -> teamSubCommandFunctions.read(event); // done
                 case "list" -> teamSubCommandFunctions.readAll(event); // done
                 case "position" -> teamSubCommandFunctions.handlePosition(event); // done
-                case "transfer" -> teamSubCommandFunctions.readAll(event);
+                case "transfer" -> teamSubCommandFunctions.transferTeam(event); // done
                 case "name" -> teamSubCommandFunctions.updateName(event); // done
                 default -> null;
             };

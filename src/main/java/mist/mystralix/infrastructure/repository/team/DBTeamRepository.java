@@ -242,7 +242,7 @@ public class DBTeamRepository implements TeamRepository {
     public void update(Team baseObject) {
 
         String sqlStatement = "UPDATE teams " +
-                "SET team_name = ?, moderators = ?, members = ?, tasks_uuid = ?, team_invitations = ? " +
+                "SET team_leader = ?, team_name = ?, moderators = ?, members = ?, tasks_uuid = ?, team_invitations = ? " +
                 "WHERE uuid = ?";
 
         String uuid = baseObject.getUUID();
@@ -256,12 +256,13 @@ public class DBTeamRepository implements TeamRepository {
             String members = gson.toJson(baseObject.getMembers());
             String tasksUUID = gson.toJson(baseObject.getTasksUUID());
             String teamInvitations = gson.toJson(baseObject.getTeamInvitations());
-            preparedStatement.setString(1, baseObject.getTeamName());
-            preparedStatement.setString(2, moderators);
-            preparedStatement.setString(3, members);
-            preparedStatement.setString(4, tasksUUID);
-            preparedStatement.setString(5, teamInvitations);
-            preparedStatement.setString(6, uuid);
+            preparedStatement.setString(1, baseObject.getTeamLeader());
+            preparedStatement.setString(2, baseObject.getTeamName());
+            preparedStatement.setString(3, moderators);
+            preparedStatement.setString(4, members);
+            preparedStatement.setString(5, tasksUUID);
+            preparedStatement.setString(6, teamInvitations);
+            preparedStatement.setString(7, uuid);
 
             int rowsUpdated = preparedStatement.executeUpdate();
             if (rowsUpdated == 0) {
