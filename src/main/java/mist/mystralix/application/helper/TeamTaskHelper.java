@@ -1,4 +1,4 @@
-package mist.mystralix.application.validator;
+package mist.mystralix.application.helper;
 
 import mist.mystralix.domain.task.TeamTask;
 

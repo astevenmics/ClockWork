@@ -276,10 +276,6 @@ public class DBTeamRepository implements TeamRepository {
 
     }
 
-    public void updateTeamLeader(Team baseObject) {
-        // do something
-    }
-
     @Override
     public void delete(Team baseObject) {
         String sqlStatement = "DELETE FROM teams WHERE uuid = ?";

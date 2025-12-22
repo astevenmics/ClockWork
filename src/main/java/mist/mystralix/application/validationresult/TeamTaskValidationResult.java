@@ -1,4 +1,4 @@
-package mist.mystralix.domain.records;
+package mist.mystralix.application.validationresult;
 
 import mist.mystralix.domain.task.TeamTask;
 import mist.mystralix.domain.team.Team;
