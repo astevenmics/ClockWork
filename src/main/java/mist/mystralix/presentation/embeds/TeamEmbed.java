@@ -265,17 +265,12 @@ public class TeamEmbed implements IMessageEmbedBuilder {
 
     @Override
     public MessageEmbed createErrorEmbed(User user, String message) {
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Error | Team");
-        embed.setColor(Color.RED);
-        embed.setDescription(message);
-
-        embed.setFooter(
-                user.getEffectiveName() + " | Team Error",
-                user.getEffectiveAvatarUrl()
-        );
-
-        return embed.build();
+        return new EmbedBuilder()
+                .setColor(Color.RED)
+                .setTitle("Error | Team")
+                .setDescription(message)
+                .setFooter(user.getEffectiveName() + " | Team Error", user.getEffectiveAvatarUrl())
+                .build();
     }
 
     @Override

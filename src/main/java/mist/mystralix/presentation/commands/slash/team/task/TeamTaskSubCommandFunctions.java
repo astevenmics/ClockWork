@@ -1,12 +1,13 @@
 package mist.mystralix.presentation.commands.slash.team.task;
 
 import mist.mystralix.application.helper.TaskHelper;
+import mist.mystralix.application.helper.TeamTaskHelper;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.team.TeamTaskService;
-import mist.mystralix.application.validator.TeamTaskHelper;
+import mist.mystralix.application.validationresult.TeamTaskValidationResult;
 import mist.mystralix.application.validator.TeamTaskValidator;
+import mist.mystralix.application.validator.TeamValidator;
 import mist.mystralix.domain.enums.TaskStatus;
-import mist.mystralix.domain.records.TeamTaskValidationResult;
 import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.domain.task.TeamTask;
 import mist.mystralix.domain.team.Team;
@@ -53,7 +54,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         String title = titleOption.getAsString();
         String description = descriptionOption.getAsString();
 
-        MessageEmbed messageEmbed = TeamTaskValidator.validateTeamAndPermission(user, TEAM_SERVICE, TEAM_TASK_EMBED, teamId);
+        MessageEmbed messageEmbed = TeamValidator.validateTeamAndPermission(user, TEAM_SERVICE, TEAM_TASK_EMBED, teamId);
         if (messageEmbed != null) {
             return messageEmbed;
         }
@@ -170,7 +171,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
         int teamId = teamOption.getAsInt();
 
-        MessageEmbed messageEmbed = TeamTaskValidator.validateTeamAndAccess(user, TEAM_SERVICE, TEAM_TASK_EMBED, teamId);
+        MessageEmbed messageEmbed = TeamValidator.validateTeamAndAccess(user, TEAM_SERVICE, TEAM_TASK_EMBED, teamId);
         if (messageEmbed != null) {
             return messageEmbed;
         }
@@ -201,7 +202,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         String userToHandleId = userToHandle.getId();
         boolean isAssign = event.getSubcommandName().equals("assign");
 
-        if (TeamTaskValidator.isUserNotPartOfTeam(result.team(), userToHandleId)) {
+        if (TeamTaskValidator.isUserMentionedNotPartOfTeam(result.team(), userToHandleId)) {
             return TEAM_TASK_EMBED.createErrorEmbed(user,
                     String.format(
                             Constants.USER_MENTIONED_NOT_PART_OF_THE_TEAM.getValue(String.class),
