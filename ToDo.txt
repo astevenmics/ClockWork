@@ -44,24 +44,25 @@
     * /task cancel [task id] ✅
     * /task delete [task id] ✅
 
-- Team Command ❌
+- Team Command ⏳
+    * TODO: Add checks if the mentioned user is a bot or the user itself
     * /team create [teamName] ✅
     * /team delete [teamID] ✅
-    * /team add [teamID] [user] ✅
-    * /team remove [teamID] [user] ✅
-    * /team invitation [teamID] [accept/reject] ✅
+    * /team add [teamID] [user] ⏳
+    * /team remove [teamID] [user] ⏳
+    * /team invitation [teamID] [accept/reject] ⏳
     * /team leave [teamID] ✅
     * /team view [teamID] ✅
-    * /team list ⏳
-    * /team position [teamID] [user] [promote/demote] ❌
-    * /team transfer [teamID] [user] ❌
-    * /team task [teamID] create [title] [description] ⏳
-    * /team task [teamID] delete [taskID] ❌
-    * /team task [teamID] update [taskID] [title/description/status] ❌
-    * /team task [teamID] list ❌
-    * /team task [teamID] assign [taskID] [userID] ❌
-    * /team task [teamID] unassign [taskID] [userID] ❌
-    * /team task [teamID] view [taskID] ❌
+    * /team list ✅
+    * /team position [teamID] [user] [promote/demote] ⏳
+    * /team transfer [teamID] [user] ⏳
+    * /team task create [teamID] [title] [description] ✅
+    * /team task delete [teamID] [taskID] ✅
+    * /team task update [teamID] [taskID] [title/description/status] ✅
+    * /team task list [teamID] ✅
+    * /team task assign [teamID] [taskID] [userID] ⏳
+    * /team task unassign [teamID] [taskID] [userID] ⏳
+    * /team task view [teamID] [taskID] ✅
     * Object Team
         - String uuid
         - int id
@@ -86,8 +87,9 @@
             * void update(Team team)
 
 - Create remind ⏳
+    * TODO: Remove/update in scheduler if the task is deleted/updated
     * Make it persistent even if the application restarts ✅
-    * Scheduler ✅
+    * Scheduler ⏳
     * Refactor code
     * Implement interfaces ✅
     * Commands ✅
@@ -95,7 +97,7 @@
         - remind create ✅
         - remind list ✅
         - remind delete ✅
-        - remind update ✅
+        - remind update ⏳
         - remind view ✅
 
 - Clean Up & Make comments - ✅
