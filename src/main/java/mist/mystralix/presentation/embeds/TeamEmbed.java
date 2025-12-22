@@ -322,4 +322,27 @@ public class TeamEmbed implements IMessageEmbedBuilder {
                 .build();
     }
 
+    public MessageEmbed createTeamNameUpdateEmbed(
+            User user,
+            Team team,
+            String previousName
+    ) {
+        return new EmbedBuilder()
+                .setColor(Color.PINK)
+                .setTitle("Team Name Update | Team #" + team.getId())
+                .setDescription(
+                        String.format(
+                                """
+                                        You have successfully changed the team name.
+                                        *Previous Name*: **%s**
+                                        *New Name*: **%s**
+                                        """,
+                                previousName,
+                                team.getTeamName()
+                        )
+                )
+                .setFooter("Team Name changed by: " + user.getEffectiveName(), user.getEffectiveAvatarUrl())
+                .build();
+    }
+
 }

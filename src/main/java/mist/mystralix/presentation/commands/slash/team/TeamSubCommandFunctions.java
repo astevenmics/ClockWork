@@ -479,4 +479,50 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         return TEAM_EMBED.createPositionUpdateEmbed(user, userToHandle, team, position.equals("moderator"));
     }
+
+    public MessageEmbed updateName(SlashCommandInteraction event) {
+        User user = event.getUser();
+        OptionMapping teamOption = event.getOption("id");
+        OptionMapping nameOption = event.getOption("name");
+        if (teamOption == null || nameOption == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        Team team = TEAM_SERVICE.findByID(teamOption.getAsInt());
+        if (team == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    ));
+        }
+
+        if (!team.getTeamLeader().equals(user.getId()) && !team.getModerators().contains(user.getId()) && !team.getMembers().contains(user.getId())) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    ));
+        }
+
+        if (!team.getTeamLeader().equals(user.getId())) {
+            return TEAM_EMBED.createErrorEmbed(user, Constants.TEAM_LEADER_REQUIRED.getValue(String.class));
+        }
+
+        String currentName = team.getTeamName();
+        String newName = nameOption.getAsString();
+        team.setTeamName(newName);
+        TEAM_SERVICE.update(team);
+
+        return TEAM_EMBED.createTeamNameUpdateEmbed(
+                user,
+                team,
+                currentName
+        );
+    }
 }
