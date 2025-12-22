@@ -51,6 +51,7 @@ public enum Constants {
     USER_ALREADY_INVITED("The user, %s, has already been invited."),
     USER_ALREADY_PART_OF_THE_TEAM("You are already part of the **%s** team"),
     USER_MENTIONED_ALREADY_PART_OF_THE_TEAM("The user, %s, is already part of the %s team"),
+    USER_MENTIONED_ALREADY_HAS_THE_POSITION_IN_THE_TEAM("The user, %s, is already a %s in the %s team"),
     USER_MENTIONED_ALREADY_ASSIGNED_FOR_THE_TEAM_TASK("The user, %s, is assigned for this team task."),
     USER_MENTIONED_IS_NOT_ASSIGNED_FOR_THE_TEAM_TASK("The user, %s, is not assigned for this team task."),
     USER_MENTIONED_NOT_PART_OF_THE_TEAM("The mentioned user is not a part of the **%s** team."),

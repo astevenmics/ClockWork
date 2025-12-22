@@ -406,4 +406,77 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         return TEAM_EMBED.createListEmbed(user, userTeams);
     }
+
+    public MessageEmbed handlePosition(SlashCommandInteraction event) {
+        User user = event.getUser();
+        OptionMapping teamOption = event.getOption("id");
+        OptionMapping userToHandleOption = event.getOption("user");
+        OptionMapping positionOption = event.getOption("position");
+
+        if (teamOption == null || userToHandleOption == null || positionOption == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.MISSING_PARAMETERS.getValue(String.class)
+            );
+        }
+
+        Team team = TEAM_SERVICE.findByID(teamOption.getAsInt());
+        if (team == null) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    )
+            );
+        }
+
+        ArrayList<String> moderators = team.getModerators();
+        ArrayList<String> members = team.getMembers();
+        User userToHandle = userToHandleOption.getAsUser();
+
+        if (!team.getTeamLeader().equals(user.getId())) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    Constants.TEAM_LEADER_REQUIRED.getValue(String.class)
+            );
+        }
+
+        if (!moderators.contains(userToHandle.getId()) && !members.contains(userToHandle.getId())) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        String position = positionOption.getAsString();
+
+        if ((position.equals("moderator") && moderators.contains(userToHandle.getId())) ||
+                (position.equals("member") && members.contains(userToHandle.getId()))) {
+            return TEAM_EMBED.createErrorEmbed(
+                    user,
+                    String.format(
+                            Constants.USER_MENTIONED_ALREADY_HAS_THE_POSITION_IN_THE_TEAM.getValue(String.class),
+                            userToHandle.getAsMention(),
+                            position,
+                            team.getTeamName()
+                    )
+            );
+        }
+
+        if (position.equals("moderator")) {
+            moderators.add(userToHandle.getId());
+            members.remove(userToHandle.getId());
+        } else if (position.equals("member")) {
+            moderators.remove(userToHandle.getId());
+            members.add(userToHandle.getId());
+        }
+
+        TEAM_SERVICE.update(team);
+
+        return TEAM_EMBED.createPositionUpdateEmbed(user, userToHandle, team, position.equals("moderator"));
+    }
 }

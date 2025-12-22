@@ -112,6 +112,29 @@ public class TeamCommand implements SlashCommand {
                             true
                         )
                 ),
+                new SubcommandData("position", "Adjust the position of a member in the team")
+                        .addOptions(
+                        new OptionData(
+                                OptionType.INTEGER,
+                                "id",
+                                "Team ID of the team you want to leave",
+                                true
+                        ),
+                        new OptionData(
+                                OptionType.USER,
+                                "user",
+                                "Mention a user to adjust their team position",
+                                true
+                        ),
+                        new OptionData(
+                                OptionType.STRING,
+                                "position",
+                                "Changes position of a member from either Moderator or Member",
+                                true
+                        )
+                                .addChoice("Moderator", "moderator")
+                                .addChoice("Member", "member")
+                ),
                 new SubcommandData("view", "View a team using team ID")
                     .addOptions(
                         new OptionData(
@@ -199,7 +222,6 @@ public class TeamCommand implements SlashCommand {
                                         new OptionData(OptionType.INTEGER, "task", "Task ID", true),
                                         new OptionData(OptionType.USER, "user", "User to unassign", true)
                                 ),
-
                         new SubcommandData("view", "View a task")
                                 .addOptions(
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
@@ -247,7 +269,7 @@ public class TeamCommand implements SlashCommand {
                 case "leave" -> teamSubCommandFunctions.leave(event); // done
                 case "view" -> teamSubCommandFunctions.read(event); // done
                 case "list" -> teamSubCommandFunctions.readAll(event); // done
-                case "position" -> teamSubCommandFunctions.readAll(event);
+                case "position" -> teamSubCommandFunctions.handlePosition(event);
                 case "transfer" -> teamSubCommandFunctions.readAll(event);
                 case "name" -> teamSubCommandFunctions.readAll(event);
                 default -> null;

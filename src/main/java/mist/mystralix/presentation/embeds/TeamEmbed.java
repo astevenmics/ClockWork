@@ -292,4 +292,34 @@ public class TeamEmbed implements IMessageEmbedBuilder {
 
         return embed.build();
     }
+
+    public MessageEmbed createPositionUpdateEmbed(
+            User user,
+            User userUpdated,
+            Team team,
+            boolean isPromote
+    ) {
+        String roleChange = isPromote ? "promoted" : "demoted";
+        String previousRole = isPromote ? "Member" : "Moderator";
+        String newRole = isPromote ? "Moderator" : "Member";
+        return new EmbedBuilder()
+                .setColor(isPromote ? Color.GREEN : Color.RED)
+                .setTitle("Position Update | Team #" + team.getId())
+                .setDescription(
+                        String.format(
+                                """
+                                        %s has been %s in **%s** team by %s
+                                        *Previous Role*: **%s** | *New Role*: **%s**
+                                        """,
+                                userUpdated.getAsMention(),
+                                roleChange,
+                                team.getTeamName(),
+                                user.getAsMention(),
+                                previousRole,
+                                newRole
+                        )
+                )
+                .build();
+    }
+
 }
