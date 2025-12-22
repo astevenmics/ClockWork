@@ -18,7 +18,7 @@ public class TeamTaskValidator {
 
     // Checks if the mentioned user is already part of the team
     public static boolean isUserMentionedNotPartOfTeam(Team team, String userId) {
-        return !team.getModerators().contains(userId) && !team.getMembers().contains(userId);
+        return !team.getTeamLeader().equals(userId) && !team.getModerators().contains(userId) && !team.getMembers().contains(userId);
     }
 
     // Through validateTeamAndPermission | Checks if the team exists

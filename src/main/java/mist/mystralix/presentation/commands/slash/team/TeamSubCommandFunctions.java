@@ -60,11 +60,6 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         String userToAddMention = userToAdd.getAsMention();
         int id = idOption.getAsInt();
 
-        MessageEmbed userErrorEmbed = UserValidator.validatorUser(user, userToAdd, TEAM_EMBED);
-        if (userErrorEmbed != null) {
-            return userErrorEmbed;
-        }
-
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndPermission(
                 user,
                 TEAM_SERVICE,
@@ -74,6 +69,11 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         if (errorEmbed != null) {
             return errorEmbed;
+        }
+
+        MessageEmbed userErrorEmbed = UserValidator.validatorUser(user, userToAdd, TEAM_EMBED);
+        if (userErrorEmbed != null) {
+            return userErrorEmbed;
         }
 
         Team team = TEAM_SERVICE.findByID(id);
@@ -191,9 +191,14 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
-        MessageEmbed errorEmbed = TeamValidator.validateTeamAndPermission(user, TEAM_SERVICE, TEAM_EMBED, idOption.getAsInt());
-        if (errorEmbed != null) return errorEmbed;
         Team team = TEAM_SERVICE.findByID(idOption.getAsInt());
+        if (team == null) {
+            return TEAM_EMBED.createErrorEmbed(user,
+                    String.format(
+                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            "team"
+                    ));
+        }
 
         if (team.getTeamLeader().equals(userId) || team.getModerators().contains(userId) || team.getMembers().contains(userId)) {
             return TEAM_EMBED.createErrorEmbed(
@@ -272,7 +277,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
-        MessageEmbed errorEmbed = TeamValidator.validateTeamAndPermission(user, TEAM_SERVICE, TEAM_EMBED, idOption.getAsInt());
+        MessageEmbed errorEmbed = TeamValidator.validateTeamAndAccess(user, TEAM_SERVICE, TEAM_EMBED, idOption.getAsInt());
         if (errorEmbed != null) return errorEmbed;
 
         return TEAM_EMBED.createTeamInfoEmbed(

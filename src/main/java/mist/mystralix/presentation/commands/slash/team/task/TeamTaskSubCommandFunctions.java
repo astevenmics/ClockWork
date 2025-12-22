@@ -203,7 +203,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         String userToHandleId = userToHandle.getId();
         boolean isAssign = event.getSubcommandName().equals("assign");
 
-        MessageEmbed userErrorEmbed = UserValidator.validatorUser(user, userToHandle, TEAM_TASK_EMBED);
+        MessageEmbed userErrorEmbed = UserValidator.validateUserBot(user, userToHandle, TEAM_TASK_EMBED);
         if (userErrorEmbed != null) {
             return userErrorEmbed;
         }

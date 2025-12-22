@@ -21,4 +21,16 @@ public class UserValidator {
         }
         return null;
     }
+
+    // Checks if the user mentioned is a bot
+    public static MessageEmbed validateUserBot(
+            User user,
+            User userMentioned,
+            IMessageEmbedBuilder embedBuilder
+    ) {
+        if (userMentioned.isBot()) {
+            return embedBuilder.createErrorEmbed(user, Constants.USER_MENTIONED_CANNOT_BE_BOT.getValue(String.class));
+        }
+        return null;
+    }
 }

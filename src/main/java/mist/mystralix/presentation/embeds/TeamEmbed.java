@@ -117,8 +117,8 @@ public class TeamEmbed implements IMessageEmbedBuilder {
         embed.setColor(Color.RED);
         embed.setDescription(
                 "User: " + userRemoved.getAsMention()
-                        + ", has been removed from the "
-                        + team.getTeamName() + "team by "
+                        + ", has been removed from the **"
+                        + team.getTeamName() + "** team by "
                         + user.getAsMention()
         );
         embed.setFooter(
