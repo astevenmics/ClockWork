@@ -61,7 +61,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
             return messageEmbed;
         }
 
-        Team team = TEAM_SERVICE.findByID(teamId);
+        Team team = TEAM_SERVICE.getById(teamId);
 
         String uuid = UUID.randomUUID().toString();
         TEAM_TASK_SERVICE.create(
@@ -130,7 +130,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
         TaskHelper.updateTaskDAO(event, teamTask.getTaskDAO());
 
-        TEAM_TASK_SERVICE.updateTeamTask(teamTask);
+        TEAM_TASK_SERVICE.update(teamTask);
 
         return TEAM_TASK_EMBED.createMessageEmbed(user, "Updated Task", teamTask);
     }
@@ -232,7 +232,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         }
 
         TeamTaskHelper.updateAssignedUsers(result.teamTask(), userToHandleId, isAssign);
-        TEAM_TASK_SERVICE.updateTeamTask(result.teamTask());
+        TEAM_TASK_SERVICE.update(result.teamTask());
 
         return TEAM_TASK_EMBED.createTeamAssignedUsersUpdateEmbed(
                 user,

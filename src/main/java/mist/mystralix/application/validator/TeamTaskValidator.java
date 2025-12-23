@@ -49,7 +49,7 @@ public class TeamTaskValidator {
         if (messageEmbed != null) {
             return messageEmbed;
         }
-        Team team = teamService.findByID(teamId);
+        Team team = teamService.getById(teamId);
         TeamTask teamTask = teamTaskService.getById(taskId);
         if (teamTask == null) {
             return embedBuilder.createErrorEmbed(user,
@@ -94,7 +94,7 @@ public class TeamTaskValidator {
 
         int teamId = Objects.requireNonNull(event.getOption("team")).getAsInt();
         int taskId = Objects.requireNonNull(event.getOption("task")).getAsInt();
-        Team team = teamService.findByID(teamId);
+        Team team = teamService.getById(teamId);
         TeamTask teamTask = teamTaskService.getById(taskId);
 
         return new TeamTaskValidationResult(null, team, teamTask);

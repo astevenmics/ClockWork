@@ -10,6 +10,7 @@
     * Update Handling from HashSet to HashMap - ✅
 
 - All - ⏳
+    * Changed everything into blocked quotes
     * Improve formatting ⏳
     * SQLite > Might change to PostgresSQL / MySQL ✅
     * Combine ReminderFunctions and TaskFunctions ✅

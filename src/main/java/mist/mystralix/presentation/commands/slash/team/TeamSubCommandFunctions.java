@@ -16,6 +16,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.UUID;
 
 public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
@@ -35,9 +36,10 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         }
 
         String name = optionName.getAsString();
-        Team team = TEAM_SERVICE.create(name, user.getId());
+        String uuid = UUID.randomUUID().toString();
+        TEAM_SERVICE.create(uuid, name, user.getId());
 
-        return TEAM_EMBED.createMessageEmbed(user, "New Team", team);
+        return TEAM_EMBED.createMessageEmbed(user, "New Team", TEAM_SERVICE.getByUUID(uuid));
     }
 
     public MessageEmbed add(SlashCommandInteraction event) {
@@ -71,7 +73,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             return userErrorEmbed;
         }
 
-        Team team = TEAM_SERVICE.findByID(id);
+        Team team = TEAM_SERVICE.getById(id);
 
         if (team.getModerators().contains(userToAdd.getId()) || team.getMembers().contains(userToAdd.getId())) {
             // User already in the team
@@ -126,7 +128,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndPermission(user, TEAM_SERVICE, TEAM_EMBED, teamId);
         if (errorEmbed != null) return errorEmbed;
 
-        Team team = TEAM_SERVICE.findByID(teamId);
+        Team team = TEAM_SERVICE.getById(teamId);
         User userToRemove = userOption.getAsUser();
         String userToRemoveId = userToRemove.getId();
 
@@ -177,7 +179,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
-        Team team = TEAM_SERVICE.findByID(idOption.getAsInt());
+        Team team = TEAM_SERVICE.getById(idOption.getAsInt());
         if (team == null) {
             return TEAM_EMBED.createErrorEmbed(user,
                     String.format(
@@ -231,7 +233,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndAccess(user, TEAM_SERVICE, TEAM_EMBED, idOption.getAsInt());
         if (errorEmbed != null) return errorEmbed;
-        Team team = TEAM_SERVICE.findByID(idOption.getAsInt());
+        Team team = TEAM_SERVICE.getById(idOption.getAsInt());
 
         if (team.getTeamLeader().equals(userId)) {
             return TEAM_EMBED.createErrorEmbed(user, TeamMessages.LEADER_CANNOT_LEAVE);
@@ -262,7 +264,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         return TEAM_EMBED.createTeamInfoEmbed(
                 user,
-                TEAM_SERVICE.findByID(idOption.getAsInt()),
+                TEAM_SERVICE.getById(idOption.getAsInt()),
                 event
         );
     }
@@ -285,7 +287,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndLeadership(user, TEAM_SERVICE, TEAM_EMBED, teamId);
         if (errorEmbed != null) return errorEmbed;
-        Team team = TEAM_SERVICE.findByID(teamId);
+        Team team = TEAM_SERVICE.getById(teamId);
 
         TEAM_SERVICE.delete(team);
         return TEAM_EMBED.createMessageEmbed(user, team.getTeamName() + " team has been deleted", team);
@@ -312,7 +314,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndLeadership(user, TEAM_SERVICE, TEAM_EMBED, teamOption.getAsInt());
         if (errorEmbed != null) return errorEmbed;
-        Team team = TEAM_SERVICE.findByID(teamOption.getAsInt());
+        Team team = TEAM_SERVICE.getById(teamOption.getAsInt());
         ArrayList<String> moderators = team.getModerators();
         ArrayList<String> members = team.getMembers();
 
@@ -363,12 +365,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
     public MessageEmbed updateName(SlashCommandInteraction event) {
         User user = event.getUser();
-        TeamValidationResult result = TeamValidator.validateTeamAndGetTeam(
-                event,
-                TEAM_SERVICE,
-                TEAM_EMBED,
-                "id", "name"
-        );
+        TeamValidationResult result = TeamValidator.validateTeamAndGetTeam(event, TEAM_SERVICE, TEAM_EMBED, "id", "name");
         if (result.error() != null) return result.error();
 
         Team team = result.team();
@@ -377,21 +374,12 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         team.setTeamName(newName);
         TEAM_SERVICE.update(team);
 
-        return TEAM_EMBED.createTeamNameUpdateEmbed(
-                user,
-                team,
-                currentName
-        );
+        return TEAM_EMBED.createTeamNameUpdateEmbed(user, team, currentName);
     }
 
     public MessageEmbed transferTeam(SlashCommandInteraction event) {
         User user = event.getUser();
-        TeamValidationResult result = TeamValidator.validateTeamAndGetTeam(
-                event,
-                TEAM_SERVICE,
-                TEAM_EMBED,
-                "id", "user"
-        );
+        TeamValidationResult result = TeamValidator.validateTeamAndGetTeam(event, TEAM_SERVICE, TEAM_EMBED, "id", "user");
         if (result.error() != null) return result.error();
 
         Team team = result.team();

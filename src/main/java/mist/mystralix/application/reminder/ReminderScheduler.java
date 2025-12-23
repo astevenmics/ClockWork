@@ -37,7 +37,6 @@ public class ReminderScheduler {
         return instance;
     }
 
-    // TODO: update to cancel when updated and re-schedule
     public void scheduleReminders(JDA jda) {
         HashSet<Reminder> allReminders = REMINDER_SERVICE.getAllActiveReminders();
 

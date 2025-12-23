@@ -23,7 +23,7 @@ public class TeamValidator {
             IMessageEmbedBuilder teamEmbed,
             int teamId
     ) {
-        Team team = teamService.findByID(teamId);
+        Team team = teamService.getById(teamId);
         if (team == null) {
             return teamEmbed.createErrorEmbed(user,
                     String.format(
@@ -57,7 +57,7 @@ public class TeamValidator {
         if (messageEmbed != null) {
             return messageEmbed;
         }
-        Team team = teamService.findByID(teamId);
+        Team team = teamService.getById(teamId);
         String userId = user.getId();
         if (!team.getTeamLeader().equals(userId) && !team.getModerators().contains(userId)) {
             return teamEmbed.createErrorEmbed(user, TeamMessages.MODERATOR_REQUIRED);
@@ -79,7 +79,7 @@ public class TeamValidator {
         if (messageEmbed != null) {
             return messageEmbed;
         }
-        Team team = teamService.findByID(teamId);
+        Team team = teamService.getById(teamId);
         String userId = user.getId();
         if (!team.getTeamLeader().equals(userId)) {
             return teamEmbed.createErrorEmbed(user, TeamMessages.LEADER_REQUIRED);
@@ -107,7 +107,7 @@ public class TeamValidator {
             return new TeamValidationResult(errorEmbed, null);
         }
 
-        Team team = teamService.findByID(teamOption.getAsInt());
+        Team team = teamService.getById(teamOption.getAsInt());
         return new TeamValidationResult(null, team);
     }
 
