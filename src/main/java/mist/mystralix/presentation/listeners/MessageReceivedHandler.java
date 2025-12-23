@@ -3,6 +3,7 @@ package mist.mystralix.presentation.listeners;
 import mist.mystralix.infrastructure.exception.FileException;
 import mist.mystralix.infrastructure.file.FileHandler;
 import mist.mystralix.infrastructure.file.JSONHandler;
+import net.dv8tion.jda.api.entities.channel.ChannelType;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -10,7 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.HashSet;
 
-public class MessageFilter extends ListenerAdapter {
+public class MessageReceivedHandler extends ListenerAdapter {
 
     @Override
     public void onMessageReceived(MessageReceivedEvent event) {
@@ -39,6 +40,26 @@ public class MessageFilter extends ListenerAdapter {
 
         if (censoredWords.contains(eventMessage)) {
             event.getMessage().delete().queue();
+        }
+
+        if (event.getAuthor().isBot() || event.getMember() == null) {
+            return;
+        }
+
+        if (event.isFromType(ChannelType.PRIVATE)) {
+            System.out.printf(
+                    "[PM] %s: %s%n",
+                    event.getAuthor().getName(),
+                    event.getMessage().getContentDisplay()
+            );
+        } else {
+            System.out.printf(
+                    "[%s][%s] %s: %s%n",
+                    event.getGuild().getName(),
+                    event.getChannel().getName(),
+                    event.getMember().getEffectiveName(),
+                    event.getMessage().getContentDisplay()
+            );
         }
     }
 }

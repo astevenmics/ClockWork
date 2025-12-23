@@ -10,16 +10,13 @@ import mist.mystralix.presentation.commands.slash.general.help.HelpCommand;
 import mist.mystralix.presentation.commands.slash.reminder.ReminderCommand;
 import mist.mystralix.presentation.commands.slash.task.TaskCommand;
 import mist.mystralix.presentation.commands.slash.team.TeamCommand;
-import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
-import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
 
 import java.util.HashMap;
 import java.util.List;
 
-public class CommandManager extends ListenerAdapter {
+public class CommandManager {
 
     private final HashMap<String, SlashCommand> commands = new HashMap<>();
 
@@ -39,36 +36,8 @@ public class CommandManager extends ListenerAdapter {
         commands.put(command.getName(), command);
     }
 
-    @Override
-    public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
-        if (!event.isFromGuild()) {
-            event.reply("This command can only be used in servers.")
-                    .setEphemeral(true)
-                    .queue();
-            return;
-        }
-        String commandName = event.getName();
-        SlashCommand command = commands.get(commandName);
-
-        if (command == null) {
-            event.reply("Unknown command!").setEphemeral(true).queue();
-            return;
-        }
-
-        command.execute(event);
-    }
-
-    @Override
-    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
-        String commandName = event.getComponentId().split(":")[0];
-        SlashCommand command = commands.get(commandName);
-
-        if (command == null) {
-            event.reply("Unknown command!").setEphemeral(true).queue();
-            return;
-        }
-
-        command.stringSelectInteraction(event);
+    public HashMap<String, SlashCommand> getCommands() {
+        return commands;
     }
 
     public List<SlashCommandData> getCommandData() {
