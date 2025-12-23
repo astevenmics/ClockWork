@@ -8,6 +8,8 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 
+import java.util.List;
+
 public final class ReminderCommand implements SlashCommand {
 
     private final ReminderSubCommandFunctions REMINDER_SUB_COMMAND_FUNCTIONS;
@@ -27,9 +29,8 @@ public final class ReminderCommand implements SlashCommand {
     }
 
     @Override
-    public SubcommandData[] getSubcommands() {
-        return new SubcommandData[] {
-
+    public List<SubcommandData> getSubcommands() {
+        return List.of(
                 // /reminder create
                 new SubcommandData(
                         "create",
@@ -104,8 +105,7 @@ public final class ReminderCommand implements SlashCommand {
                                 "The ID of the reminder to view.",
                                 true
                         )
-                )
-        };
+                ));
     }
 
     @Override

@@ -12,6 +12,8 @@ import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
+import java.util.List;
+
 public class TeamCommand implements SlashCommand {
 
     private final TeamTaskService TEAM_TASK_SERVICE;
@@ -36,8 +38,8 @@ public class TeamCommand implements SlashCommand {
     }
 
     @Override
-    public SubcommandData[] getSubcommands() {
-        return new SubcommandData[]{
+    public List<SubcommandData> getSubcommands() {
+        return List.of(
                 new SubcommandData("create", "Create a team")
                     .addOptions(
                         new OptionData(
@@ -175,12 +177,12 @@ public class TeamCommand implements SlashCommand {
                         )
                 ),
                 new SubcommandData("list", "View all teams you are in")
-        };
+        );
     }
 
     @Override
-    public SubcommandGroupData[] getSubcommandGroupData() {
-        return new SubcommandGroupData[]{
+    public List<SubcommandGroupData> getSubcommandGroupData() {
+        return List.of(
                 new SubcommandGroupData("task", "Task Management")
                         .addSubcommands(
                         new SubcommandData("create", "Create a task")
@@ -257,7 +259,7 @@ public class TeamCommand implements SlashCommand {
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
                                         new OptionData(OptionType.INTEGER, "task", "Task ID", true)
                                 ))
-        };
+        );
     }
 
     @Override

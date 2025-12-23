@@ -1,8 +1,12 @@
 package mist.mystralix.presentation.commands.slash;
 
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
+
+import java.util.Collections;
+import java.util.List;
 
 public interface SlashCommand {
 
@@ -10,11 +14,17 @@ public interface SlashCommand {
 
     String getDescription();
 
-    SubcommandData[] getSubcommands();
+    default List<SubcommandData> getSubcommands() {
+        return Collections.emptyList();
+    }
 
-    default SubcommandGroupData[] getSubcommandGroupData() {
-        return new SubcommandGroupData[0];
+    default List<SubcommandGroupData> getSubcommandGroupData() {
+        return Collections.emptyList();
     }
 
     void execute(SlashCommandInteraction event);
+
+    default void stringSelectInteraction(StringSelectInteractionEvent event) {
+    }
+
 }

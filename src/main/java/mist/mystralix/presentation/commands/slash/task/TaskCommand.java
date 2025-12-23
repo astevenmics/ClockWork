@@ -1,13 +1,15 @@
 package mist.mystralix.presentation.commands.slash.task;
 
-import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.application.task.TaskService;
+import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.interactions.commands.OptionType;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.OptionData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
+
+import java.util.List;
 
 public final class TaskCommand implements SlashCommand {
 
@@ -28,8 +30,8 @@ public final class TaskCommand implements SlashCommand {
     }
 
     @Override
-    public SubcommandData[] getSubcommands() {
-        return new SubcommandData[] {
+    public List<SubcommandData> getSubcommands() {
+        return List.of(
 
                 // /task add
                 new SubcommandData("add", "Create a new task.")
@@ -132,8 +134,7 @@ public final class TaskCommand implements SlashCommand {
                                 "ID number of the task to view.",
                                 true
                     )
-                )
-        };
+                    ));
     }
 
     @Override
