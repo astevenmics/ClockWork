@@ -77,9 +77,8 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
         }
 
         // Build the embed payload
-        MessageEmbed embed = reminderEmbed.createMessageEmbed(
+        MessageEmbed embed = reminderEmbed.createReminderEmbed(
                 user,
-                "Reminder Alert!",
                 reminder
         );
 

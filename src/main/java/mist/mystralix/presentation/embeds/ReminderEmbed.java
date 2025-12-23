@@ -102,4 +102,13 @@ public class ReminderEmbed implements IMessageEmbedBuilder {
 
         return embedBuilder.build();
     }
+
+    public MessageEmbed createReminderEmbed(User user, Reminder reminder) {
+        return new EmbedBuilder()
+                .setTitle("Reminder Alert | Reminder #" + reminder.getId())
+                .setColor(Color.GREEN)
+                .setDescription("Message: " + reminder.getMessage())
+                .setFooter("Reminder for " + user.getEffectiveName(), user.getEffectiveAvatarUrl())
+                .build();
+    }
 }
