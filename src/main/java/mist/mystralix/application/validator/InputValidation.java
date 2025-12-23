@@ -17,10 +17,10 @@ public class InputValidation {
             IdentifiableFetcher<T> service,
             IMessageEmbedBuilder embedBuilder,
             String idOptionName,
+            String objectName,
             Function<T, MessageEmbed> action
     ) {
         User user = event.getUser();
-        String userDiscordID = user.getId();
 
         OptionMapping option = event.getOption(idOptionName);
 
@@ -30,15 +30,13 @@ public class InputValidation {
 
         int objectID = option.getAsInt();
 
-        T object = service.fetchByUserIDAndObjectID(userDiscordID, objectID);
+        T object = service.getById(objectID);
 
         if (object == null) {
-            return embedBuilder.createErrorEmbed(
-                    user,
+            return embedBuilder.createErrorEmbed(user,
                     String.format(
-                            CommonMessages.NO_OBJECT_FOUND,
-                            idOptionName,
-                            objectID
+                            CommonMessages.OBJECT_NOT_FOUND,
+                            objectName
                     )
             );
         }

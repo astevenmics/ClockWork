@@ -8,6 +8,9 @@ public final class ReminderMessages {
     public static final String MINIMUM_TIME_INPUT =
             "Time target/duration must be at least 1 minute.";
 
+    public static final String REMINDER_NOT_CREATED_BY_USER =
+            "You do not have access to Reminder #%d, as it was created by a different user.";
+
     private ReminderMessages() {
     }
 }

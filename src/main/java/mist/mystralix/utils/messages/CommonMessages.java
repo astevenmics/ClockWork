@@ -8,9 +8,6 @@ public final class CommonMessages {
     public static final String OBJECT_NOT_FOUND =
             "The %s does not exist.";
 
-    public static final String NO_OBJECT_FOUND =
-            "No object found of %s with ID: %s";
-
     private CommonMessages() {
     }
 }

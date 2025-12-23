@@ -3,6 +3,7 @@ package mist.mystralix.presentation.commands.slash.reminder;
 import mist.mystralix.application.reminder.ReminderScheduler;
 import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.application.validator.InputValidation;
+import mist.mystralix.application.validator.ReminderValidator;
 import mist.mystralix.domain.reminder.Reminder;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.ReminderEmbed;
@@ -65,11 +66,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 isNotificationSent
         );
 
-        Reminder newlyCreatedReminder = REMINDER_SERVICE.getUserReminder(
-                userDiscordID,
-                reminderUUID
-        );
-
+        Reminder newlyCreatedReminder = REMINDER_SERVICE.getByUUID(reminderUUID);
         ReminderScheduler.getInstance().scheduleReminder(user, newlyCreatedReminder);
 
         return REMINDER_EMBED.createMessageEmbed(
@@ -86,7 +83,12 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 REMINDER_SERVICE, 
                 REMINDER_EMBED,
                 "reminder_id",
+                "reminder",
                 reminder -> {
+                    MessageEmbed messageEmbed = ReminderValidator.validateReminderAccess(event.getUser(), reminder, REMINDER_EMBED);
+                    if (messageEmbed != null) {
+                        return messageEmbed;
+                    }
                     REMINDER_SERVICE.delete(reminder);
                     ReminderScheduler.getInstance().cancelReminder(reminder.getUUID());
                     return REMINDER_EMBED.createMessageEmbed(event.getUser(), "Deleted", reminder);
@@ -99,15 +101,17 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         return InputValidation.validate(
                 event, 
                 REMINDER_SERVICE, 
-                REMINDER_EMBED, 
-                "reminder_id", 
+                REMINDER_EMBED,
+                "reminder_id",
+                "reminder",
                 reminder -> {
                     User user = event.getUser();
-        
-                    Optional.ofNullable(
-                            event.getOption("message", () -> null, OptionMapping::getAsString)
-                    ).ifPresent(reminder::setMessage);
-        
+                    MessageEmbed messageEmbed = ReminderValidator.validateReminderAccess(user, reminder, REMINDER_EMBED);
+                    if (messageEmbed != null) {
+                        return messageEmbed;
+                    }
+
+                    Optional.ofNullable(event.getOption("message", () -> null, OptionMapping::getAsString)).ifPresent(reminder::setMessage);
                     String timeString = event.getOption("time", () -> null, OptionMapping::getAsString);
         
                     if (timeString != null) {
@@ -119,8 +123,8 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         
                         reminder.setTargetTimestamp(System.currentTimeMillis() + duration);
                     }
-        
-                    REMINDER_SERVICE.updateUserReminder(reminder);
+
+                    REMINDER_SERVICE.update(reminder);
                     ReminderScheduler.getInstance().scheduleReminder(user, reminder);
         
                     return REMINDER_EMBED.createMessageEmbed(user, "Updated", reminder);
@@ -135,13 +139,14 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 REMINDER_SERVICE, 
                 REMINDER_EMBED,
                 "reminder_id",
-                reminder ->
-                    REMINDER_EMBED.createMessageEmbed(
-                        event.getUser(),
-                        "View",
-                        reminder
-                )
-        );
+                "reminder",
+                reminder -> {
+                    MessageEmbed messageEmbed = ReminderValidator.validateReminderAccess(event.getUser(), reminder, REMINDER_EMBED);
+                    if (messageEmbed != null) {
+                        return messageEmbed;
+                    }
+                    return REMINDER_EMBED.createMessageEmbed(event.getUser(), "View", reminder);
+                });
     }
 
     @Override
