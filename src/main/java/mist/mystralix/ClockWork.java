@@ -1,12 +1,12 @@
 package mist.mystralix;
 
+import mist.mystralix.application.reminder.ReminderScheduler;
+import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.config.DBManager;
 import mist.mystralix.config.DBSchemaInitializer;
 import mist.mystralix.presentation.commands.manager.CommandManager;
 import mist.mystralix.presentation.listeners.MessageFilter;
 import mist.mystralix.presentation.listeners.MessageLogger;
-import mist.mystralix.application.reminder.ReminderScheduler;
-import mist.mystralix.application.reminder.ReminderService;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -15,13 +15,17 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 
 import java.util.EnumSet;
+import java.util.List;
 
 public final class ClockWork {
 
     public static void main(String[] args) throws InterruptedException {
 
         final String token = System.getenv("DISCORD_TOKEN");
-        final String guildId = System.getenv("GUILD_ID");
+        final List<String> guildIds = List.of(new String[]{
+                System.getenv("GUILD_ID"),
+                System.getenv("GUILD_ID2")
+        });
 
         if (token == null) {
             throw new IllegalStateException("DISCORD_TOKEN environment variable is missing.");
@@ -56,12 +60,16 @@ public final class ClockWork {
         jda.addEventListener(new MessageLogger());
         jda.addEventListener(new MessageFilter());
 
-        if (guildId != null) {
-            Guild guild = jda.getGuildById(guildId);
-            if (guild != null) {
-                guild.updateCommands()
-                        .addCommands(commandManager.getCommandData())
-                        .queue();
+//        jda.updateCommands().addCommands(commandManager.getCommandData()).queue();
+
+        for (String guildId : guildIds) {
+            if (guildId != null) {
+                Guild guild = jda.getGuildById(guildId);
+                if (guild != null) {
+                    guild.updateCommands()
+                            .addCommands(commandManager.getCommandData())
+                            .queue();
+                }
             }
         }
 
