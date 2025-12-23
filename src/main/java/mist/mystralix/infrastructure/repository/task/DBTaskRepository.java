@@ -42,61 +42,23 @@ public class DBTaskRepository implements TaskRepository {
     }
 
     @Override
-    public Task findByDiscordIDAndUUID(String userDiscordID, String uuidAsString) {
+    public Task findByID(int id) {
         Task task = null;
 
-        String sqlStatement = "SELECT * FROM tasks WHERE user_discord_id = ? AND uuid = ?;";
+        String sqlStatement = "SELECT * FROM tasks WHERE id = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
         ) {
-            preparedStatement.setString(1, userDiscordID);
-            preparedStatement.setString(2, uuidAsString);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            Gson gson = new Gson();
-
-            if (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String taskDAOJson = resultSet.getString("task_dao");
-
-                TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
-
-                task = new Task(
-                        uuidAsString,
-                        userDiscordID,
-                        id,
-                        taskDAO
-                );
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error retrieving task with UUID: " + uuidAsString);
-            throw new RuntimeException("DB Error", e);
-        }
-
-        return task;
-    }
-
-    @Override
-    public Task findByDiscordIDAndID(String userDiscordID, int id) {
-        Task task = null;
-
-        String sqlStatement = "SELECT * FROM tasks WHERE user_discord_id = ? AND id = ?;";
-
-        try (
-                Connection connection = DBManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
-        ) {
-            preparedStatement.setString(1, userDiscordID);
-            preparedStatement.setInt(2, id);
+            preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             Gson gson = new Gson();
 
             if (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
+                String userDiscordID = resultSet.getString("user_discord_id");
                 String taskDAOJson = resultSet.getString("task_dao");
 
                 TaskDAO taskDAO = gson.fromJson(taskDAOJson, TaskDAO.class);
@@ -110,16 +72,11 @@ public class DBTaskRepository implements TaskRepository {
             }
 
         } catch (SQLException e) {
-            System.out.println("Error retrieving user: " + userDiscordID + ", taskID: " + id);
+            System.out.println("Error retrieving task with taskID: " + id);
             throw new RuntimeException("DB Error", e);
         }
 
         return task;
-    }
-
-    @Override
-    public Task findByID(int uuid) {
-        return null;
     }
 
     @Override

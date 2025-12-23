@@ -143,16 +143,6 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
     }
 
     @Override
-    public TeamTask findByDiscordIDAndUUID(String userDiscordID, String uuid) {
-        return null;
-    }
-
-    @Override
-    public TeamTask findByDiscordIDAndID(String userDiscordID, int id) {
-        return null;
-    }
-
-    @Override
     public void update(TeamTask baseObject) {
 
         String sql =

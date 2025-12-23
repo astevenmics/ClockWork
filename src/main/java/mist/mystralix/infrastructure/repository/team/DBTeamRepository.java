@@ -48,69 +48,6 @@ public class DBTeamRepository implements TeamRepository {
     }
 
     @Override
-    public Team findByDiscordIDAndUUID(String userDiscordID, String uuid) {
-
-        String sqlStatement = "SELECT * FROM teams " +
-                "WHERE uuid = ? " +
-                "AND (" +
-                "JSON CONTAINS(moderators, JSON_ARRAY(?)) " +
-                "OR JSON CONTAINS(members, JSON_ARRAY(?))" +
-                ");";
-
-        Team team = null;
-
-        try (
-                Connection connection = DBManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
-                ) {
-
-            preparedStatement.setString(1, uuid);
-            preparedStatement.setString(2, userDiscordID);
-            preparedStatement.setString(3, userDiscordID);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                team = TeamHelper.getTeam(resultSet);
-            }
-        } catch (SQLException e) {
-            System.out.println("Error finding a team with an UUID: " + uuid);
-            throw new RuntimeException("DB Error", e);
-        }
-
-        return team;
-    }
-
-    @Override
-    public Team findByDiscordIDAndID(String userDiscordID, int id) {
-
-        String sqlStatement = "SELECT * FROM teams WHERE id = ? AND (" +
-                "JSON_CONTAINS(moderators, JSON_ARRAY(?)) " +
-                "OR JSON_CONTAINS(members, JSON_ARRAY(?))" +
-                ");";
-
-        Team team = null;
-        try(
-                Connection connection = DBManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
-                ) {
-
-            preparedStatement.setInt(1, id);
-            preparedStatement.setString(2, userDiscordID);
-            preparedStatement.setString(3, userDiscordID);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                team = TeamHelper.getTeam(resultSet);
-            }
-
-        } catch (SQLException e) {
-            System.out.println("Error finding a team with an ID: " + id);
-            throw new RuntimeException("DB Error", e);
-        }
-        return team;
-    }
-
-    @Override
     public Team findByUUID(String uuid) {
 
         String sqlStatement = "SELECT * FROM teams WHERE uuid = ?";

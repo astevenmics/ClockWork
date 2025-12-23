@@ -48,61 +48,20 @@ public class DBReminderRepository implements ReminderRepository {
     }
 
     @Override
-    public Reminder findByDiscordIDAndUUID(String userDiscordID, String uuid) {
-
-        String sqlStatement = "SELECT * FROM reminders WHERE user_discord_id = ? AND uuid = ?;";
-
-        try (
-                Connection connection = DBManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
-        ) {
-
-            preparedStatement.setString(1, userDiscordID);
-            preparedStatement.setString(2, uuid);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
-
-            if (resultSet.next()) {
-                String reminderMessage = resultSet.getString("message");
-                long createdTimestamp = resultSet.getLong("created_timestamp");
-                long targetTimestamp = resultSet.getLong("target_timestamp");
-                int id = resultSet.getInt("id");
-                boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
-
-                return new Reminder(
-                        uuid,
-                        userDiscordID,
-                        id,
-                        reminderMessage,
-                        createdTimestamp,
-                        targetTimestamp,
-                        isNotificationSent
-                );
-            }
-            return null;
-
-        } catch (SQLException e) {
-            System.out.println("Error reading reminder from database.");
-            throw new RuntimeException("DB Error", e);
-        }
-    }
-
-    @Override
-    public Reminder findByDiscordIDAndID(String userDiscordID, int id) {
-
-        String sqlStatement = "SELECT * FROM reminders WHERE user_discord_id = ? AND id = ?;";
+    public Reminder findByID(int id) {
+        String sqlStatement = "SELECT * FROM reminders WHERE id = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
         ) {
-            preparedStatement.setString(1, userDiscordID);
-            preparedStatement.setInt(2, id);
+            preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
+                String userDiscordID = resultSet.getString("user_discord_id");
                 String reminderMessage = resultSet.getString("message");
                 long createdTimestamp = resultSet.getLong("created_timestamp");
                 long targetTimestamp = resultSet.getLong("target_timestamp");
@@ -127,13 +86,42 @@ public class DBReminderRepository implements ReminderRepository {
     }
 
     @Override
-    public Reminder findByID(int uuid) {
-        return null;
-    }
-
-    @Override
     public Reminder findByUUID(String uuid) {
-        return null;
+        String sqlStatement = "SELECT * FROM reminders WHERE uuid = ?;";
+
+        try (
+                Connection connection = DBManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(sqlStatement)
+        ) {
+
+            preparedStatement.setString(1, uuid);
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                String userDiscordID = resultSet.getString("user_discord_id");
+                int id = resultSet.getInt("id");
+                String reminderMessage = resultSet.getString("message");
+                long createdTimestamp = resultSet.getLong("created_timestamp");
+                long targetTimestamp = resultSet.getLong("target_timestamp");
+                boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
+
+                return new Reminder(
+                        uuid,
+                        userDiscordID,
+                        id,
+                        reminderMessage,
+                        createdTimestamp,
+                        targetTimestamp,
+                        isNotificationSent
+                );
+            }
+            return null;
+
+        } catch (SQLException e) {
+            System.out.println("Error reading reminder from database.");
+            throw new RuntimeException("DB Error", e);
+        }
     }
 
     @Override

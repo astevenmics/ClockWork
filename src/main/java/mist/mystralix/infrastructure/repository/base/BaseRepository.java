@@ -10,10 +10,6 @@ public interface BaseRepository<T> {
 
     T findByUUID(String uuid);
 
-    T findByDiscordIDAndUUID(String userDiscordID, String uuid);
-
-    T findByDiscordIDAndID(String userDiscordID, int id);
-
     void update(T baseObject);
 
     void delete(T baseObject);
