@@ -6,10 +6,12 @@ import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.team.TeamTaskService;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
+import mist.mystralix.presentation.commands.slash.general.help.HelpCommand;
 import mist.mystralix.presentation.commands.slash.reminder.ReminderCommand;
 import mist.mystralix.presentation.commands.slash.task.TaskCommand;
 import mist.mystralix.presentation.commands.slash.team.TeamCommand;
 import net.dv8tion.jda.api.events.interaction.command.SlashCommandInteractionEvent;
+import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import net.dv8tion.jda.api.interactions.commands.build.Commands;
 import net.dv8tion.jda.api.interactions.commands.build.SlashCommandData;
@@ -27,12 +29,10 @@ public class CommandManager extends ListenerAdapter {
         ReminderService reminderService = clockWorkContainer.getReminderService();
         TeamService teamService = clockWorkContainer.getTeamService();
 
+        registerCommand(new HelpCommand(teamTaskService, taskService, reminderService, teamService));
         registerCommand(new TaskCommand(taskService));
         registerCommand(new ReminderCommand(reminderService));
-        registerCommand(new TeamCommand(
-                teamTaskService,
-                teamService
-        ));
+        registerCommand(new TeamCommand(teamTaskService, teamService));
     }
 
     private void registerCommand(SlashCommand command) {
@@ -50,6 +50,19 @@ public class CommandManager extends ListenerAdapter {
         }
 
         command.execute(event);
+    }
+
+    @Override
+    public void onStringSelectInteraction(StringSelectInteractionEvent event) {
+        String commandName = event.getComponentId().split(":")[0];
+        SlashCommand command = commands.get(commandName);
+
+        if (command == null) {
+            event.reply("Unknown command!").setEphemeral(true).queue();
+            return;
+        }
+
+        command.stringSelectInteraction(event);
     }
 
     public List<SlashCommandData> getCommandData() {
