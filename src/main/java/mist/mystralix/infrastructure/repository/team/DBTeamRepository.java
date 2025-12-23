@@ -1,11 +1,10 @@
 package mist.mystralix.infrastructure.repository.team;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import mist.mystralix.application.helper.TeamHelper;
 import mist.mystralix.config.DBManager;
 import mist.mystralix.domain.team.Team;
 
-import java.lang.reflect.Type;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,8 +12,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public class DBTeamRepository implements TeamRepository {
-
-    private final Type LIST_TYPE = new TypeToken<ArrayList<String>>(){}.getType();
 
     @Override
     public void create(Team baseObject) {
@@ -72,26 +69,8 @@ public class DBTeamRepository implements TeamRepository {
             preparedStatement.setString(3, userDiscordID);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            Gson gson = new Gson();
             if (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("team_name");
-                String teamLeader = resultSet.getString("team_leader");
-                ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
-                ArrayList<String> members = gson.fromJson(resultSet.getString("members"), LIST_TYPE);
-                ArrayList<String> tasksUUID = gson.fromJson(resultSet.getString("tasks_uuid"), LIST_TYPE);
-                ArrayList<String> teamInvitations = gson.fromJson(resultSet.getString("team_invitations"), LIST_TYPE);
-
-                team = new Team(
-                        uuid,
-                        id,
-                        name,
-                        teamLeader,
-                        moderators,
-                        members,
-                        tasksUUID,
-                        teamInvitations
-                );
+                team = TeamHelper.getTeam(resultSet);
             }
         } catch (SQLException e) {
             System.out.println("Error finding a team with an UUID: " + uuid);
@@ -120,27 +99,8 @@ public class DBTeamRepository implements TeamRepository {
             preparedStatement.setString(3, userDiscordID);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            Gson gson = new Gson();
-
             if (resultSet.next()) {
-                String uuid = resultSet.getString("id");
-                String name = resultSet.getString("team_name");
-                String teamLeader = resultSet.getString("team_leader");
-                ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
-                ArrayList<String> members = gson.fromJson(resultSet.getString("members"), LIST_TYPE);
-                ArrayList<String> tasksUUID = gson.fromJson(resultSet.getString("tasks_uuid"), LIST_TYPE);
-                ArrayList<String> teamInvitations = gson.fromJson(resultSet.getString("team_invitations"), LIST_TYPE);
-
-                team = new Team(
-                        uuid,
-                        id,
-                        name,
-                        teamLeader,
-                        moderators,
-                        members,
-                        tasksUUID,
-                        teamInvitations
-                );
+                team = TeamHelper.getTeam(resultSet);
             }
 
         } catch (SQLException e) {
@@ -164,27 +124,8 @@ public class DBTeamRepository implements TeamRepository {
             preparedStatement.setString(1, uuid);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            Gson gson = new Gson();
-
             if (resultSet.next()) {
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("team_name");
-                String teamLeader = resultSet.getString("team_leader");
-                ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
-                ArrayList<String> members = gson.fromJson(resultSet.getString("members"), LIST_TYPE);
-                ArrayList<String> tasksUUID = gson.fromJson(resultSet.getString("tasks_uuid"), LIST_TYPE);
-                ArrayList<String> teamInvitations = gson.fromJson(resultSet.getString("team_invitations"), LIST_TYPE);
-
-                team = new Team(
-                        uuid,
-                        id,
-                        name,
-                        teamLeader,
-                        moderators,
-                        members,
-                        tasksUUID,
-                        teamInvitations
-                );
+                team = TeamHelper.getTeam(resultSet);
             }
 
         } catch (SQLException e) {
@@ -208,27 +149,8 @@ public class DBTeamRepository implements TeamRepository {
             preparedStatement.setInt(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            Gson gson = new Gson();
-
             if (resultSet.next()) {
-                String uuid = resultSet.getString("uuid");
-                String name = resultSet.getString("team_name");
-                String teamLeader = resultSet.getString("team_leader");
-                ArrayList<String> moderators = gson.fromJson(resultSet.getString("moderators"), LIST_TYPE);
-                ArrayList<String> members = gson.fromJson(resultSet.getString("members"), LIST_TYPE);
-                ArrayList<String> tasksUUID = gson.fromJson(resultSet.getString("tasks_uuid"), LIST_TYPE);
-                ArrayList<String> teamInvitations = gson.fromJson(resultSet.getString("team_invitations"), LIST_TYPE);
-
-                team = new Team(
-                        uuid,
-                        id,
-                        name,
-                        teamLeader,
-                        moderators,
-                        members,
-                        tasksUUID,
-                        teamInvitations
-                );
+                team = TeamHelper.getTeam(resultSet);
             }
 
         } catch (SQLException e) {
@@ -320,42 +242,8 @@ public class DBTeamRepository implements TeamRepository {
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
-            Gson gson = new Gson();
-
             while(resultSet.next()) {
-                String uuid = resultSet.getString("uuid");
-                int id = resultSet.getInt("id");
-                String name = resultSet.getString("team_name");
-                String teamLeader = resultSet.getString("team_leader");
-
-                ArrayList<String> moderators = gson.fromJson(
-                        resultSet.getString("moderators"),
-                        LIST_TYPE
-                );
-                ArrayList<String> members = gson.fromJson(
-                        resultSet.getString("members"),
-                        LIST_TYPE
-                );
-                ArrayList<String> tasksUUID = gson.fromJson(
-                        resultSet.getString("tasks_uuid"),
-                        LIST_TYPE
-                );
-
-                ArrayList<String> teamInvitations = gson.fromJson(
-                        resultSet.getString("team_invitations"),
-                        LIST_TYPE
-                );
-
-                teams.add(new Team(
-                        uuid,
-                        id,
-                        name,
-                        teamLeader,
-                        moderators,
-                        members,
-                        tasksUUID,
-                        teamInvitations
-                ));
+                teams.add(TeamHelper.getTeam(resultSet));
             }
         } catch (SQLException e) {
             System.out.println("Error reading all existing teams with userDiscordID: " + userDiscordID);

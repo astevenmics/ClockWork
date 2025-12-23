@@ -17,7 +17,6 @@ public class TaskService implements IdentifiableFetcher<Task> {
     }
 
     public void addTask(TaskDAO task, User user, String uuid) {
-
         TASK_REPOSITORY.create(
                 new Task(
                         uuid,
