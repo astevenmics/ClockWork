@@ -16,6 +16,26 @@ public class TaskService implements IdentifiableFetcher<Task> {
         this.TASK_REPOSITORY = taskRepository;
     }
 
+    @Override
+    public void update(Task task) {
+        TASK_REPOSITORY.update(task);
+    }
+
+    @Override
+    public void delete(Task task) {
+        TASK_REPOSITORY.delete(task);
+    }
+
+    @Override
+    public Task getById(int id) {
+        return TASK_REPOSITORY.findByID(id);
+    }
+
+    @Override
+    public Task getByUUID(String uuid) {
+        return TASK_REPOSITORY.findByUUID(uuid);
+    }
+
     public void addTask(TaskDAO task, User user, String uuid) {
         TASK_REPOSITORY.create(
                 new Task(
@@ -29,29 +49,4 @@ public class TaskService implements IdentifiableFetcher<Task> {
         return TASK_REPOSITORY.readAll(user.getId());
     }
 
-    public Task getUserTask(String userDiscordID, String uuid) {
-        return TASK_REPOSITORY.findByDiscordIDAndUUID(userDiscordID, uuid);
-    }
-
-    public Task getUserTask(String userDiscordID, int id) {
-        return TASK_REPOSITORY.findByDiscordIDAndID(userDiscordID, id);
-    }
-
-    public void updateUserTask(Task task) {
-        TASK_REPOSITORY.update(task);
-    }
-
-    public void deleteUserTask(Task task) {
-        TASK_REPOSITORY.delete(task);
-    }
-
-    @Override
-    public Task fetchByUserIDAndObjectID(String userDiscordId, int id) {
-        return getUserTask(userDiscordId, id);
-    }
-
-    @Override
-    public Task fetchByUserIDAndObjectUUID(String userDiscordId, String objectUUID) {
-        return getUserTask(userDiscordId, objectUUID);
-    }
 }

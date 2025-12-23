@@ -18,6 +18,26 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
         this.REMINDER_REPOSITORY = reminderRepository;
     }
 
+    @Override
+    public void update(Reminder updatedReminder) {
+        REMINDER_REPOSITORY.update(updatedReminder);
+    }
+
+    @Override
+    public void delete(Reminder reminder) {
+        REMINDER_REPOSITORY.delete(reminder);
+    }
+
+    @Override
+    public Reminder getById(int id) {
+        return REMINDER_REPOSITORY.findByID(id);
+    }
+
+    @Override
+    public Reminder getByUUID(String uuid) {
+        return REMINDER_REPOSITORY.findByUUID(uuid);
+    }
+
     public void createReminder(
             String reminderUUID,
             String userDiscordID,
@@ -38,30 +58,8 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
         );
     }
 
-    public Reminder getUserReminder(
-            String userDiscordID,
-            int id
-    ) {
-        return REMINDER_REPOSITORY.findByDiscordIDAndID(userDiscordID, id);
-    }
-
-    public Reminder getUserReminder(
-            String userDiscordID,
-            String reminderUUID
-    ) {
-        return REMINDER_REPOSITORY.findByDiscordIDAndUUID(userDiscordID, reminderUUID);
-    }
-
     public ArrayList<Reminder> getAllUserReminders(String userDiscordID) {
         return REMINDER_REPOSITORY.readAll(userDiscordID);
-    }
-
-    public void updateUserReminder(Reminder updatedReminder) {
-        REMINDER_REPOSITORY.update(updatedReminder);
-    }
-
-    public void delete(Reminder reminder) {
-        REMINDER_REPOSITORY.delete(reminder);
     }
 
     public HashSet<Reminder> getAllActiveReminders() {
@@ -100,17 +98,6 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
 
     public void reminderSentUpdate(Reminder reminder) {
         REMINDER_REPOSITORY.updateIsNotificationSent(reminder);
-    }
-
-
-    @Override
-    public Reminder fetchByUserIDAndObjectID(String userDiscordId, int id) {
-        return getUserReminder(userDiscordId, id);
-    }
-
-    @Override
-    public Reminder fetchByUserIDAndObjectUUID(String userDiscordId, String objectUUID) {
-        return getUserReminder(userDiscordId, objectUUID);
     }
 
 }

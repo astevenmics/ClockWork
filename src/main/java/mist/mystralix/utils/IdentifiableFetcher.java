@@ -2,7 +2,12 @@ package mist.mystralix.utils;
 
 public interface IdentifiableFetcher<T> {
 
-    T fetchByUserIDAndObjectID(String userDiscordId, int objectID);
-    T fetchByUserIDAndObjectUUID(String userDiscordId, String objectUUID);
+    void update(T t);
+
+    void delete(T t);
+
+    T getById(int id);
+
+    T getByUUID(String uuid);
 
 }
