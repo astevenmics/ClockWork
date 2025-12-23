@@ -43,6 +43,7 @@ public enum Constants {
                     "UNIQUE KEY(id)" +
                     ");"
     )),
+    MENU_BELONGS_TO_OTHER_USER("%s, you cannot use this menu — it belongs to another user."),
     MISSING_PARAMETERS("Please provide all the necessary parameters."),
     OBJECT_NOT_FOUND("The %s does not exist."),
     REMINDER_INVALID_TIME_INPUT("Invalid reminder time provided.\nExample: 1d, 1d20h, 20h15m..."),
