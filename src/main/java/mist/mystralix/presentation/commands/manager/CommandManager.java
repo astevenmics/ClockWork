@@ -41,6 +41,12 @@ public class CommandManager extends ListenerAdapter {
 
     @Override
     public void onSlashCommandInteraction(SlashCommandInteractionEvent event) {
+        if (!event.isFromGuild()) {
+            event.reply("This command can only be used in servers.")
+                    .setEphemeral(true)
+                    .queue();
+            return;
+        }
         String commandName = event.getName();
         SlashCommand command = commands.get(commandName);
 
