@@ -10,6 +10,8 @@ public class Reminder {
 
     private String message;
 
+    private long createdTimestamp;
+
     private long targetTimestamp;
 
     private boolean notificationSent;
@@ -19,6 +21,7 @@ public class Reminder {
             String userDiscordID,
             int id,
             String message,
+            long createdTimestamp,
             long targetTimestamp,
             boolean notificationSent
     ) {
@@ -26,6 +29,7 @@ public class Reminder {
         this.userDiscordID = userDiscordID;
         this.id = id;
         this.message = message;
+        this.createdTimestamp = createdTimestamp;
         this.targetTimestamp = targetTimestamp;
         this.notificationSent = notificationSent;
     }
@@ -34,10 +38,11 @@ public class Reminder {
             String uuid,
             String userDiscordID,
             String message,
+            long createdTimestamp,
             long targetTimestamp,
             boolean notificationSent
     ) {
-        this(uuid, userDiscordID, 0, message, targetTimestamp, notificationSent);
+        this(uuid, userDiscordID, 0, message, createdTimestamp, targetTimestamp, notificationSent);
     }
 
     public String getUUID() {
@@ -54,6 +59,10 @@ public class Reminder {
 
     public String getMessage() {
         return message;
+    }
+
+    public long getCreatedTimestamp() {
+        return createdTimestamp;
     }
 
     public long getTargetTimestamp() {
@@ -78,6 +87,10 @@ public class Reminder {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public void setCreatedTimestamp(long createdTimestamp) {
+        this.createdTimestamp = createdTimestamp;
     }
 
     public void setTargetTimestamp(long targetTimestamp) {

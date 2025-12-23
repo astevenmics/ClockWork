@@ -18,6 +18,7 @@ public final class Tables {
                 user_discord_id VARCHAR(50) NOT NULL,
                 id BIGINT NOT NULL AUTO_INCREMENT,
                 message VARCHAR(8192) NOT NULL,
+                created_timestamp BIGINT NOT NULL,
                 target_timestamp BIGINT NOT NULL,
                 is_notification_sent BOOLEAN NOT NULL DEFAULT FALSE,
                 UNIQUE KEY(id)

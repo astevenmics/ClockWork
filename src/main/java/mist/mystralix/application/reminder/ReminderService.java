@@ -22,6 +22,7 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
             String reminderUUID,
             String userDiscordID,
             String reminderMessage,
+            long createdTimestamp,
             long targetTimestamp,
             boolean isNotificationSent
     ) {
@@ -30,6 +31,7 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
                         reminderUUID,
                         userDiscordID,
                         reminderMessage,
+                        createdTimestamp,
                         targetTimestamp,
                         isNotificationSent
                 )

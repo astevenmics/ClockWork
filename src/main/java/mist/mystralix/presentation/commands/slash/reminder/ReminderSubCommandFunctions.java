@@ -49,7 +49,8 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
             return REMINDER_EMBED.createErrorEmbed(user, ReminderMessages.MINIMUM_TIME_INPUT);
         }
 
-        long targetTimestamp = System.currentTimeMillis() + reminderAsLong;
+        long currentTimestamp = System.currentTimeMillis();
+        long targetTimestamp = currentTimestamp + reminderAsLong;
 
         String userDiscordID = user.getId();
         String reminderUUID = UUID.randomUUID().toString();
@@ -59,6 +60,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 reminderUUID,
                 userDiscordID,
                 reminderMessage,
+                currentTimestamp,
                 targetTimestamp,
                 isNotificationSent
         );

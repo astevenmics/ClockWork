@@ -19,13 +19,14 @@ public class DBReminderRepository implements ReminderRepository {
         String uuid = reminder.getUUID();
         String userDiscordID = reminder.getUserDiscordID();
         String reminderMessage = reminder.getMessage();
-        long timestamp = reminder.getTargetTimestamp();
+        long createdTimestamp = reminder.getCreatedTimestamp();
+        long targetTimestamp = reminder.getTargetTimestamp();
         boolean isNotificationSent = reminder.isNotificationSent();
 
         String sqlStatement =
                 "INSERT INTO reminders " +
-                        "(uuid, user_discord_id, message, target_timestamp, is_notification_sent) " +
-                        "VALUES (?, ?, ?, ?, ?);";
+                        "(uuid, user_discord_id, message, created_timestamp, target_timestamp, is_notification_sent) " +
+                        "VALUES (?, ?, ?, ?, ?, ?);";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -34,8 +35,9 @@ public class DBReminderRepository implements ReminderRepository {
             preparedStatement.setString(1, uuid);
             preparedStatement.setString(2, userDiscordID);
             preparedStatement.setString(3, reminderMessage);
-            preparedStatement.setLong(4, timestamp);
-            preparedStatement.setBoolean(5, isNotificationSent);
+            preparedStatement.setLong(4, createdTimestamp);
+            preparedStatement.setLong(5, targetTimestamp);
+            preparedStatement.setBoolean(6, isNotificationSent);
 
             preparedStatement.executeUpdate();
 
@@ -62,7 +64,8 @@ public class DBReminderRepository implements ReminderRepository {
 
             if (resultSet.next()) {
                 String reminderMessage = resultSet.getString("message");
-                long timestamp = resultSet.getLong("target_timestamp");
+                long createdTimestamp = resultSet.getLong("created_timestamp");
+                long targetTimestamp = resultSet.getLong("target_timestamp");
                 int id = resultSet.getInt("id");
                 boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
 
@@ -71,7 +74,8 @@ public class DBReminderRepository implements ReminderRepository {
                         userDiscordID,
                         id,
                         reminderMessage,
-                        timestamp,
+                        createdTimestamp,
+                        targetTimestamp,
                         isNotificationSent
                 );
             }
@@ -100,7 +104,8 @@ public class DBReminderRepository implements ReminderRepository {
             if (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
                 String reminderMessage = resultSet.getString("message");
-                long timestamp = resultSet.getLong("target_timestamp");
+                long createdTimestamp = resultSet.getLong("created_timestamp");
+                long targetTimestamp = resultSet.getLong("target_timestamp");
                 boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
 
                 return new Reminder(
@@ -108,7 +113,8 @@ public class DBReminderRepository implements ReminderRepository {
                         userDiscordID,
                         id,
                         reminderMessage,
-                        timestamp,
+                        createdTimestamp,
+                        targetTimestamp,
                         isNotificationSent
                 );
             }
@@ -209,6 +215,7 @@ public class DBReminderRepository implements ReminderRepository {
                 String uuid = resultSet.getString("uuid");
                 String reminderMessage = resultSet.getString("message");
                 int id = resultSet.getInt("id");
+                long createdTimestamp = resultSet.getLong("created_timestamp");
                 long targetTimestamp = resultSet.getLong("target_timestamp");
                 boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
 
@@ -218,6 +225,7 @@ public class DBReminderRepository implements ReminderRepository {
                             userDiscordID,
                                 id,
                             reminderMessage,
+                                createdTimestamp,
                             targetTimestamp,
                             isNotificationSent
                     )
@@ -249,6 +257,7 @@ public class DBReminderRepository implements ReminderRepository {
                 String userDiscordID = resultSet.getString("user_discord_id");
                 int id = resultSet.getInt("id");
                 String reminderMessage = resultSet.getString("message");
+                long createdTimestamp = resultSet.getLong("created_timestamp");
                 long targetTimestamp = resultSet.getLong("target_timestamp");
                 boolean isNotificationSent = resultSet.getBoolean("is_notification_sent");
 
@@ -258,6 +267,7 @@ public class DBReminderRepository implements ReminderRepository {
                         userDiscordID,
                             id,
                         reminderMessage,
+                            createdTimestamp,
                         targetTimestamp,
                         isNotificationSent
                     )

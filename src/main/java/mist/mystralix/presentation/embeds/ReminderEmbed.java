@@ -104,10 +104,28 @@ public class ReminderEmbed implements IMessageEmbedBuilder {
     }
 
     public MessageEmbed createReminderEmbed(User user, Reminder reminder) {
+
+        Instant targetInstant = Instant.ofEpochMilli(reminder.getTargetTimestamp());
+        String discordReminderTargetTimestamp = TimeFormat.DATE_TIME_LONG.format(targetInstant);
+
+        Instant createdInstant = Instant.ofEpochMilli(reminder.getCreatedTimestamp());
+        String discordCreatedTimestamp = TimeFormat.DATE_TIME_LONG.format(createdInstant);
+
         return new EmbedBuilder()
                 .setTitle("Reminder Alert | Reminder #" + reminder.getId())
                 .setColor(Color.GREEN)
-                .setDescription("Message: " + reminder.getMessage())
+                .setDescription(
+                        String.format(
+                                """
+                                        Message: %s
+                                        
+                                        Created On: %s
+                                        Due on: %s
+                                        """,
+                                reminder.getMessage(),
+                                discordCreatedTimestamp,
+                                discordReminderTargetTimestamp
+                        ))
                 .setFooter("Reminder for " + user.getEffectiveName(), user.getEffectiveAvatarUrl())
                 .build();
     }
