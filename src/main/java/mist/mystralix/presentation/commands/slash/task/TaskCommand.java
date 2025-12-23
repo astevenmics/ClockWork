@@ -1,5 +1,6 @@
 package mist.mystralix.presentation.commands.slash.task;
 
+import mist.mystralix.application.helper.TaskHelper;
 import mist.mystralix.application.task.TaskService;
 import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
@@ -32,26 +33,13 @@ public final class TaskCommand implements SlashCommand {
     @Override
     public List<SubcommandData> getSubcommands() {
         return List.of(
-
-                // /task add
-                new SubcommandData("add", "Create a new task.")
+                new SubcommandData("create", "Create a new task.")
                         .addOptions(
                         new OptionData(OptionType.STRING, "title", "A brief title for the task.", true)
                                 .setRequiredLength(1, 32),
                         new OptionData(OptionType.STRING, "description", "A detailed description for the task.", true)
                                 .setRequiredLength(1, 256)
-                ),
-
-                // /task cancel
-                new SubcommandData("cancel", "Cancel a task by its task ID.")
-                        .addOptions(new OptionData(
-                        OptionType.INTEGER,
-                        "task_id",
-                        "ID number of the task to cancel.",
-                        true
-                )),
-
-                // /task delete
+                        ),
                 new SubcommandData("delete", "Delete a task by its task ID.")
                         .addOptions(new OptionData(
                         OptionType.INTEGER,
@@ -59,68 +47,57 @@ public final class TaskCommand implements SlashCommand {
                         "ID number of the task to delete.",
                         true
                 )),
-
+                new SubcommandData("update", "Update a task’s title, description, or status.")
+                        .addOptions(
+                                new OptionData(
+                                        OptionType.INTEGER,
+                                        "id",
+                                        "ID of the task to update.",
+                                        true
+                                ),
+                                new OptionData(
+                                        OptionType.STRING,
+                                        "title",
+                                        "New title for the task.",
+                                        false
+                                ).setRequiredLength(1, 32),
+                                new OptionData(
+                                        OptionType.STRING,
+                                        "description",
+                                        "New description for the task.",
+                                        false
+                                ).setRequiredLength(1, 256),
+                                TaskHelper.getTaskTypeOptions()
+                        ),
                 // /task list
                 new SubcommandData("list", "List all tasks, optionally filtered by status.")
                         .addOptions(
-                            new OptionData(OptionType.INTEGER, "type", "Filter tasks by status.", false)
-                                    .addChoice(
-                                            TaskStatus.ALL.getIcon() + " " + TaskStatus.ALL.getStringValue(),
-                                            TaskStatus.ALL.getIntValue())
-                                    .addChoice(
-                                            TaskStatus.COMPLETED.getIcon() + " " + TaskStatus.COMPLETED.getStringValue(),
-                                            TaskStatus.COMPLETED.getIntValue())
-                                    .addChoice(
-                                            TaskStatus.INPROGRESS.getIcon() + " " + TaskStatus.INPROGRESS.getStringValue(),
-                                            TaskStatus.INPROGRESS.getIntValue())
-                                    .addChoice(
-                                            TaskStatus.ARCHIVED.getIcon() + " " + TaskStatus.ARCHIVED.getStringValue(),
-                                            TaskStatus.ARCHIVED.getIntValue())
-                                    .addChoice(
-                                            TaskStatus.CANCELLED.getIcon() + " " + TaskStatus.CANCELLED.getStringValue(),
-                                            TaskStatus.CANCELLED.getIntValue())
+                                new OptionData(OptionType.INTEGER, "type", "Filter tasks by status.", false)
+                                        .addChoice(
+                                                TaskStatus.ALL.getIcon() + " " + TaskStatus.ALL.getStringValue(),
+                                                TaskStatus.ALL.getIntValue())
+                                        .addChoice(
+                                                TaskStatus.COMPLETED.getIcon() + " " + TaskStatus.COMPLETED.getStringValue(),
+                                                TaskStatus.COMPLETED.getIntValue())
+                                        .addChoice(
+                                                TaskStatus.INPROGRESS.getIcon() + " " + TaskStatus.INPROGRESS.getStringValue(),
+                                                TaskStatus.INPROGRESS.getIntValue())
+                                        .addChoice(
+                                                TaskStatus.ARCHIVED.getIcon() + " " + TaskStatus.ARCHIVED.getStringValue(),
+                                                TaskStatus.ARCHIVED.getIntValue())
+                                        .addChoice(
+                                                TaskStatus.CANCELLED.getIcon() + " " + TaskStatus.CANCELLED.getStringValue(),
+                                                TaskStatus.CANCELLED.getIntValue())
                 ),
-
-                // /task update
-                new SubcommandData("update", "Update a task’s title, description, or status.")
-                        .addOptions(
-                        new OptionData(
+                // /task cancel
+                new SubcommandData("cancel", "Cancel a task by its task ID.")
+                        .addOptions(new OptionData(
                                 OptionType.INTEGER,
-                                "id",
-                                "ID of the task to update.",
+                                "task_id",
+                                "ID number of the task to cancel.",
                                 true
-                        ),
-                        new OptionData(
-                                OptionType.STRING,
-                                "title",
-                                "New title for the task.",
-                                false
-                        ).setRequiredLength(1, 32),
-                        new OptionData(
-                                OptionType.STRING,
-                                "description",
-                                "New description for the task.",
-                                false
-                        ).setRequiredLength(1, 256),
-                        new OptionData(
-                                OptionType.INTEGER,
-                                "type",
-                                "New status for the task.",
-                                false
-                        )
-                                .addChoice(
-                                        TaskStatus.COMPLETED.getIcon() + " " + TaskStatus.COMPLETED.getStringValue(),
-                                        TaskStatus.COMPLETED.getIntValue())
-                                .addChoice(
-                                        TaskStatus.INPROGRESS.getIcon() + " " + TaskStatus.INPROGRESS.getStringValue(),
-                                        TaskStatus.INPROGRESS.getIntValue())
-                                .addChoice(
-                                        TaskStatus.ARCHIVED.getIcon() + " " + TaskStatus.ARCHIVED.getStringValue(),
-                                        TaskStatus.ARCHIVED.getIntValue())
-                                .addChoice(
-                                        TaskStatus.CANCELLED.getIcon() + " " + TaskStatus.CANCELLED.getStringValue(),
-                                        TaskStatus.CANCELLED.getIntValue())
-                ),
+                        )),
+
 
                 // /task view
                 new SubcommandData(
@@ -151,7 +128,7 @@ public final class TaskCommand implements SlashCommand {
         TaskSubCommandFunctions subCommandHandler = new TaskSubCommandFunctions(TASK_SERVICE);
 
         MessageEmbed messageEmbed = switch (subCommand) {
-            case "add"    -> subCommandHandler.create(event);
+            case "create" -> subCommandHandler.create(event);
             case "cancel" -> subCommandHandler.cancelTask(event);
             case "delete" -> subCommandHandler.delete(event);
             case "list"   -> subCommandHandler.readAll(event);

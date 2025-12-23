@@ -1,8 +1,8 @@
 package mist.mystralix.presentation.commands.slash.team;
 
+import mist.mystralix.application.helper.TaskHelper;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.team.TeamTaskService;
-import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
 import mist.mystralix.presentation.commands.slash.team.task.TeamTaskSubCommandFunctions;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -217,24 +217,7 @@ public class TeamCommand implements SlashCommand {
                                                 "New description for the task.",
                                                 false
                                         ).setRequiredLength(1, 256),
-                                        new OptionData(
-                                                OptionType.INTEGER,
-                                                "type",
-                                                "New status for the task.",
-                                                false
-                                        )
-                                                .addChoice(
-                                                        TaskStatus.COMPLETED.getIcon() + " " + TaskStatus.COMPLETED.getStringValue(),
-                                                        TaskStatus.COMPLETED.getIntValue())
-                                                .addChoice(
-                                                        TaskStatus.INPROGRESS.getIcon() + " " + TaskStatus.INPROGRESS.getStringValue(),
-                                                        TaskStatus.INPROGRESS.getIntValue())
-                                                .addChoice(
-                                                        TaskStatus.ARCHIVED.getIcon() + " " + TaskStatus.ARCHIVED.getStringValue(),
-                                                        TaskStatus.ARCHIVED.getIntValue())
-                                                .addChoice(
-                                                        TaskStatus.CANCELLED.getIcon() + " " + TaskStatus.CANCELLED.getStringValue(),
-                                                        TaskStatus.CANCELLED.getIntValue())
+                                        TaskHelper.getTaskTypeOptions()
                                 ),
                         new SubcommandData("list", "List all tasks")
                                 .addOptions(
