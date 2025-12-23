@@ -68,8 +68,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 reminderUUID
         );
 
-        new ReminderScheduler(REMINDER_SERVICE)
-                .scheduleReminder(user, newlyCreatedReminder);
+        ReminderScheduler.getInstance().scheduleReminder(user, newlyCreatedReminder);
 
         return REMINDER_EMBED.createMessageEmbed(
                 user,
@@ -87,6 +86,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                 "reminder_id",
                 reminder -> {
                     REMINDER_SERVICE.delete(reminder);
+                    ReminderScheduler.getInstance().cancelReminder(reminder.getUUID());
                     return REMINDER_EMBED.createMessageEmbed(event.getUser(), "Deleted", reminder);
                 }
         );
@@ -119,6 +119,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                     }
         
                     REMINDER_SERVICE.updateUserReminder(reminder);
+                    ReminderScheduler.getInstance().scheduleReminder(user, reminder);
         
                     return REMINDER_EMBED.createMessageEmbed(user, "Updated", reminder);
                 }

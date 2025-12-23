@@ -1,12 +1,12 @@
 package mist.mystralix;
 
 import mist.mystralix.application.reminder.ReminderScheduler;
-import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.config.DBManager;
 import mist.mystralix.config.DBSchemaInitializer;
 import mist.mystralix.presentation.commands.manager.CommandManager;
 import mist.mystralix.presentation.listeners.MessageFilter;
 import mist.mystralix.presentation.listeners.MessageLogger;
+import mist.mystralix.presentation.listeners.Shutdown;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.JDABuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -55,10 +55,13 @@ public final class ClockWork {
         System.out.println("ClockWork bot is online!");
 
         CommandManager commandManager = new CommandManager(container);
+        ReminderScheduler reminderScheduler = ReminderScheduler.getInstance(container.getReminderService());
+        reminderScheduler.scheduleReminders(jda);
 
         jda.addEventListener(commandManager);
         jda.addEventListener(new MessageLogger());
         jda.addEventListener(new MessageFilter());
+        jda.addEventListener(new Shutdown());
 
 //        jda.updateCommands().addCommands(commandManager.getCommandData()).queue();
 
@@ -72,11 +75,6 @@ public final class ClockWork {
                 }
             }
         }
-
-        ReminderService reminderService = container.getReminderService();
-        ReminderScheduler reminderScheduler = new ReminderScheduler(reminderService);
-
-        reminderScheduler.scheduleReminders(jda);
 
         System.out.println("Reminder scheduler activated.");
     }

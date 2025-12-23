@@ -5,19 +5,36 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.User;
 
 import java.util.HashSet;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Map;
+import java.util.concurrent.*;
 
 public class ReminderScheduler {
 
-    private final ScheduledExecutorService SCHEDULER =
-            Executors.newScheduledThreadPool(1);
+    private static final ScheduledExecutorService SCHEDULER = Executors.newScheduledThreadPool(1);
+
+    private static final Map<String, ScheduledFuture<?>> SCHEDULED_REMINDERS = new ConcurrentHashMap<>();
 
     private final ReminderService REMINDER_SERVICE;
 
+    private static volatile ReminderScheduler instance;
+
     public ReminderScheduler(ReminderService reminderService) {
         this.REMINDER_SERVICE = reminderService;
+    }
+
+    public static ReminderScheduler getInstance(ReminderService reminderService) {
+        if (instance == null) {
+            synchronized (ReminderScheduler.class) {
+                if (instance == null) {
+                    instance = new ReminderScheduler(reminderService);
+                }
+            }
+        }
+        return instance;
+    }
+
+    public static ReminderScheduler getInstance() {
+        return instance;
     }
 
     // TODO: update to cancel when updated and re-schedule
@@ -39,30 +56,62 @@ public class ReminderScheduler {
 
             } else {
                 // Otherwise schedule the reminder to execute in the future
-                SCHEDULER.schedule(() ->
+                ScheduledFuture<?> scheduledReminder = SCHEDULER.schedule(() ->
                                 jda.retrieveUserById(userDiscordID).queue(user -> {
                                     REMINDER_SERVICE.sendReminder(user, reminder);
                                     REMINDER_SERVICE.reminderSentUpdate(reminder);
+                                    SCHEDULED_REMINDERS.remove(reminder.getUUID());
                                 }, error -> System.out.println(error.getMessage())),
                         remainingTime,
                         TimeUnit.MILLISECONDS
                 );
+                SCHEDULED_REMINDERS.put(reminder.getUUID(), scheduledReminder);
             }
         }
     }
 
-    // TODO: update to cancel when updated and re-schedule
     public void scheduleReminder(User user, Reminder reminder) {
 
         long reminderTargetTimestamp = reminder.getTargetTimestamp();
         long remainingTime = reminderTargetTimestamp - System.currentTimeMillis();
 
-        SCHEDULER.schedule(() -> {
+        ScheduledFuture<?> reminderScheduled = SCHEDULER.schedule(() -> {
                     REMINDER_SERVICE.sendReminder(user, reminder);
                     REMINDER_SERVICE.reminderSentUpdate(reminder);
+                    SCHEDULED_REMINDERS.remove(reminder.getUUID());
                 },
                 remainingTime,
                 TimeUnit.MILLISECONDS
         );
+
+        // SCHEDULED_REMINDERS.put returns a value if the key already existed, returns null if not
+        ScheduledFuture<?> scheduledReminder = SCHEDULED_REMINDERS.put(reminder.getUUID(), reminderScheduled);
+        if (scheduledReminder != null) {
+            scheduledReminder.cancel(true);
+        }
     }
+
+    public void cancelReminder(String reminderUUID) {
+        ScheduledFuture<?> scheduledReminder = SCHEDULED_REMINDERS.get(reminderUUID);
+        if (scheduledReminder != null) {
+            scheduledReminder.cancel(true);
+            SCHEDULED_REMINDERS.remove(reminderUUID);
+        }
+    }
+
+    public void shutdown() {
+        SCHEDULER.shutdown();
+        try {
+            boolean terminationSuccess = SCHEDULER.awaitTermination(1, TimeUnit.MINUTES);
+            if (terminationSuccess) {
+                System.out.println("ReminderScheduler has been shut down!");
+            } else {
+                System.out.println("ReminderScheduler shutdown timed out.");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            System.out.println("ReminderScheduler shutdown was interrupted.");
+        }
+    }
+
 }
