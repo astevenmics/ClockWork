@@ -1,7 +1,7 @@
 package mist.mystralix.application.validator;
 
 import mist.mystralix.presentation.embeds.IMessageEmbedBuilder;
-import mist.mystralix.utils.Constants;
+import mist.mystralix.utils.messages.UserMessages;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 
@@ -15,9 +15,9 @@ public class UserValidator {
             IMessageEmbedBuilder embedBuilder
     ) {
         if (user.equals(userMentioned)) {
-            return embedBuilder.createErrorEmbed(user, Constants.USER_MENTIONED_CANNOT_BE_USER.getValue(String.class));
+            return embedBuilder.createErrorEmbed(user, UserMessages.CANNOT_MENTION_SELF);
         } else if (userMentioned.isBot()) {
-            return embedBuilder.createErrorEmbed(user, Constants.USER_MENTIONED_CANNOT_BE_BOT.getValue(String.class));
+            return embedBuilder.createErrorEmbed(user, UserMessages.CANNOT_MENTION_BOT);
         }
         return null;
     }
@@ -29,7 +29,7 @@ public class UserValidator {
             IMessageEmbedBuilder embedBuilder
     ) {
         if (userMentioned.isBot()) {
-            return embedBuilder.createErrorEmbed(user, Constants.USER_MENTIONED_CANNOT_BE_BOT.getValue(String.class));
+            return embedBuilder.createErrorEmbed(user, UserMessages.CANNOT_MENTION_BOT);
         }
         return null;
     }

@@ -7,7 +7,8 @@ import mist.mystralix.application.validator.UserValidator;
 import mist.mystralix.domain.team.Team;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TeamEmbed;
-import mist.mystralix.utils.Constants;
+import mist.mystralix.utils.messages.CommonMessages;
+import mist.mystralix.utils.messages.TeamMessages;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -30,10 +31,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         User user = event.getUser();
         OptionMapping optionName = event.getOption("team_name");
         if (optionName == null) {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         String name = optionName.getAsString();
@@ -50,10 +48,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping userOption = event.getOption("user");
         OptionMapping idOption = event.getOption("id");
         if (userOption == null || idOption == null) {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         User userToAdd = userOption.getAsUser();
@@ -83,7 +78,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             return TEAM_EMBED.createErrorEmbed(
                     user,
                     String.format(
-                            Constants.USER_MENTIONED_ALREADY_PART_OF_THE_TEAM.getValue(String.class),
+                            TeamMessages.USER_ALREADY_PART_OF_TEAM,
                             userToAddMention,
                             team.getTeamName()
                     )
@@ -96,7 +91,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             return TEAM_EMBED.createErrorEmbed(
                     user,
                     String.format(
-                            Constants.USER_ALREADY_INVITED.getValue(String.class),
+                            TeamMessages.USER_ALREADY_INVITED,
                             userToAddMention
                     )
             );
@@ -124,10 +119,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping idOption = event.getOption("id");
         OptionMapping userOption = event.getOption("user");
         if (idOption == null || userOption == null) {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         int teamId = idOption.getAsInt();
@@ -148,13 +140,13 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         ArrayList<String> members = team.getMembers();
 
         if(teamLeaderID.equals(userToRemoveId) || moderators.contains(userToRemoveId)) {
-            return TEAM_EMBED.createErrorEmbed(user, Constants.TEAM_CO_MODERATORS_ERROR.getValue(String.class));
+            return TEAM_EMBED.createErrorEmbed(user, TeamMessages.CANNOT_REMOVE_FELLOW_MODERATOR);
         }
 
         if(!moderators.contains(userToRemove.getId()) && !members.contains(userToRemove.getId())) {
             return TEAM_EMBED.createErrorEmbed(user,
                     String.format(
-                            Constants.USER_MENTIONED_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            TeamMessages.USER_NOT_PART_OF_TEAM,
                             team.getTeamName()
                     )
             );
@@ -167,10 +159,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         } else if(moderators.contains(userId)) {
             members.remove(userToRemoveId);
         } else {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.TEAM_MODERATOR_OR_HIGHER_REQUIRED.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, TeamMessages.MODERATOR_REQUIRED);
         }
 
         TEAM_SERVICE.update(team);
@@ -185,17 +174,14 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping idOption = event.getOption("id");
         OptionMapping decisionOption = event.getOption("decision");
         if(idOption == null || decisionOption == null) {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         Team team = TEAM_SERVICE.findByID(idOption.getAsInt());
         if (team == null) {
             return TEAM_EMBED.createErrorEmbed(user,
                     String.format(
-                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            CommonMessages.OBJECT_NOT_FOUND,
                             "team"
                     ));
         }
@@ -204,7 +190,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             return TEAM_EMBED.createErrorEmbed(
                     user,
                     String.format(
-                            Constants.USER_ALREADY_PART_OF_THE_TEAM.getValue(String.class),
+                            TeamMessages.ALREADY_PART_OF_TEAM,
                             team.getTeamName()
                     )
             );
@@ -214,7 +200,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         if(!teamInvitations.contains(userId)) {
             return TEAM_EMBED.createErrorEmbed(
                     user,
-                    Constants.TEAM_NO_PENDING_INVITATION.getValue(String.class)
+                    TeamMessages.NO_PENDING_TEAM_INVITATION
             );
         }
 
@@ -240,10 +226,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         OptionMapping idOption = event.getOption("id");
         if(idOption == null) {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndAccess(user, TEAM_SERVICE, TEAM_EMBED, idOption.getAsInt());
@@ -251,7 +234,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         Team team = TEAM_SERVICE.findByID(idOption.getAsInt());
 
         if (team.getTeamLeader().equals(userId)) {
-            return TEAM_EMBED.createErrorEmbed(user, Constants.TEAM_LEADER_CANNOT_LEAVE.getValue(String.class));
+            return TEAM_EMBED.createErrorEmbed(user, TeamMessages.LEADER_CANNOT_LEAVE);
         }
 
         team.getModerators().remove(userId);
@@ -271,10 +254,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         OptionMapping idOption = event.getOption("id");
         if(idOption == null) {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndAccess(user, TEAM_SERVICE, TEAM_EMBED, idOption.getAsInt());
@@ -299,10 +279,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         OptionMapping optionName = event.getOption("id");
         if (optionName == null) {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
         int teamId = optionName.getAsInt();
 
@@ -330,10 +307,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping positionOption = event.getOption("position");
 
         if (teamOption == null || userToHandleOption == null || positionOption == null) {
-            return TEAM_EMBED.createErrorEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TEAM_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         MessageEmbed errorEmbed = TeamValidator.validateTeamAndLeadership(user, TEAM_SERVICE, TEAM_EMBED, teamOption.getAsInt());
@@ -353,7 +327,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             return TEAM_EMBED.createErrorEmbed(
                     user,
                     String.format(
-                            Constants.USER_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            TeamMessages.NOT_PART_OF_TEAM,
                             team.getTeamName()
                     )
             );
@@ -366,7 +340,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
             return TEAM_EMBED.createErrorEmbed(
                     user,
                     String.format(
-                            Constants.USER_MENTIONED_ALREADY_HAS_THE_POSITION_IN_THE_TEAM.getValue(String.class),
+                            TeamMessages.USER_ALREADY_HAS_ROLE_IN_TEAM,
                             userToHandle.getAsMention(),
                             position,
                             team.getTeamName()
@@ -433,7 +407,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         if (!moderators.contains(userMentioned.getId()) && !members.contains(userMentioned.getId())) {
             return TEAM_EMBED.createErrorEmbed(user,
                     String.format(
-                            Constants.USER_MENTIONED_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            TeamMessages.USER_NOT_PART_OF_TEAM,
                             team.getTeamName()
                     ));
         }

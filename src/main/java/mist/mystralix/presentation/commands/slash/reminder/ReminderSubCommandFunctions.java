@@ -6,8 +6,9 @@ import mist.mystralix.application.validator.InputValidation;
 import mist.mystralix.domain.reminder.Reminder;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.ReminderEmbed;
-import mist.mystralix.utils.Constants;
 import mist.mystralix.utils.TimeHandler;
+import mist.mystralix.utils.messages.CommonMessages;
+import mist.mystralix.utils.messages.ReminderMessages;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -35,10 +36,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping targetTime = event.getOption("time");
 
         if (message == null || targetTime == null) {
-            return REMINDER_EMBED.createMissingParametersEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return REMINDER_EMBED.createMissingParametersEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         String reminderMessage = message.getAsString();
@@ -46,15 +44,9 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
         long reminderAsLong = TimeHandler.parseDuration(reminderTargetTimestampAsString);
         if (reminderAsLong <= 0) {
-            return REMINDER_EMBED.createErrorEmbed(
-                    user,
-                    Constants.REMINDER_INVALID_TIME_INPUT.getValue(String.class)
-            );
+            return REMINDER_EMBED.createErrorEmbed(user, ReminderMessages.INVALID_TIME_INPUT);
         } else if (reminderAsLong < 60_000L) {
-            return REMINDER_EMBED.createErrorEmbed(
-                    user,
-                    Constants.REMINDER_MINIMUM_TIME_INPUT.getValue(String.class)
-            );
+            return REMINDER_EMBED.createErrorEmbed(user, ReminderMessages.MINIMUM_TIME_INPUT);
         }
 
         long targetTimestamp = System.currentTimeMillis() + reminderAsLong;
@@ -120,10 +112,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                         long duration = TimeHandler.parseDuration(timeString);
         
                         if (duration <= 0) {
-                            return REMINDER_EMBED.createErrorEmbed(
-                                    user,
-                                    Constants.REMINDER_INVALID_TIME_INPUT.getValue(String.class)
-                            );
+                            return REMINDER_EMBED.createErrorEmbed(user, ReminderMessages.INVALID_TIME_INPUT);
                         }
         
                         reminder.setTargetTimestamp(System.currentTimeMillis() + duration);

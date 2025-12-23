@@ -8,7 +8,7 @@ import mist.mystralix.domain.task.Task;
 import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TaskEmbed;
-import mist.mystralix.utils.Constants;
+import mist.mystralix.utils.messages.CommonMessages;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -35,10 +35,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping description = event.getOption("description");
 
         if (title == null || description == null) {
-            return TASK_EMBED.createMissingParametersEmbed(
-                    user,
-                    Constants.MISSING_PARAMETERS.getValue(String.class)
-            );
+            return TASK_EMBED.createMissingParametersEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         TaskDAO taskDAO = new TaskDAO(
@@ -89,7 +86,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
             return TASK_EMBED.createErrorEmbed(
                     user,
                     String.format(
-                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            CommonMessages.OBJECT_NOT_FOUND,
                             "task"
                     )
             );

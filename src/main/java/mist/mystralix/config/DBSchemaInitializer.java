@@ -1,6 +1,6 @@
 package mist.mystralix.config;
 
-import mist.mystralix.utils.Constants;
+import mist.mystralix.utils.schema.Tables;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -10,10 +10,7 @@ import java.util.List;
 public class DBSchemaInitializer {
 
     public void initializeDatabaseTable() {
-    List<?> constantsList = Constants.TABLES.getValue(List.class);
-    List<String> tableQueries = constantsList.stream()
-            .map(String::valueOf)
-            .toList();
+        List<String> tableQueries = List.of(Tables.REMINDERS, Tables.TASKS, Tables.TEAM_TASK, Tables.TEAMS);
 
         try (
                 Connection connection = DBManager.getConnection();

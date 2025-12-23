@@ -14,7 +14,8 @@ import mist.mystralix.domain.task.TeamTask;
 import mist.mystralix.domain.team.Team;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TeamTaskEmbed;
-import mist.mystralix.utils.Constants;
+import mist.mystralix.utils.messages.CommonMessages;
+import mist.mystralix.utils.messages.TeamMessages;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -48,7 +49,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping titleOption = event.getOption("title");
         OptionMapping descriptionOption = event.getOption("description");
         if (teamOption == null || titleOption == null || descriptionOption == null) {
-            return TEAM_TASK_EMBED.createErrorEmbed(user, Constants.MISSING_PARAMETERS.getValue(String.class));
+            return TEAM_TASK_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         int teamId = teamOption.getAsInt();
@@ -167,7 +168,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping teamOption = event.getOption("team");
 
         if (teamOption == null) {
-            return TEAM_TASK_EMBED.createErrorEmbed(user, Constants.MISSING_PARAMETERS.getValue(String.class));
+            return TEAM_TASK_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         int teamId = teamOption.getAsInt();
@@ -196,7 +197,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping userOption = event.getOption("user");
 
         if (event.getSubcommandName() == null || userOption == null) {
-            return TEAM_TASK_EMBED.createErrorEmbed(user, Constants.MISSING_PARAMETERS.getValue(String.class));
+            return TEAM_TASK_EMBED.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         User userToHandle = userOption.getAsUser();
@@ -211,7 +212,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         if (TeamTaskValidator.isUserMentionedNotPartOfTeam(result.team(), userToHandleId)) {
             return TEAM_TASK_EMBED.createErrorEmbed(user,
                     String.format(
-                            Constants.USER_MENTIONED_NOT_PART_OF_THE_TEAM.getValue(String.class),
+                            TeamMessages.USER_NOT_PART_OF_TEAM,
                             result.team().getTeamName()
                     ));
         }
@@ -219,16 +220,14 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         if (isAssign && result.teamTask().getAssignedUsers().contains(userToHandleId)) {
             return TEAM_TASK_EMBED.createErrorEmbed(user,
                     String.format(
-                            Constants.USER_MENTIONED_ALREADY_ASSIGNED_FOR_THE_TEAM_TASK.getValue(String.class),
-                            userToHandle.getAsMention(),
-                            result.team().getTeamName()
+                            TeamMessages.USER_ALREADY_ASSIGNED_TASK,
+                            userToHandle.getAsMention()
                     ));
         } else if (!isAssign && !result.teamTask().getAssignedUsers().contains(userToHandleId)) {
             return TEAM_TASK_EMBED.createErrorEmbed(user,
                     String.format(
-                            Constants.USER_MENTIONED_IS_NOT_ASSIGNED_FOR_THE_TEAM_TASK.getValue(String.class),
-                            userToHandle.getAsMention(),
-                            result.team().getTeamName()
+                            TeamMessages.USER_NOT_ASSIGNED_TASK,
+                            userToHandle.getAsMention()
                     ));
         }
 

@@ -10,7 +10,7 @@ import mist.mystralix.presentation.commands.slash.task.TaskCommand;
 import mist.mystralix.presentation.commands.slash.team.TeamCommand;
 import mist.mystralix.presentation.embeds.GeneralEmbed;
 import mist.mystralix.presentation.embeds.HelpEmbed;
-import mist.mystralix.utils.Constants;
+import mist.mystralix.utils.messages.UserMessages;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.selections.StringSelectMenu;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -80,7 +80,7 @@ public final class HelpCommand implements SlashCommand {
             event.replyEmbeds(
                             GeneralEmbed.createErrorEmbed(
                                     String.format(
-                                            Constants.MENU_BELONGS_TO_OTHER_USER.getValue(String.class),
+                                            UserMessages.MENU_BELONGS_TO_OTHER_USER,
                                             user.getAsMention()
                                     )))
                     .setEphemeral(true)

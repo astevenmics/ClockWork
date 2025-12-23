@@ -2,7 +2,7 @@ package mist.mystralix.presentation.embeds;
 
 import mist.mystralix.application.loops.Loops;
 import mist.mystralix.domain.team.Team;
-import mist.mystralix.utils.Constants;
+import mist.mystralix.utils.messages.TeamMessages;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -221,12 +221,12 @@ public class TeamEmbed implements IMessageEmbedBuilder {
         StringBuilder teamModerators = Loops.createTeamUsersStringBuilder(
                 serverGuild,
                 team.getModerators(),
-                Constants.TEAM_NO_MODERATORS.getValue(String.class)
+                TeamMessages.NO_MODERATORS
         );
         StringBuilder teamMembers = Loops.createTeamUsersStringBuilder(
                 serverGuild,
                 team.getMembers(),
-                Constants.TEAM_NO_MEMBERS.getValue(String.class)
+                TeamMessages.NO_MEMBERS
         );
 
         Member teamLeader = serverGuild.getMember(User.fromId(team.getTeamLeader()));

@@ -6,7 +6,8 @@ import mist.mystralix.application.validationresult.TeamTaskValidationResult;
 import mist.mystralix.domain.task.TeamTask;
 import mist.mystralix.domain.team.Team;
 import mist.mystralix.presentation.embeds.IMessageEmbedBuilder;
-import mist.mystralix.utils.Constants;
+import mist.mystralix.utils.messages.CommonMessages;
+import mist.mystralix.utils.messages.TeamMessages;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -38,7 +39,7 @@ public class TeamTaskValidator {
         OptionMapping taskOption = event.getOption("task");
 
         if (teamOption == null || taskOption == null) {
-            return embedBuilder.createErrorEmbed(user, Constants.MISSING_PARAMETERS.getValue(String.class));
+            return embedBuilder.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
 
         int teamId = teamOption.getAsInt();
@@ -53,7 +54,7 @@ public class TeamTaskValidator {
         if (teamTask == null) {
             return embedBuilder.createErrorEmbed(user,
                     String.format(
-                            Constants.OBJECT_NOT_FOUND.getValue(String.class),
+                            CommonMessages.OBJECT_NOT_FOUND,
                             "Team Task"
                     ));
         }
@@ -61,7 +62,7 @@ public class TeamTaskValidator {
         if (!team.getTasksUUID().contains(teamTask.getUUID())) {
             return embedBuilder.createErrorEmbed(user,
                     String.format(
-                            Constants.TEAM_TASK_NOT_PART_OF_TEAM.getValue(String.class),
+                            TeamMessages.TEAM_TASK_NOT_PART_OF_TEAM,
                             taskId,
                             team.getTeamName()
                     ));
