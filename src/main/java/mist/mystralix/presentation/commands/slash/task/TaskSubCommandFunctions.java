@@ -147,7 +147,6 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed readAll(SlashCommandInteraction event) {
-        // TODO: Add filters
         User user = event.getUser();
 
         int option = event.getOption("type",

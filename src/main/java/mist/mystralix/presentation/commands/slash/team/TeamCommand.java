@@ -1,6 +1,7 @@
 package mist.mystralix.presentation.commands.slash.team;
 
 import mist.mystralix.application.helper.TaskHelper;
+import mist.mystralix.application.pagination.PaginationService;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.team.TeamTaskService;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
@@ -16,15 +17,16 @@ import java.util.List;
 
 public class TeamCommand implements SlashCommand {
 
-    private final TeamTaskService TEAM_TASK_SERVICE;
-    private final TeamService TEAM_SERVICE;
+    private final TeamSubCommandFunctions teamSubCommandFunctions;
+    private final TeamTaskSubCommandFunctions teamTaskSubCommandFunctions;
 
     public TeamCommand(
             TeamTaskService teamTaskService,
-            TeamService teamService
+            TeamService teamService,
+            PaginationService paginationService
     ) {
-        this.TEAM_TASK_SERVICE = teamTaskService;
-        this.TEAM_SERVICE = teamService;
+        this.teamSubCommandFunctions = new TeamSubCommandFunctions(teamService, paginationService);
+        this.teamTaskSubCommandFunctions = new TeamTaskSubCommandFunctions(teamTaskService, teamService, paginationService);
     }
 
     @Override
@@ -257,12 +259,6 @@ public class TeamCommand implements SlashCommand {
         event.deferReply().queue();
 
         MessageEmbed messageEmbed;
-
-        TeamSubCommandFunctions teamSubCommandFunctions = new TeamSubCommandFunctions(TEAM_SERVICE);
-        TeamTaskSubCommandFunctions teamTaskSubCommandFunctions = new TeamTaskSubCommandFunctions(
-                TEAM_TASK_SERVICE,
-                TEAM_SERVICE
-        );
 
         if (subcommandGroup) {
             messageEmbed = switch (subCommand) {

@@ -1,6 +1,7 @@
 package mist.mystralix.presentation.embeds;
 
 import mist.mystralix.application.loops.Loops;
+import mist.mystralix.application.pagination.PaginationEmbedCreator;
 import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.domain.task.TeamTask;
@@ -14,7 +15,7 @@ import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 
-public class TeamTaskEmbed implements IMessageEmbedBuilder {
+public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
 
     @Override
     public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
@@ -50,7 +51,6 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
 
     @Override
     public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
-        // TODO: Pagination, limit 3 TeamTask per page
         if (list.isEmpty() || !(list.getFirst() instanceof TeamTask)) {
             return new EmbedBuilder()
                     .setTitle("There are currently no tasks for this team.")
@@ -66,7 +66,6 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
         embed.setTitle("Team Tasks | " + list.size() + " Tasks");
         embed.setColor(Color.WHITE);
 
-        // TODO: Pagination support for large task lists
         for (Object obj : list) {
             if (!(obj instanceof TeamTask teamTask)) continue;
 
@@ -226,5 +225,39 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder {
                 .addField("Assigned Users:", teamMembers.toString(), false)
                 .setFooter(user.getEffectiveName() + " | Team Viewing", user.getEffectiveAvatarUrl())
                 .build();
+    }
+
+    @Override
+    public MessageEmbed createPaginatedEmbed(User user, ArrayList<Object> data, int currentPage, int itemsPerPage) {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int endIndex = Math.min(currentPage * itemsPerPage, data.size());
+        int totalPages = (int) Math.ceil((double) data.size() / itemsPerPage);
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("List of Team Tasks | " + user.getEffectiveName());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            if (!(data.get(i) instanceof TeamTask teamTask)) continue;
+
+            TaskDAO taskDAO = teamTask.getTaskDAO();
+
+            embedBuilder.addField("Team Task #" + teamTask.getTeamID(),
+                    String.format(
+                            """
+                                    Title: **%s**
+                                    Users: %d users assigned
+                                    Status: %s **%s**
+                                    """,
+                            taskDAO.getTitle(),
+                            teamTask.getAssignedUsers().size(),
+                            taskDAO.getTaskStatus().getIcon(),
+                            taskDAO.getTaskStatus().getStringValue()
+                    ),
+                    true);
+        }
+
+        embedBuilder.setFooter("Team Count: " + data.size() + " | Page " + currentPage + "/" + totalPages, user.getEffectiveAvatarUrl());
+
+        return embedBuilder.build();
     }
 }

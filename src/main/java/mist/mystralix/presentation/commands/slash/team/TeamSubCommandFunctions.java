@@ -1,5 +1,8 @@
 package mist.mystralix.presentation.commands.slash.team;
 
+import mist.mystralix.application.pagination.PaginationData;
+import mist.mystralix.application.pagination.PaginationService;
+import mist.mystralix.application.pagination.TeamPaginationData;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.validationresult.TeamValidationResult;
 import mist.mystralix.application.validator.TeamValidator;
@@ -9,6 +12,8 @@ import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TeamEmbed;
 import mist.mystralix.utils.messages.CommonMessages;
 import mist.mystralix.utils.messages.TeamMessages;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -21,10 +26,12 @@ import java.util.UUID;
 public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
     private final TeamService TEAM_SERVICE;
+    private final PaginationService PAGINATION_SERVICE;
     private final TeamEmbed TEAM_EMBED = new TeamEmbed();
 
-    public TeamSubCommandFunctions(TeamService teamService) {
+    public TeamSubCommandFunctions(TeamService teamService, PaginationService paginationService) {
         this.TEAM_SERVICE = teamService;
+        this.PAGINATION_SERVICE = paginationService;
     }
 
     @Override
@@ -298,8 +305,28 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         User user = event.getUser();
 
         ArrayList<Team> userTeams = TEAM_SERVICE.getUserTeams(user.getId());
+        if (userTeams.isEmpty()) {
+            return TEAM_EMBED.createErrorEmbed(user, "You are currently not in a team.");
+        }
 
-        return TEAM_EMBED.createListEmbed(user, userTeams);
+        int teamsPerPage = 12;
+        int totalPages = (int) Math.ceil((double) userTeams.size() / teamsPerPage);
+        int currentPage = 1;
+
+        PaginationData paginationData = new TeamPaginationData(currentPage, totalPages, userTeams);
+        PAGINATION_SERVICE.addPaginationData(Team.class.getName() + ":" + user.getId(), paginationData);
+
+        MessageEmbed messageEmbed = TEAM_EMBED.createPaginatedEmbed(user, new ArrayList<>(userTeams), currentPage, teamsPerPage);
+        Button previousButton = Button.primary("prev_page:" + Team.class.getName(), "Previous");
+        Button nextButton = Button.primary("next_page:" + Team.class.getName(), "Next");
+
+        previousButton = previousButton.asDisabled();
+        if (currentPage == totalPages) {
+            nextButton = nextButton.asDisabled();
+        }
+        event.getHook().editOriginalEmbeds(messageEmbed).setComponents(ActionRow.of(previousButton, nextButton)).queue();
+
+        return messageEmbed;
     }
 
     public MessageEmbed handlePosition(SlashCommandInteraction event) {

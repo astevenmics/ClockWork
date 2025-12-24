@@ -2,6 +2,9 @@ package mist.mystralix.presentation.commands.slash.team.task;
 
 import mist.mystralix.application.helper.TaskHelper;
 import mist.mystralix.application.helper.TeamTaskHelper;
+import mist.mystralix.application.pagination.PaginationData;
+import mist.mystralix.application.pagination.PaginationService;
+import mist.mystralix.application.pagination.TeamTaskPaginationData;
 import mist.mystralix.application.team.TeamService;
 import mist.mystralix.application.team.TeamTaskService;
 import mist.mystralix.application.validationresult.TeamTaskValidationResult;
@@ -16,6 +19,8 @@ import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TeamTaskEmbed;
 import mist.mystralix.utils.messages.CommonMessages;
 import mist.mystralix.utils.messages.TeamMessages;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -29,14 +34,17 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
     private final TeamTaskService TEAM_TASK_SERVICE;
     private final TeamService TEAM_SERVICE;
+    private final PaginationService PAGINATION_SERVICE;
     private final TeamTaskEmbed TEAM_TASK_EMBED = new TeamTaskEmbed();
 
     public TeamTaskSubCommandFunctions(
             TeamTaskService teamTaskService,
-            TeamService teamService
+            TeamService teamService,
+            PaginationService paginationService
     ) {
         this.TEAM_TASK_SERVICE = teamTaskService;
         this.TEAM_SERVICE = teamService;
+        this.PAGINATION_SERVICE = paginationService;
     }
 
     @Override
@@ -163,7 +171,6 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed readAll(SlashCommandInteraction event) {
-
         User user = event.getUser();
         OptionMapping teamOption = event.getOption("team");
 
@@ -178,7 +185,30 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
             return messageEmbed;
         }
 
-        return TEAM_TASK_EMBED.createListEmbed(user, TEAM_TASK_SERVICE.findAllByTeamID(teamId));
+        ArrayList<TeamTask> teamTasks = TEAM_TASK_SERVICE.findAllByTeamID(teamId);
+
+        if (teamTasks.isEmpty()) {
+            return TEAM_TASK_EMBED.createErrorEmbed(user, "There are currently no Team Task for this team.");
+        }
+
+        int teamTasksPerPage = 3;
+        int totalPages = (int) Math.ceil((double) teamTasks.size() / teamTasksPerPage);
+        int currentPage = 1;
+
+        PaginationData paginationData = new TeamTaskPaginationData(currentPage, totalPages, teamTasks);
+        PAGINATION_SERVICE.addPaginationData(TeamTask.class.getName() + ":" + user.getId(), paginationData);
+
+        messageEmbed = TEAM_TASK_EMBED.createPaginatedEmbed(user, new ArrayList<>(teamTasks), currentPage, teamTasksPerPage);
+        Button previousButton = Button.primary("prev_page:" + TeamTask.class.getName(), "Previous");
+        Button nextButton = Button.primary("next_page:" + TeamTask.class.getName(), "Next");
+
+        previousButton = previousButton.asDisabled();
+        if (currentPage == totalPages) {
+            nextButton = nextButton.asDisabled();
+        }
+        event.getHook().editOriginalEmbeds(messageEmbed).setComponents(ActionRow.of(previousButton, nextButton)).queue();
+
+        return messageEmbed;
     }
 
     public MessageEmbed handleAssignment(SlashCommandInteraction event) {

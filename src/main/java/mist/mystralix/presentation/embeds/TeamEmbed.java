@@ -1,6 +1,7 @@
 package mist.mystralix.presentation.embeds;
 
 import mist.mystralix.application.loops.Loops;
+import mist.mystralix.application.pagination.PaginationEmbedCreator;
 import mist.mystralix.domain.team.Team;
 import mist.mystralix.utils.messages.TeamMessages;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -13,7 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class TeamEmbed implements IMessageEmbedBuilder {
+public class TeamEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
     @Override
     public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
         if (!(object instanceof Team team)) return null;
@@ -361,4 +362,37 @@ public class TeamEmbed implements IMessageEmbedBuilder {
                 .build();
     }
 
+    @Override
+    public MessageEmbed createPaginatedEmbed(User user, ArrayList<Object> data, int currentPage, int itemsPerPage) {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int endIndex = Math.min(currentPage * itemsPerPage, data.size());
+        int totalPages = (int) Math.ceil((double) data.size() / itemsPerPage);
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("List of Teams | " + user.getEffectiveName());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            if (!(data.get(i) instanceof Team team)) continue;
+
+            User leaderUser = user.getJDA().getUserById(team.getTeamLeader());
+            String teamLeader = leaderUser != null ? leaderUser.getAsMention() : "<@" + team.getTeamLeader() + ">";
+
+            embedBuilder.addField("Team #" + team.getId(),
+                    String.format(
+                            """
+                                    Name: **%s**
+                                    Leader: %s
+                                    Size: %d users
+                                    """,
+                            team.getTeamName(),
+                            teamLeader,
+                            1 + team.getModerators().size() + team.getMembers().size()
+                    ),
+                    true);
+        }
+
+        embedBuilder.setFooter("Team Count: " + data.size() + " | Page " + currentPage + "/" + totalPages, user.getEffectiveAvatarUrl());
+
+        return embedBuilder.build();
+    }
 }
