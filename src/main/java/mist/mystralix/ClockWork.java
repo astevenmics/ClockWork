@@ -50,7 +50,7 @@ public final class ClockWork {
         reminderScheduler.scheduleReminders(jda);
         System.out.println("Reminder scheduler activated.");
 
-        new ListenerManager(jda, commandManager.getCommands());
+        new ListenerManager(jda, commandManager.getCommands(), container);
 
     }
 }

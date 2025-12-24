@@ -1,5 +1,6 @@
 package mist.mystralix;
 
+import mist.mystralix.application.pagination.PaginationService;
 import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.team.TeamService;
@@ -23,6 +24,8 @@ public class ClockWorkContainer {
 
     private final TeamTaskService teamTaskService;
 
+    private final PaginationService paginationService;
+
     public ClockWorkContainer() {
         TaskRepository taskRepository = new DBTaskRepository();
         ReminderRepository reminderRepository = new DBReminderRepository();
@@ -33,7 +36,7 @@ public class ClockWorkContainer {
         this.reminderService = new ReminderService(reminderRepository);
         this.teamService = new TeamService(teamRepository);
         this.teamTaskService = new TeamTaskService(teamTaskRepository);
-
+        this.paginationService = new PaginationService();
     }
 
     public TaskService getTaskService() {
@@ -50,6 +53,10 @@ public class ClockWorkContainer {
 
     public TeamTaskService getTeamTaskService() {
         return teamTaskService;
+    }
+
+    public PaginationService getPaginationService() {
+        return paginationService;
     }
 
 }
