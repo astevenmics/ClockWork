@@ -1,5 +1,8 @@
 package mist.mystralix.presentation.commands.slash.reminder;
 
+import mist.mystralix.application.pagination.PaginationData;
+import mist.mystralix.application.pagination.PaginationService;
+import mist.mystralix.application.pagination.ReminderPaginationData;
 import mist.mystralix.application.reminder.ReminderScheduler;
 import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.application.validator.InputValidation;
@@ -10,6 +13,8 @@ import mist.mystralix.presentation.embeds.ReminderEmbed;
 import mist.mystralix.utils.TimeHandler;
 import mist.mystralix.utils.messages.CommonMessages;
 import mist.mystralix.utils.messages.ReminderMessages;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -23,10 +28,13 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
     private final ReminderService REMINDER_SERVICE;
 
+    private final PaginationService PAGINATION_SERVICE;
+
     private final ReminderEmbed REMINDER_EMBED = new ReminderEmbed();
 
-    public ReminderSubCommandFunctions(ReminderService reminderService) {
+    public ReminderSubCommandFunctions(ReminderService reminderService, PaginationService paginationService) {
         this.REMINDER_SERVICE = reminderService;
+        this.PAGINATION_SERVICE = paginationService;
     }
 
     @Override
@@ -164,6 +172,23 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
             );
         }
 
-        return REMINDER_EMBED.createListEmbed(user, userReminders);
+        int remindersPerPage = 12;
+        int totalPages = (int) Math.ceil((double) userReminders.size() / remindersPerPage);
+        int currentPage = 1;
+
+        PaginationData paginationData = new ReminderPaginationData(currentPage, totalPages, userReminders);
+        PAGINATION_SERVICE.addPaginationData(Reminder.class.getName() + ":" + user.getId(), paginationData);
+
+        MessageEmbed messageEmbed = REMINDER_EMBED.createPaginatedEmbed(user, new ArrayList<>(userReminders), currentPage, remindersPerPage);
+        Button previousButton = Button.primary("prev_page:" + Reminder.class.getName(), "Previous");
+        Button nextButton = Button.primary("next_page:" + Reminder.class.getName(), "Next");
+
+        previousButton = previousButton.asDisabled();
+        if (currentPage == totalPages) {
+            nextButton = nextButton.asDisabled();
+        }
+        event.getHook().editOriginalEmbeds(messageEmbed).setComponents(ActionRow.of(previousButton, nextButton)).queue();
+
+        return messageEmbed;
     }
 }

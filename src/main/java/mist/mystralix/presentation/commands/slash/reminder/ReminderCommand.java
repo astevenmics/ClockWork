@@ -1,5 +1,6 @@
 package mist.mystralix.presentation.commands.slash.reminder;
 
+import mist.mystralix.application.pagination.PaginationService;
 import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -14,8 +15,8 @@ public final class ReminderCommand implements SlashCommand {
 
     private final ReminderSubCommandFunctions REMINDER_SUB_COMMAND_FUNCTIONS;
 
-    public ReminderCommand(ReminderService reminderService) {
-        this.REMINDER_SUB_COMMAND_FUNCTIONS = new ReminderSubCommandFunctions(reminderService);
+    public ReminderCommand(ReminderService reminderService, PaginationService paginationService) {
+        this.REMINDER_SUB_COMMAND_FUNCTIONS = new ReminderSubCommandFunctions(reminderService, paginationService);
     }
 
     @Override

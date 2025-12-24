@@ -1,5 +1,6 @@
 package mist.mystralix.presentation.embeds;
 
+import mist.mystralix.application.pagination.PaginationEmbedCreator;
 import mist.mystralix.domain.reminder.Reminder;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -10,7 +11,7 @@ import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
 
-public class ReminderEmbed implements IMessageEmbedBuilder {
+public class ReminderEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
 
     @Override
     public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
@@ -34,7 +35,7 @@ public class ReminderEmbed implements IMessageEmbedBuilder {
                         "Due on: " + discordReminderTargetTimestamp
         );
         embedBuilder.setFooter(
-                user.getEffectiveName() + " | Reminder",
+                "Make sure to keep your DMs open to receive reminders!",
                 user.getEffectiveAvatarUrl()
         );
 
@@ -128,5 +129,36 @@ public class ReminderEmbed implements IMessageEmbedBuilder {
                         ))
                 .setFooter("Reminder for " + user.getEffectiveName(), user.getEffectiveAvatarUrl())
                 .build();
+    }
+
+    @Override
+    public MessageEmbed createPaginatedEmbed(User user, ArrayList<Object> data, int currentPage, int itemsPerPage) {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int endIndex = Math.min(currentPage * itemsPerPage, data.size());
+        int totalPages = (int) Math.ceil((double) data.size() / itemsPerPage);
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("List of Reminders | " + user.getEffectiveName());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            if (!(data.get(i) instanceof Reminder reminder)) continue;
+            Instant targetInstant = Instant.ofEpochMilli(reminder.getTargetTimestamp());
+            String discordReminderTargetTimestamp = TimeFormat.DATE_TIME_LONG.format(targetInstant);
+
+            embedBuilder.addField("Reminder #" + reminder.getId(),
+                    String.format(
+                            """
+                                    Message: %s
+                                    Due On: %s
+                                    """,
+                            reminder.getMessage(),
+                            discordReminderTargetTimestamp
+                    ),
+                    false);
+        }
+
+        embedBuilder.setFooter("Reminder Count: " + data.size() + " | Page " + currentPage + "/" + totalPages, user.getEffectiveAvatarUrl());
+
+        return embedBuilder.build();
     }
 }
