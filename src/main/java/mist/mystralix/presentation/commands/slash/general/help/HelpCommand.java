@@ -1,5 +1,6 @@
 package mist.mystralix.presentation.commands.slash.general.help;
 
+import mist.mystralix.application.pagination.PaginationService;
 import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.team.TeamService;
@@ -24,17 +25,20 @@ public final class HelpCommand implements SlashCommand {
     private final TaskService TASK_SERVICE;
     private final ReminderService REMINDER_SERVICE;
     private final TeamService TEAM_SERVICE;
+    private final PaginationService PAGINATION_SERVICE;
 
     public HelpCommand(
             TeamTaskService teamTaskService,
             TaskService taskService,
             ReminderService reminderService,
-            TeamService teamService
+            TeamService teamService,
+            PaginationService paginationService
     ) {
         this.TEAM_TASK_SERVICE = teamTaskService;
         this.TASK_SERVICE = taskService;
         this.REMINDER_SERVICE = reminderService;
         this.TEAM_SERVICE = teamService;
+        this.PAGINATION_SERVICE = paginationService;
     }
 
     @Override
@@ -92,9 +96,10 @@ public final class HelpCommand implements SlashCommand {
 
         HelpEmbed helpEmbed = new HelpEmbed();
         MessageEmbed messageEmbed = switch (selectedOption) {
-            case "reminder" -> helpEmbed.createCategoryEmbed(new ReminderCommand(REMINDER_SERVICE));
-            case "task" -> helpEmbed.createCategoryEmbed(new TaskCommand(TASK_SERVICE));
-            case "team" -> helpEmbed.createCategoryEmbed(new TeamCommand(TEAM_TASK_SERVICE, TEAM_SERVICE));
+            case "reminder" -> helpEmbed.createCategoryEmbed(new ReminderCommand(REMINDER_SERVICE, PAGINATION_SERVICE));
+            case "task" -> helpEmbed.createCategoryEmbed(new TaskCommand(TASK_SERVICE, PAGINATION_SERVICE));
+            case "team" ->
+                    helpEmbed.createCategoryEmbed(new TeamCommand(TEAM_TASK_SERVICE, TEAM_SERVICE, PAGINATION_SERVICE));
             default -> null;
         };
 
