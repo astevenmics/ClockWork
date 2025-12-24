@@ -1,6 +1,7 @@
 package mist.mystralix.presentation.commands.manager;
 
 import mist.mystralix.ClockWorkContainer;
+import mist.mystralix.application.pagination.PaginationService;
 import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.team.TeamService;
@@ -25,11 +26,18 @@ public class CommandManager {
         TaskService taskService = clockWorkContainer.getTaskService();
         ReminderService reminderService = clockWorkContainer.getReminderService();
         TeamService teamService = clockWorkContainer.getTeamService();
+        PaginationService paginationService = clockWorkContainer.getPaginationService();
 
-        registerCommand(new HelpCommand(teamTaskService, taskService, reminderService, teamService));
-        registerCommand(new TaskCommand(taskService));
-        registerCommand(new ReminderCommand(reminderService));
-        registerCommand(new TeamCommand(teamTaskService, teamService));
+        registerCommand(new ReminderCommand(reminderService, paginationService));
+        registerCommand(new TaskCommand(taskService, paginationService));
+        registerCommand(new TeamCommand(teamTaskService, teamService, paginationService));
+        registerCommand(new HelpCommand(
+                teamTaskService,
+                taskService,
+                reminderService,
+                teamService,
+                paginationService
+        ));
     }
 
     private void registerCommand(SlashCommand command) {
