@@ -1,6 +1,9 @@
 package mist.mystralix.presentation.commands.slash.task;
 
 import mist.mystralix.application.helper.TaskHelper;
+import mist.mystralix.application.pagination.PaginationData;
+import mist.mystralix.application.pagination.PaginationService;
+import mist.mystralix.application.pagination.TaskPaginationData;
 import mist.mystralix.application.task.TaskService;
 import mist.mystralix.application.validator.InputValidation;
 import mist.mystralix.application.validator.TaskValidator;
@@ -10,6 +13,8 @@ import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TaskEmbed;
 import mist.mystralix.utils.messages.CommonMessages;
+import net.dv8tion.jda.api.components.actionrow.ActionRow;
+import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
 import net.dv8tion.jda.api.interactions.commands.OptionMapping;
@@ -23,10 +28,13 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
     private final TaskService TASK_SERVICE;
 
+    private final PaginationService PAGINATION_SERVICE;
+
     private final TaskEmbed TASK_EMBED = new TaskEmbed();
 
-    public TaskSubCommandFunctions(TaskService taskService) {
+    public TaskSubCommandFunctions(TaskService taskService, PaginationService paginationService) {
         this.TASK_SERVICE = taskService;
+        this.PAGINATION_SERVICE = paginationService;
     }
 
     @Override
@@ -139,6 +147,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
 
     @Override
     public MessageEmbed readAll(SlashCommandInteraction event) {
+        // TODO: Add filters
         User user = event.getUser();
 
         int option = event.getOption("type",
@@ -146,10 +155,8 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
                 OptionMapping::getAsInt
         );
         TaskStatus selected = TaskStatus.getTaskStatus(option);
-
         ArrayList<Task> tasks = TASK_SERVICE.getUserTasks(user);
 
-        // No tasks at all
         if (tasks.isEmpty()) {
             return TASK_EMBED.createErrorEmbed(
                     user,
@@ -174,9 +181,24 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
             }
         }
 
-        return TASK_EMBED.createListEmbed(
-                user,
-                tasks
-        );
+        int tasksPerPage = 12;
+        int totalPages = (int) Math.ceil((double) tasks.size() / tasksPerPage);
+        int currentPage = 1;
+
+        PaginationData paginationData = new TaskPaginationData(currentPage, totalPages, tasks);
+        PAGINATION_SERVICE.addPaginationData(Task.class.getName() + ":" + user.getId(), paginationData);
+
+        MessageEmbed messageEmbed = TASK_EMBED.createPaginatedEmbed(user, new ArrayList<>(tasks), currentPage, tasksPerPage);
+        Button previousButton = Button.primary("prev_page:" + Task.class.getName(), "Previous");
+        Button nextButton = Button.primary("next_page:" + Task.class.getName(), "Next");
+
+        previousButton = previousButton.asDisabled();
+        if (currentPage == totalPages) {
+            nextButton = nextButton.asDisabled();
+        }
+        event.getHook().editOriginalEmbeds(messageEmbed).setComponents(ActionRow.of(previousButton, nextButton)).queue();
+
+        return messageEmbed;
+
     }
 }

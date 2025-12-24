@@ -1,5 +1,6 @@
 package mist.mystralix.presentation.embeds;
 
+import mist.mystralix.application.pagination.PaginationEmbedCreator;
 import mist.mystralix.domain.task.Task;
 import mist.mystralix.domain.task.TaskDAO;
 import net.dv8tion.jda.api.EmbedBuilder;
@@ -9,7 +10,7 @@ import net.dv8tion.jda.api.entities.User;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class TaskEmbed implements IMessageEmbedBuilder {
+public class TaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
 
     @Override
     public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
@@ -106,5 +107,35 @@ public class TaskEmbed implements IMessageEmbedBuilder {
         );
 
         return embed.build();
+    }
+
+    @Override
+    public MessageEmbed createPaginatedEmbed(User user, ArrayList<Object> data, int currentPage, int itemsPerPage) {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int endIndex = Math.min(currentPage * itemsPerPage, data.size());
+        int totalPages = (int) Math.ceil((double) data.size() / itemsPerPage);
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("List of Tasks | " + user.getEffectiveName());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            if (!(data.get(i) instanceof Task task)) continue;
+            TaskDAO taskDAO = task.getTaskDAO();
+            embedBuilder.addField("Task #" + task.getId(),
+                    String.format(
+                            """
+                                    Title: **%s**
+                                    Status: %s **%s**
+                                    """,
+                            taskDAO.getTitle(),
+                            taskDAO.getTaskStatus().getIcon(),
+                            taskDAO.getTaskStatus().getStringValue()
+                    ),
+                    true);
+        }
+
+        embedBuilder.setFooter("Task Count: " + data.size() + " | Page " + currentPage + "/" + totalPages, user.getEffectiveAvatarUrl());
+
+        return embedBuilder.build();
     }
 }

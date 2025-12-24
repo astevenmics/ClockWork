@@ -1,6 +1,7 @@
 package mist.mystralix.presentation.commands.slash.task;
 
 import mist.mystralix.application.helper.TaskHelper;
+import mist.mystralix.application.pagination.PaginationService;
 import mist.mystralix.application.task.TaskService;
 import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
@@ -14,10 +15,10 @@ import java.util.List;
 
 public final class TaskCommand implements SlashCommand {
 
-    private final TaskService TASK_SERVICE;
+    private final TaskSubCommandFunctions TASK_SUB_COMMAND_HANDLER;
 
-    public TaskCommand(TaskService taskService) {
-        this.TASK_SERVICE = taskService;
+    public TaskCommand(TaskService taskService, PaginationService paginationService) {
+        this.TASK_SUB_COMMAND_HANDLER = new TaskSubCommandFunctions(taskService, paginationService);
     }
 
     @Override
@@ -125,15 +126,13 @@ public final class TaskCommand implements SlashCommand {
 
         event.deferReply().queue();
 
-        TaskSubCommandFunctions subCommandHandler = new TaskSubCommandFunctions(TASK_SERVICE);
-
         MessageEmbed messageEmbed = switch (subCommand) {
-            case "create" -> subCommandHandler.create(event);
-            case "cancel" -> subCommandHandler.cancelTask(event);
-            case "delete" -> subCommandHandler.delete(event);
-            case "list"   -> subCommandHandler.readAll(event);
-            case "update" -> subCommandHandler.update(event);
-            case "view"   -> subCommandHandler.read(event);
+            case "create" -> TASK_SUB_COMMAND_HANDLER.create(event);
+            case "cancel" -> TASK_SUB_COMMAND_HANDLER.cancelTask(event);
+            case "delete" -> TASK_SUB_COMMAND_HANDLER.delete(event);
+            case "list" -> TASK_SUB_COMMAND_HANDLER.readAll(event);
+            case "update" -> TASK_SUB_COMMAND_HANDLER.update(event);
+            case "view" -> TASK_SUB_COMMAND_HANDLER.read(event);
             default       -> null;
         };
 
