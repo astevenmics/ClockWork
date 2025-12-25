@@ -43,43 +43,6 @@ public class TaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
     }
 
     @Override
-    public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
-
-        // Validate list contents
-        if (list.isEmpty() || !(list.getFirst() instanceof Task)) {
-            return null;
-        }
-
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Tasks");
-        embed.setColor(Color.WHITE);
-
-        // TODO: Pagination support for large task lists
-        for (Object obj : list) {
-            if (!(obj instanceof Task task)) continue;
-
-            TaskDAO dao = task.getTaskDAO();
-            String taskTitle = dao.getTitle();
-            String taskDesc = dao.getDescription();
-            String taskStatus = dao.getTaskStatus().getIcon() + " " + dao.getTaskStatus().getStringValue();
-
-            embed.addField(
-                    "#" + task.getId() + " | " + taskTitle,
-                    "Description: " + taskDesc + "\n" +
-                            "Status: " + taskStatus,
-                    true
-            );
-        }
-
-        embed.setFooter(
-                user.getEffectiveName() + " | Task List",
-                user.getEffectiveAvatarUrl()
-        );
-
-        return embed.build();
-    }
-
-    @Override
     public MessageEmbed createErrorEmbed(User user, String message) {
         EmbedBuilder embed = new EmbedBuilder();
         embed.setTitle("Error | Task");

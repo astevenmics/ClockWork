@@ -33,54 +33,6 @@ public class TeamEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
         return embedBuilder.build();
     }
 
-    @Override
-    public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
-        // Validate list contents
-        if (list.isEmpty() || !(list.getFirst() instanceof Team)) {
-            return new EmbedBuilder()
-                    .setTitle("No Teams Found")
-                    .setDescription("You are not currently in any teams!")
-                    .setFooter(
-                            "Type /team to view all available commands!",
-                            user.getEffectiveAvatarUrl()
-                    )
-                    .build();
-        }
-
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Teams");
-        embed.setColor(Color.WHITE);
-
-        // TODO: Pagination support for large task lists
-        for (Object obj : list) {
-            if (!(obj instanceof Team team)) continue;
-
-            int teamUserCount =
-                    team.getModerators().size() +           // Team Members
-                            team.getMembers().size() +      // Team Moderators
-                            1;                              // Team Leader
-
-            embed.addField(
-                    "Team #" + team.getId(),
-                    String.format(
-                            """
-                            Name: **%s**
-                            User Count: **%d**
-                            """,
-                            team.getTeamName(),
-                            teamUserCount
-                    ), true
-            );
-        }
-
-        embed.setFooter(
-                user.getEffectiveName() + " | Task List",
-                user.getEffectiveAvatarUrl()
-        );
-
-        return embed.build();
-    }
-
     public MessageEmbed createInvitationEmbed(
             User user,
             User userToAdd,

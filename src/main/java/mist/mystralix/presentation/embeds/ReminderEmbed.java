@@ -43,40 +43,6 @@ public class ReminderEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
     }
 
     @Override
-    public MessageEmbed createListEmbed(User user, ArrayList<?> userReminders) {
-        if (userReminders.isEmpty() || !(userReminders.getFirst() instanceof Reminder)) {
-            return null;
-        }
-
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("Reminders");
-        embedBuilder.setColor(Color.ORANGE);
-
-        for (Object objectReminder : userReminders) {
-            if (!(objectReminder instanceof Reminder reminder)) continue;
-
-            String reminderMessage = reminder.getMessage();
-            int reminderID = reminder.getId();
-
-            Instant instant = Instant.ofEpochMilli(reminder.getTargetTimestamp());
-            String discordTimestamp = TimeFormat.DATE_TIME_LONG.format(instant);
-
-            embedBuilder.addField(
-                    "#" + reminderID + " | " + reminderMessage,
-                    "Due on: " + discordTimestamp,
-                    false
-            );
-        }
-
-        embedBuilder.setFooter(
-                user.getEffectiveName() + " | Reminders",
-                user.getEffectiveAvatarUrl()
-        );
-
-        return embedBuilder.build();
-    }
-
-    @Override
     public MessageEmbed createErrorEmbed(User user, String message) {
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("Error | Reminder");

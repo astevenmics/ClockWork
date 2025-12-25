@@ -50,53 +50,6 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
     }
 
     @Override
-    public MessageEmbed createListEmbed(User user, ArrayList<?> list) {
-        if (list.isEmpty() || !(list.getFirst() instanceof TeamTask)) {
-            return new EmbedBuilder()
-                    .setTitle("There are currently no tasks for this team.")
-                    .setFooter(
-                            "Type /team to view all available commands!",
-                            user.getEffectiveAvatarUrl()
-                    )
-                    .build();
-        }
-
-        int teamId = 0;
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Team Tasks | " + list.size() + " Tasks");
-        embed.setColor(Color.WHITE);
-
-        for (Object obj : list) {
-            if (!(obj instanceof TeamTask teamTask)) continue;
-
-            TaskDAO taskDAO = teamTask.getTaskDAO();
-
-            embed.addField(
-                    "Team Task #" + teamTask.getId(),
-                    String.format(
-                            """
-                                    **Title**: **%s**
-                                    **Status**: %s **%s**
-                                    **Assigned Users**: **%d**
-                                    """,
-                            taskDAO.getTitle(),
-                            taskDAO.getTaskStatus().getIcon(),
-                            taskDAO.getTaskStatus().getStringValue(),
-                            teamTask.getAssignedUsers().size()
-                    ), true
-            );
-            teamId = teamTask.getTeamID();
-        }
-
-        embed.setFooter(
-                user.getEffectiveName() + " | Team #" + teamId,
-                user.getEffectiveAvatarUrl()
-        );
-
-        return embed.build();
-    }
-
-    @Override
     public MessageEmbed createErrorEmbed(User user, String message) {
         return new EmbedBuilder()
                 .setTitle("Error Team Task")
