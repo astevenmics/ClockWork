@@ -5,19 +5,17 @@ import mist.mystralix.utils.schema.Tables;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.List;
 
 public class DBSchemaInitializer {
 
     public void initializeDatabaseTable() {
-        List<String> tableQueries = List.of(Tables.REMINDERS, Tables.TASKS, Tables.TEAM_TASK, Tables.TEAMS);
 
         try (
                 Connection connection = DBManager.getConnection();
                 Statement statement = connection.createStatement()
         ) {
             // Create tables if missing
-            for (String query : tableQueries) {
+            for (String query : Tables.getTables()) {
                 statement.execute(query);
             }
 

@@ -42,4 +42,8 @@ public class TimeHandler {
 
         return totalMilliseconds;
     }
+
+    private TimeHandler() {
+    }
+
 }

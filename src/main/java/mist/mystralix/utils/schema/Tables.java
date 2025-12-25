@@ -1,5 +1,7 @@
 package mist.mystralix.utils.schema;
 
+import java.util.List;
+
 public final class Tables {
 
     public static final String TASKS = """
@@ -54,5 +56,10 @@ public final class Tables {
 
     private Tables() {
     }
+
+    public static List<String> getTables() {
+        return List.of(TASKS, REMINDERS, TEAMS, TEAM_TASK);
+    }
+
 }
 
