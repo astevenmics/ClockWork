@@ -31,13 +31,7 @@ public class CommandManager {
         registerCommand(new ReminderCommand(reminderService, paginationService));
         registerCommand(new TaskCommand(taskService, paginationService));
         registerCommand(new TeamCommand(teamTaskService, teamService, paginationService));
-        registerCommand(new HelpCommand(
-                teamTaskService,
-                taskService,
-                reminderService,
-                teamService,
-                paginationService
-        ));
+        registerCommand(new HelpCommand());
     }
 
     private void registerCommand(SlashCommand command) {
