@@ -19,8 +19,7 @@ public class DBTaskRepository implements TaskRepository {
         String userDiscordID = task.getUserDiscordID();
         TaskDAO taskDAO = task.getTaskDAO();
 
-        String sqlStatement =
-                "INSERT INTO tasks (uuid, user_discord_id, task_dao) VALUES (?, ?, ?);";
+        String sqlStatement = "INSERT INTO tasks (uuid, user_discord_id, task_dao) VALUES (?, ?, ?);";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -121,8 +120,7 @@ public class DBTaskRepository implements TaskRepository {
     public ArrayList<Task> readAll(String userDiscordID) {
         ArrayList<Task> userTasks = new ArrayList<>();
 
-        String sqlStatement =
-                "SELECT * FROM tasks WHERE user_discord_id = ? ORDER BY id ASC;";
+        String sqlStatement = "SELECT * FROM tasks WHERE user_discord_id = ? ORDER BY id ASC;";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -162,8 +160,7 @@ public class DBTaskRepository implements TaskRepository {
     public void update(Task task) {
         String userDiscordID = task.getUserDiscordID();
         int id = task.getId();
-        String sqlStatement =
-                "UPDATE tasks SET task_dao = ? WHERE user_discord_id = ? AND id = ?;";
+        String sqlStatement = "UPDATE tasks SET task_dao = ? WHERE user_discord_id = ? AND id = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -190,8 +187,7 @@ public class DBTaskRepository implements TaskRepository {
     @Override
     public void delete(Task task) {
         String userDiscordID = task.getUserDiscordID();
-        String sqlStatement =
-                "DELETE FROM tasks WHERE uuid = ? AND user_discord_id = ?;";
+        String sqlStatement = "DELETE FROM tasks WHERE uuid = ? AND user_discord_id = ?;";
 
         String uuid = task.getUUID();
 

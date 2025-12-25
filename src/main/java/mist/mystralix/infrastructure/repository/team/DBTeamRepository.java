@@ -16,9 +16,11 @@ public class DBTeamRepository implements TeamRepository {
     @Override
     public void create(Team baseObject) {
         String sqlStatement =
-                "INSERT INTO teams " +
-                "(uuid, team_name, team_leader, moderators, members, tasks_uuid) " +
-                "VALUES (?, ?, ?, ?, ?, ?)";
+                """
+                        INSERT INTO teams
+                        (uuid, team_name, team_leader, moderators, members, tasks_uuid)
+                        VALUES (?, ?, ?, ?, ?, ?)
+                        """;
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -100,9 +102,12 @@ public class DBTeamRepository implements TeamRepository {
     @Override
     public void update(Team baseObject) {
 
-        String sqlStatement = "UPDATE teams " +
-                "SET team_leader = ?, team_name = ?, moderators = ?, members = ?, tasks_uuid = ?, team_invitations = ? " +
-                "WHERE uuid = ?";
+        String sqlStatement =
+                """
+                        UPDATE teams
+                        SET team_leader = ?, team_name = ?, moderators = ?, members = ?, tasks_uuid = ?, team_invitations = ?
+                        WHERE uuid = ?
+                        """;
 
         String uuid = baseObject.getUUID();
 
@@ -164,9 +169,12 @@ public class DBTeamRepository implements TeamRepository {
 
         ArrayList<Team> teams = new ArrayList<>();
 
-        String sqlStatement = "SELECT * FROM teams WHERE team_leader = ?" +
-                "OR JSON_CONTAINS(moderators, JSON_ARRAY(?)) " +
-                "OR JSON_CONTAINS(members, JSON_ARRAY(?)) ORDER BY id ASC";
+        String sqlStatement =
+                """
+                        SELECT * FROM teams WHERE team_leader = ?
+                        OR JSON_CONTAINS(moderators, JSON_ARRAY(?))
+                        OR JSON_CONTAINS(members, JSON_ARRAY(?)) ORDER BY id ASC
+                        """;
 
         try(
                 Connection connection = DBManager.getConnection();

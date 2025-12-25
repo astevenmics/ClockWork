@@ -14,6 +14,10 @@ public interface BaseRepository<T> {
 
     void delete(T baseObject);
 
-    ArrayList<T> readAll(String userDiscordID);
+    default ArrayList<T> readAll(String userDiscordID) {
+        return new ArrayList<>();
+    }
+
+    ;
 
 }

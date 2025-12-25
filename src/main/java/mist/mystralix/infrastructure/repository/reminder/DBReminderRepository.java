@@ -24,9 +24,11 @@ public class DBReminderRepository implements ReminderRepository {
         boolean isNotificationSent = reminder.isNotificationSent();
 
         String sqlStatement =
-                "INSERT INTO reminders " +
-                        "(uuid, user_discord_id, message, created_timestamp, target_timestamp, is_notification_sent) " +
-                        "VALUES (?, ?, ?, ?, ?, ?);";
+                """
+                        INSERT INTO reminders
+                        (uuid, user_discord_id, message, created_timestamp, target_timestamp, is_notification_sent)
+                        VALUES (?, ?, ?, ?, ?, ?);
+                        """;
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -134,9 +136,11 @@ public class DBReminderRepository implements ReminderRepository {
         String uuid = reminder.getUUID();
 
         String sqlStatement =
-                "UPDATE reminders " +
-                        "SET message = ?, target_timestamp = ? " +
-                        "WHERE uuid = ? AND user_discord_id = ?;";
+                """
+                        UPDATE reminders
+                        SET message = ?, target_timestamp = ?
+                        WHERE uuid = ? AND user_discord_id = ?;
+                        """;
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -277,8 +281,7 @@ public class DBReminderRepository implements ReminderRepository {
         String uuid = reminder.getUUID();
         boolean isNotificationSent = true;
 
-        String sqlStatement = "UPDATE reminders SET is_notification_sent = ? " +
-                        "WHERE uuid = ? AND user_discord_id = ?;";
+        String sqlStatement = "UPDATE reminders SET is_notification_sent = ? WHERE uuid = ? AND user_discord_id = ?;";
 
         try (
                 Connection connection = DBManager.getConnection();

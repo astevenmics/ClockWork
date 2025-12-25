@@ -52,10 +52,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
 
     @Override
     public TeamTask findByID(int id) {
-        String sql =
-                """
-                SELECT * FROM team_task WHERE id = ?;
-                """;
+        String sql = "SELECT * FROM team_task WHERE id = ?;";
 
         TeamTask teamTask = null;
 
@@ -98,10 +95,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
 
     @Override
     public TeamTask findByUUID(String uuid) {
-        String sql =
-                """
-                SELECT * FROM team_task WHERE uuid = ?;
-                """;
+        String sql = "SELECT * FROM team_task WHERE uuid = ?;";
 
         TeamTask teamTask = null;
 
@@ -145,12 +139,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
     @Override
     public void update(TeamTask baseObject) {
 
-        String sql =
-                """
-                        UPDATE team_task
-                        SET task_dao = ?, assigned_users = ?
-                        WHERE uuid = ?;
-                        """;
+        String sql = "UPDATE team_task SET task_dao = ?, assigned_users = ? WHERE uuid = ?;";
 
         String teamTaskUUID = baseObject.getUUID();
 
@@ -180,10 +169,7 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
 
     @Override
     public void delete(TeamTask baseObject) {
-        String sql =
-                """
-                        DELETE FROM team_task WHERE uuid = ?;
-                        """;
+        String sql = "DELETE FROM team_task WHERE uuid = ?;";
         String teamTaskUUID = baseObject.getUUID();
 
         try (
@@ -204,17 +190,9 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
     }
 
     @Override
-    public ArrayList<TeamTask> readAll(String userDiscordID) {
-        return null;
-    }
-
-    @Override
     public ArrayList<TeamTask> findAllByTeamId(int teamId) {
 
-        String sql =
-                """
-                        SELECT * FROM team_task WHERE team_id = ? ORDER BY id ASC;
-                        """;
+        String sql = "SELECT * FROM team_task WHERE team_id = ? ORDER BY id ASC;";
         ArrayList<TeamTask> teamTasks = new ArrayList<>();
 
         try (
