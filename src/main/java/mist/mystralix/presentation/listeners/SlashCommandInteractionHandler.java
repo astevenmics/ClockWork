@@ -8,10 +8,10 @@ import java.util.HashMap;
 
 public class SlashCommandInteractionHandler extends ListenerAdapter {
 
-    private final HashMap<String, SlashCommand> commands;
+    private final HashMap<String, SlashCommand> COMMANDS;
 
     public SlashCommandInteractionHandler(HashMap<String, SlashCommand> commands) {
-        this.commands = commands;
+        this.COMMANDS = commands;
     }
 
     @Override
@@ -23,7 +23,7 @@ public class SlashCommandInteractionHandler extends ListenerAdapter {
             return;
         }
         String commandName = event.getName();
-        SlashCommand command = commands.get(commandName);
+        SlashCommand command = COMMANDS.get(commandName);
 
         if (command == null) {
             event.reply("Unknown command!").setEphemeral(true).queue();

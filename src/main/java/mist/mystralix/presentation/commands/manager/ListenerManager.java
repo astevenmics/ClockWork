@@ -11,7 +11,10 @@ import mist.mystralix.presentation.embeds.ReminderEmbed;
 import mist.mystralix.presentation.embeds.TaskEmbed;
 import mist.mystralix.presentation.embeds.TeamEmbed;
 import mist.mystralix.presentation.embeds.TeamTaskEmbed;
-import mist.mystralix.presentation.listeners.*;
+import mist.mystralix.presentation.listeners.ButtonInteractionHandler;
+import mist.mystralix.presentation.listeners.ShutdownHandler;
+import mist.mystralix.presentation.listeners.SlashCommandInteractionHandler;
+import mist.mystralix.presentation.listeners.StringSelectInteractionHandler;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 
@@ -21,7 +24,6 @@ import java.util.Map;
 public class ListenerManager extends ListenerAdapter {
 
     public ListenerManager(JDA jda, HashMap<String, SlashCommand> commands, ClockWorkContainer container) {
-        jda.addEventListener(new MessageReceivedHandler());
         jda.addEventListener(new ShutdownHandler());
         jda.addEventListener(new SlashCommandInteractionHandler(commands));
         jda.addEventListener(new StringSelectInteractionHandler(commands));

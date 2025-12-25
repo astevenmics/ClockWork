@@ -1,6 +1,5 @@
 package mist.mystralix.presentation.commands.slash;
 
-import net.dv8tion.jda.api.events.interaction.component.StringSelectInteractionEvent;
 import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
@@ -23,8 +22,5 @@ public interface SlashCommand {
     }
 
     void execute(SlashCommandInteraction event);
-
-    default void stringSelectInteraction(StringSelectInteractionEvent event) {
-    }
 
 }

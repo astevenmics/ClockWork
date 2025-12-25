@@ -30,7 +30,6 @@ public class ButtonInteractionHandler extends ListenerAdapter {
         }
 
         String[] parts = event.getComponentId().split(":");
-
         String action = parts[0];
         String className = parts[1];
 
@@ -85,7 +84,6 @@ public class ButtonInteractionHandler extends ListenerAdapter {
         paginationService.addPaginationData(className + ":" + user.getId(), paginationData);
 
         event.deferEdit().queue();
-
         event.getHook().editOriginalEmbeds(messageEmbed).setComponents(ActionRow.of(previousButton, nextButton)).queue();
     }
 }

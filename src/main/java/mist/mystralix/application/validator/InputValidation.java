@@ -21,7 +21,6 @@ public class InputValidation {
             Function<T, MessageEmbed> action
     ) {
         User user = event.getUser();
-
         OptionMapping option = event.getOption(idOptionName);
 
         if (option == null) {
@@ -29,15 +28,12 @@ public class InputValidation {
         }
 
         int objectID = option.getAsInt();
-
         T object = service.getById(objectID);
 
         if (object == null) {
-            return embedBuilder.createErrorEmbed(user,
-                    String.format(
-                            CommonMessages.OBJECT_NOT_FOUND,
-                            objectName
-                    )
+            return embedBuilder.createErrorEmbed(
+                    user,
+                    String.format(CommonMessages.OBJECT_NOT_FOUND, objectName)
             );
         }
 
