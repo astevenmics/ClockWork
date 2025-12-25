@@ -77,10 +77,7 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
         }
 
         // Build the embed payload
-        MessageEmbed embed = reminderEmbed.createReminderEmbed(
-                user,
-                reminder
-        );
+        MessageEmbed embed = reminderEmbed.createReminderEmbed(user, reminder);
 
         // Open DM channel and send the embed asynchronously
         user.openPrivateChannel().queue(

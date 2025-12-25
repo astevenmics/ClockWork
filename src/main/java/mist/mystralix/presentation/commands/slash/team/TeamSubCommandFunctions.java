@@ -297,7 +297,11 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         Team team = TEAM_SERVICE.getById(teamId);
 
         TEAM_SERVICE.delete(team);
-        return TEAM_EMBED.createMessageEmbed(user, team.getTeamName() + " team has been deleted", team);
+        return TEAM_EMBED.createMessageEmbed(
+                user,
+                String.format(TeamMessages.TEAM_DELETED, team.getTeamName()),
+                team
+        );
     }
 
     @Override
@@ -306,7 +310,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
 
         ArrayList<Team> userTeams = TEAM_SERVICE.getUserTeams(user.getId());
         if (userTeams.isEmpty()) {
-            return TEAM_EMBED.createErrorEmbed(user, "You are currently not in a team.");
+            return TEAM_EMBED.createErrorEmbed(user, TeamMessages.NOT_IN_A_TEAM);
         }
 
         int teamsPerPage = 12;
@@ -386,7 +390,6 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         }
 
         TEAM_SERVICE.update(team);
-
         return TEAM_EMBED.createPositionUpdateEmbed(user, userToHandle, team, position.equals("moderator"));
     }
 

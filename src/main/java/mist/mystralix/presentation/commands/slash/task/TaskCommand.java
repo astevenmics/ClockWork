@@ -124,8 +124,6 @@ public final class TaskCommand implements SlashCommand {
             return;
         }
 
-        event.deferReply().queue();
-
         MessageEmbed messageEmbed = switch (subCommand) {
             case "create" -> TASK_SUB_COMMAND_HANDLER.create(event);
             case "cancel" -> TASK_SUB_COMMAND_HANDLER.cancelTask(event);
@@ -143,6 +141,7 @@ public final class TaskCommand implements SlashCommand {
             return;
         }
 
+        event.deferReply().queue();
         event.getHook().editOriginalEmbeds(messageEmbed).queue();
     }
 }

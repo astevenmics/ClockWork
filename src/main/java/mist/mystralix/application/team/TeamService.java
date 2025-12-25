@@ -10,9 +10,7 @@ public class TeamService implements IdentifiableFetcher<Team> {
 
     private final TeamRepository TEAM_REPOSITORY;
 
-    public TeamService(
-            TeamRepository teamRepository
-    ) {
+    public TeamService(TeamRepository teamRepository) {
         this.TEAM_REPOSITORY = teamRepository;
     }
 
@@ -36,16 +34,12 @@ public class TeamService implements IdentifiableFetcher<Team> {
         return TEAM_REPOSITORY.findByUUID(uuid);
     }
 
-    public void create(
-            String uuid,
-            String teamName,
-            String teamLeaderId
-    ) {
+    public void create(String uuid, String name, String leaderId) {
         TEAM_REPOSITORY.create(
                 new Team(
                         uuid,
-                        teamName,
-                        teamLeaderId,
+                        name,
+                        leaderId,
                         new ArrayList<>(),
                         new ArrayList<>(),
                         new ArrayList<>(),

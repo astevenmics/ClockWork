@@ -11,9 +11,7 @@ public class TeamTaskService implements IdentifiableFetcher<TeamTask> {
 
     private final TeamTaskRepository TEAM_TASK_REPOSITORY;
 
-    public TeamTaskService(
-            TeamTaskRepository teamTaskRepository
-    ) {
+    public TeamTaskService(TeamTaskRepository teamTaskRepository) {
         this.TEAM_TASK_REPOSITORY = teamTaskRepository;
     }
 
@@ -28,19 +26,14 @@ public class TeamTaskService implements IdentifiableFetcher<TeamTask> {
     }
 
     @Override
-    public TeamTask getById(
-            int id
-    ) {
+    public TeamTask getById(int id) {
         return TEAM_TASK_REPOSITORY.findByID(id);
     }
 
     @Override
-    public TeamTask getByUUID(
-            String uuid
-    ) {
+    public TeamTask getByUUID(String uuid) {
         return TEAM_TASK_REPOSITORY.findByUUID(uuid);
     }
-
 
     public void create(
             String uuid,
@@ -61,9 +54,7 @@ public class TeamTaskService implements IdentifiableFetcher<TeamTask> {
         );
     }
 
-    public ArrayList<TeamTask> findAllByTeamID(
-            int teamID
-    ) {
+    public ArrayList<TeamTask> findAllByTeamID(int teamID) {
         return TEAM_TASK_REPOSITORY.findAllByTeamId(teamID);
     }
 

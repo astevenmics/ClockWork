@@ -70,8 +70,8 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         }
 
         Team team = TEAM_SERVICE.getById(teamId);
-
         String uuid = UUID.randomUUID().toString();
+
         TEAM_TASK_SERVICE.create(
                 uuid,
                 userId,
@@ -137,7 +137,6 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         TeamTask teamTask = TEAM_TASK_SERVICE.getById(taskId);
 
         TaskHelper.updateTaskDAO(event, teamTask.getTaskDAO());
-
         TEAM_TASK_SERVICE.update(teamTask);
 
         return TEAM_TASK_EMBED.createMessageEmbed(user, "Updated Task", teamTask);
@@ -188,7 +187,7 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         ArrayList<TeamTask> teamTasks = TEAM_TASK_SERVICE.findAllByTeamID(teamId);
 
         if (teamTasks.isEmpty()) {
-            return TEAM_TASK_EMBED.createErrorEmbed(user, "There are currently no Team Task for this team.");
+            return TEAM_TASK_EMBED.createErrorEmbed(user, TeamMessages.NO_CURRENT_TEAM_TASK);
         }
 
         int teamTasksPerPage = 3;

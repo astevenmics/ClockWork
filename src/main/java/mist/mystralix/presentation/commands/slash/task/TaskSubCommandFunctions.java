@@ -13,6 +13,7 @@ import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.TaskEmbed;
 import mist.mystralix.utils.messages.CommonMessages;
+import mist.mystralix.utils.messages.TaskMessages;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
 import net.dv8tion.jda.api.components.buttons.Button;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -157,10 +158,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         ArrayList<Task> tasks = TASK_SERVICE.getUserTasks(user);
 
         if (tasks.isEmpty()) {
-            return TASK_EMBED.createErrorEmbed(
-                    user,
-                    "You currently do not have any tasks! Use the /task add command to start."
-            );
+            return TASK_EMBED.createErrorEmbed(user, TaskMessages.NO_CURRENT_TASKS);
         }
 
         // Filter if not ALL
@@ -175,7 +173,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
             if (tasks.isEmpty()) {
                 return TASK_EMBED.createErrorEmbed(
                         user,
-                        "No tasks found with status " + selected.getStringValue()
+                        String.format(TaskMessages.NO_TASKS_FOUND_WITH_STATUS, selected.getStringValue())
                 );
             }
         }
@@ -195,6 +193,7 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         if (currentPage == totalPages) {
             nextButton = nextButton.asDisabled();
         }
+
         event.getHook().editOriginalEmbeds(messageEmbed).setComponents(ActionRow.of(previousButton, nextButton)).queue();
 
         return messageEmbed;

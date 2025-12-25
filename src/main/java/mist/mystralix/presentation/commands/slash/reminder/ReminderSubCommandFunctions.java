@@ -124,7 +124,6 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         
                     if (timeString != null) {
                         long duration = TimeHandler.parseDuration(timeString);
-        
                         if (duration <= 0) {
                             return REMINDER_EMBED.createErrorEmbed(user, ReminderMessages.INVALID_TIME_INPUT);
                         }
@@ -162,14 +161,9 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
         User user = event.getUser();
         String userDiscordID = user.getId();
-
         ArrayList<Reminder> userReminders = REMINDER_SERVICE.getAllUserReminders(userDiscordID);
-
         if (userReminders.isEmpty()) {
-            return REMINDER_EMBED.createErrorEmbed(
-                    user,
-                    "You currently do not have any reminders! Use the /remind command to start."
-            );
+            return REMINDER_EMBED.createErrorEmbed(user, ReminderMessages.NO_CURRENT_REMINDERS);
         }
 
         int remindersPerPage = 12;
@@ -187,6 +181,7 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         if (currentPage == totalPages) {
             nextButton = nextButton.asDisabled();
         }
+
         event.getHook().editOriginalEmbeds(messageEmbed).setComponents(ActionRow.of(previousButton, nextButton)).queue();
 
         return messageEmbed;

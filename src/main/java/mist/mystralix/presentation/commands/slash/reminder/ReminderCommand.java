@@ -113,13 +113,10 @@ public final class ReminderCommand implements SlashCommand {
     public void execute(SlashCommandInteraction event) {
 
         String subCommand = event.getSubcommandName();
-
         if (subCommand == null) {
             event.reply("Invalid subcommand.").setEphemeral(true).queue();
             return;
         }
-
-        event.deferReply().queue();
 
         MessageEmbed messageEmbed = switch (subCommand) {
             case "create" -> REMINDER_SUB_COMMAND_FUNCTIONS.create(event);
@@ -135,6 +132,7 @@ public final class ReminderCommand implements SlashCommand {
             return;
         }
 
+        event.deferReply().queue();
         event.getHook().editOriginalEmbeds(messageEmbed).queue();
     }
 }
