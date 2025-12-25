@@ -11,6 +11,10 @@ public final class ReminderMessages {
     public static final String REMINDER_NOT_CREATED_BY_USER =
             "You do not have access to Reminder #%d, as it was created by a different user.";
 
+    public static final String NO_CURRENT_REMINDERS =
+            "You currently do not have any reminders! Use the /remind command to start.";
+
     private ReminderMessages() {
     }
+
 }

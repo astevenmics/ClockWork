@@ -2,6 +2,9 @@ package mist.mystralix.utils.messages;
 
 public final class TeamMessages {
 
+    public static final String NO_CURRENT_TEAM_TASK =
+            "There are currently no Team Task for this team.";
+
     public static final String TEAM_TASK_NOT_PART_OF_TEAM =
             "Team Task #%d is not part of the %s team.";
 
@@ -20,8 +23,14 @@ public final class TeamMessages {
     public static final String ALREADY_PART_OF_TEAM =
             "You are already part of the **%s** team";
 
+    public static final String NOT_IN_A_TEAM =
+            "You are currently not in a team.";
+
     public static final String NOT_PART_OF_TEAM =
             "You are not a part of the **%s** team.";
+
+    public static final String TEAM_DELETED =
+            "**%s** team has been deleted";
 
     public static final String USER_ALREADY_ASSIGNED_TASK =
             "The user, %s, is assigned for this team task.";
@@ -53,4 +62,5 @@ public final class TeamMessages {
 
     private TeamMessages() {
     }
+
 }
