@@ -34,7 +34,6 @@ public class TeamTaskValidator {
             IMessageEmbedBuilder embedBuilder
     ) {
         User user = event.getUser();
-
         OptionMapping teamOption = event.getOption("team");
         OptionMapping taskOption = event.getOption("task");
 
@@ -49,23 +48,21 @@ public class TeamTaskValidator {
         if (messageEmbed != null) {
             return messageEmbed;
         }
+
         Team team = teamService.getById(teamId);
         TeamTask teamTask = teamTaskService.getById(taskId);
         if (teamTask == null) {
-            return embedBuilder.createErrorEmbed(user,
-                    String.format(
-                            CommonMessages.OBJECT_NOT_FOUND,
-                            "Team Task"
-                    ));
+            return embedBuilder.createErrorEmbed(
+                    user,
+                    String.format(CommonMessages.OBJECT_NOT_FOUND, "Team Task")
+            );
         }
 
         if (!team.getTasksUUID().contains(teamTask.getUUID())) {
-            return embedBuilder.createErrorEmbed(user,
-                    String.format(
-                            TeamMessages.TEAM_TASK_NOT_PART_OF_TEAM,
-                            taskId,
-                            team.getTeamName()
-                    ));
+            return embedBuilder.createErrorEmbed(
+                    user,
+                    String.format(TeamMessages.TEAM_TASK_NOT_PART_OF_TEAM, taskId, team.getTeamName())
+            );
         }
         return null;
     }

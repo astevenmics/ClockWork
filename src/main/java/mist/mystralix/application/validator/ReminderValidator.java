@@ -10,11 +10,10 @@ public class ReminderValidator {
 
     public static MessageEmbed validateReminderAccess(User user, Reminder reminder, ReminderEmbed reminderEmbed) {
         if (!reminder.getUserDiscordID().equals(user.getId())) {
-            return reminderEmbed.createErrorEmbed(user,
-                    String.format(
-                            ReminderMessages.REMINDER_NOT_CREATED_BY_USER,
-                            reminder.getId()
-                    ));
+            return reminderEmbed.createErrorEmbed(
+                    user,
+                    String.format(ReminderMessages.REMINDER_NOT_CREATED_BY_USER, reminder.getId())
+            );
         }
         return null;
     }

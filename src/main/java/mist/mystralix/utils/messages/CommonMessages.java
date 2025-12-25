@@ -10,5 +10,6 @@ public final class CommonMessages {
 
     private CommonMessages() {
     }
+
 }
 

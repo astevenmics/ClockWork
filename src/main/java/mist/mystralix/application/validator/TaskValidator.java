@@ -11,10 +11,8 @@ public class TaskValidator {
     public static MessageEmbed validateTaskAccess(User user, Task task, TaskEmbed taskEmbed) {
         if (!task.getUserDiscordID().equals(user.getId())) {
             return taskEmbed.createErrorEmbed(user,
-                    String.format(
-                            TaskMessages.TASK_NOT_CREATED_BY_USER,
-                            task.getId()
-                    ));
+                    String.format(TaskMessages.TASK_NOT_CREATED_BY_USER, task.getId())
+            );
         }
         return null;
     }

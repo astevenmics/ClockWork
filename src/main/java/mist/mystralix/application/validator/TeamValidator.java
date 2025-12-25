@@ -25,20 +25,18 @@ public class TeamValidator {
     ) {
         Team team = teamService.getById(teamId);
         if (team == null) {
-            return teamEmbed.createErrorEmbed(user,
-                    String.format(
-                            CommonMessages.OBJECT_NOT_FOUND,
-                            "team"
-                    ));
+            return teamEmbed.createErrorEmbed(
+                    user,
+                    String.format(CommonMessages.OBJECT_NOT_FOUND, "team")
+            );
         }
 
         String userId = user.getId();
         if (!team.getTeamLeader().equals(userId) && !team.getModerators().contains(userId) && !team.getMembers().contains(userId)) {
-            return teamEmbed.createErrorEmbed(user,
-                    String.format(
-                            TeamMessages.NOT_PART_OF_TEAM,
-                            team.getTeamName()
-                    ));
+            return teamEmbed.createErrorEmbed(
+                    user,
+                    String.format(TeamMessages.NOT_PART_OF_TEAM, team.getTeamName())
+            );
         }
 
         return null;
@@ -57,6 +55,7 @@ public class TeamValidator {
         if (messageEmbed != null) {
             return messageEmbed;
         }
+
         Team team = teamService.getById(teamId);
         String userId = user.getId();
         if (!team.getTeamLeader().equals(userId) && !team.getModerators().contains(userId)) {
@@ -79,6 +78,7 @@ public class TeamValidator {
         if (messageEmbed != null) {
             return messageEmbed;
         }
+
         Team team = teamService.getById(teamId);
         String userId = user.getId();
         if (!team.getTeamLeader().equals(userId)) {
