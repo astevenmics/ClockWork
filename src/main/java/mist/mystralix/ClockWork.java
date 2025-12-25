@@ -1,5 +1,6 @@
 package mist.mystralix;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import mist.mystralix.application.reminder.ReminderScheduler;
 import mist.mystralix.config.DBManager;
 import mist.mystralix.config.DBSchemaInitializer;
@@ -17,7 +18,8 @@ public final class ClockWork {
 
     public static void main(String[] args) throws InterruptedException {
 
-        final String token = System.getenv("DISCORD_TOKEN");
+        Dotenv dotenv = Dotenv.load();
+        final String token = dotenv.get("DISCORD_TOKEN");
         if (token == null) {
             throw new IllegalStateException("DISCORD_TOKEN environment variable is missing.");
         }

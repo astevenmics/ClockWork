@@ -2,6 +2,7 @@ package mist.mystralix.config;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import io.github.cdimascio.dotenv.Dotenv;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -14,11 +15,16 @@ public class DBManager {
 
         HikariConfig config = new HikariConfig();
 
-        String dbPort = System.getenv("DB_PORT");
-        String dbName = System.getenv("DB_NAME");
-        config.setJdbcUrl("jdbc:mysql://localhost:" + dbPort + "/" + dbName);
-        config.setUsername("root");
-        config.setPassword(System.getenv("DB_PASSWORD"));
+        Dotenv dotenv = Dotenv.load();
+        String dbName = dotenv.get("DB_NAME");
+        String dbPort = dotenv.get("DB_PORT");
+        String dbURL = dotenv.get("DB_URL");
+        String dbUsername = dotenv.get("DB_USERNAME");
+        String dbPassword = dotenv.get("DB_PASSWORD");
+        String jdbcURL = "jdbc:mysql://" + dbURL + ":" + dbPort + "/" + dbName + "?useSSL=false&serverTimezone=UTC";
+        config.setJdbcUrl(jdbcURL);
+        config.setUsername(dbUsername);
+        config.setPassword(dbPassword);
 
         config.addDataSourceProperty("cachePrepStmts", "true");           // Cache prepared statements
         config.addDataSourceProperty("prepStmtCacheSize", "250");          // Max cached statements

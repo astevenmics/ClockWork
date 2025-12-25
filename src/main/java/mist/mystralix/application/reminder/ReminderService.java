@@ -85,11 +85,11 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
         // Open DM channel and send the embed asynchronously
         user.openPrivateChannel().queue(
                 channel -> channel.sendMessageEmbeds(embed).queue(
-                        _ -> System.out.println("✅ Reminder sent to " + user.getEffectiveName()),
+                        success -> System.out.println("✅ Reminder sent to " + user.getEffectiveName()),
                         fail -> System.out.println("❌ Failed to send to " + user.getEffectiveName() +
                                 " (DM blocked): " + fail.getMessage())
                 ),
-                _ -> System.out.println(
+                fail -> System.out.println(
                         "❌ Cannot open DM with " + user.getEffectiveName() +
                                 " — DMs are off or the user blocked the bot."
                 )
