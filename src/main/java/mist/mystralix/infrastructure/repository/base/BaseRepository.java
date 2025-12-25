@@ -18,6 +18,4 @@ public interface BaseRepository<T> {
         return new ArrayList<>();
     }
 
-    ;
-
 }

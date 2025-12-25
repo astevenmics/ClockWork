@@ -19,49 +19,60 @@ public class HelpEmbed {
                         ClockWork is a productivity and team-management Discord bot designed to help you stay organized, on time, and in control—whether you’re working solo or collaborating with a team.
                         
                         At its core, ClockWork lets you manage reminders, personal tasks, and team-based workflows directly inside Discord using clean, easy-to-use slash commands.
-                        """);
+                        """
+        );
         embedBuilder.setColor(Color.ORANGE);
         embedBuilder.addBlankField(false);
         embedBuilder.addField(
                 "⏰ Reminders",
-                "ClockWork acts like your personal assistant. You can create reminders with custom messages and time durations, view all your active reminders, update them if plans change, or delete them when they are no longer needed. Each reminder is tracked with a unique ID so you can easily manage or review specific ones at any time." +
-                        "\n```md\n" +
-                        "You can:\n" +
-                        "- Create tasks with titles and descriptions\n" +
-                        "- Update task details or status as you make progress\n" +
-                        "- View individual tasks or list all tasks (with optional status filtering)\n" +
-                        "- Cancel or delete tasks when plans change```",
+                """
+                        ClockWork acts like your personal assistant. You can create reminders with custom messages and time durations, view all your active reminders, update them if plans change, or delete them when they are no longer needed. Each reminder is tracked with a unique ID so you can easily manage or review specific ones at any time.\
+                        
+                        ```md
+                        You can:
+                        - Create tasks with titles and descriptions
+                        - Update task details or status as you make progress
+                        - View individual tasks or list all tasks (with optional status filtering)
+                        - Cancel or delete tasks when plans change```
+                        """,
                 false
         );
         embedBuilder.addBlankField(false);
         embedBuilder.addField(
                 "✅ Tasks",
-                "ClockWork helps you track what you need to do and what’s already done. This makes it easy to manage ongoing responsibilities without leaving Discord." +
-                        "\n```md\n" +
-                        "Perfect for:\n" +
-                        "- Deadlines\n" +
-                        "- Events\n" +
-                        "- Study sessions\n" +
-                        "- “Don’t forget” moments```",
+                """
+                        ClockWork helps you track what you need to do and what’s already done. This makes it easy to manage ongoing responsibilities without leaving Discord.\
+                        
+                        ```md
+                        Perfect for:
+                        - Deadlines
+                        - Events
+                        - Study sessions
+                        - “Don’t forget” moments```
+                        """,
                 false
         );
         embedBuilder.addBlankField(false);
         embedBuilder.addField(
                 "👥 Teams",
-                "ClockWork really shines when working with others. You can create and manage teams, invite users, remove members, leave teams, rename them, and even transfer leadership. Each team has its own structure, allowing members to collaborate efficiently." +
-                        "\n```md\n" +
-                        "Within teams, you can:\n" +
-                        "- Assign tasks to specific members\n" +
-                        "- Unassign tasks when responsibilities shift\n" +
-                        "- Update or delete team tasks\n" +
-                        "- View all tasks associated with a team\n" +
-                        "- Adjust member positions or roles within the team\n```" +
-                        "```md\n" +
-                        "This makes ClockWork ideal for:\n" +
-                        "- Project groups\n" +
-                        "- Gaming teams\n" +
-                        "- Study groups\n" +
-                        "- Small organizations or startups```",
+                """
+                        ClockWork really shines when working with others. You can create and manage teams, invite users, remove members, leave teams, rename them, and even transfer leadership. Each team has its own structure, allowing members to collaborate efficiently.\
+                        
+                        ```md
+                        Within teams, you can:
+                        - Assign tasks to specific members
+                        - Unassign tasks when responsibilities shift
+                        - Update or delete team tasks
+                        - View all tasks associated with a team
+                        - Adjust member positions or roles within the team
+                        ```
+                        ```md
+                        This makes ClockWork ideal for:
+                        - Project groups
+                        - Gaming teams
+                        - Study groups
+                        - Small organizations or startups```
+                        """,
                 false
         );
         embedBuilder.addBlankField(false);
