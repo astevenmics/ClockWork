@@ -28,27 +28,27 @@ public final class TaskCommand implements SlashCommand {
 
     @Override
     public String getDescription() {
-        return "All task-related features: adding, deleting, updating, and more.";
+        return "Create, manage, and track tasks with status updates and detailed views.";
     }
 
     @Override
     public List<SubcommandData> getSubcommands() {
         return List.of(
-                new SubcommandData("create", "Create a new task.")
+                new SubcommandData("create", "Create a new task with a title and description.")
                         .addOptions(
                         new OptionData(OptionType.STRING, "title", "A brief title for the task.", true)
                                 .setRequiredLength(1, 32),
                         new OptionData(OptionType.STRING, "description", "A detailed description for the task.", true)
                                 .setRequiredLength(1, 256)
                         ),
-                new SubcommandData("delete", "Delete a task by its task ID.")
+                new SubcommandData("delete", "Permanently delete a task using its task ID.")
                         .addOptions(new OptionData(
                         OptionType.INTEGER,
                         "task_id",
                         "ID number of the task to delete.",
                         true
                 )),
-                new SubcommandData("update", "Update a task’s title, description, or status.")
+                new SubcommandData("edit", "Edit a task’s title, description, or status.")
                         .addOptions(
                                 new OptionData(
                                         OptionType.INTEGER,
@@ -71,7 +71,7 @@ public final class TaskCommand implements SlashCommand {
                                 TaskHelper.getTaskTypeOptions()
                         ),
                 // /task list
-                new SubcommandData("list", "List all tasks, optionally filtered by status.")
+                new SubcommandData("list", "View all tasks, with optional filtering by status.")
                         .addOptions(
                                 new OptionData(OptionType.INTEGER, "type", "Filter tasks by status.", false)
                                         .addChoice(
@@ -91,7 +91,7 @@ public final class TaskCommand implements SlashCommand {
                                                 TaskStatus.CANCELLED.getIntValue())
                 ),
                 // /task cancel
-                new SubcommandData("cancel", "Cancel a task by its task ID.")
+                new SubcommandData("cancel", "Cancel an active task without deleting it.")
                         .addOptions(new OptionData(
                                 OptionType.INTEGER,
                                 "task_id",
@@ -103,7 +103,7 @@ public final class TaskCommand implements SlashCommand {
                 // /task view
                 new SubcommandData(
                         "view",
-                        "View a specific task by its task ID."
+                        "View detailed information about a specific task by ID."
                 )
                     .addOptions(
                             new OptionData(
@@ -129,7 +129,7 @@ public final class TaskCommand implements SlashCommand {
             case "cancel" -> TASK_SUB_COMMAND_HANDLER.cancelTask(event);
             case "delete" -> TASK_SUB_COMMAND_HANDLER.delete(event);
             case "list" -> TASK_SUB_COMMAND_HANDLER.readAll(event);
-            case "update" -> TASK_SUB_COMMAND_HANDLER.update(event);
+            case "edit" -> TASK_SUB_COMMAND_HANDLER.update(event);
             case "view" -> TASK_SUB_COMMAND_HANDLER.read(event);
             default       -> null;
         };

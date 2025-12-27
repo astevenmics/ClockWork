@@ -1,5 +1,6 @@
 package mist.mystralix.presentation.embeds;
 
+import mist.mystralix.application.helper.StringHelper;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -7,6 +8,7 @@ import net.dv8tion.jda.api.interactions.commands.build.SubcommandData;
 import net.dv8tion.jda.api.interactions.commands.build.SubcommandGroupData;
 
 import java.awt.*;
+import java.util.stream.Collectors;
 
 public class HelpEmbed {
 
@@ -14,19 +16,19 @@ public class HelpEmbed {
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle("ClockWork | Information");
+        embedBuilder.setColor(Color.ORANGE);
         embedBuilder.setDescription(
                 """
-                        ClockWork is a productivity and team-management Discord bot designed to help you stay organized, on time, and in control—whether you’re working solo or collaborating with a team.
+                        ClockWork is a productivity and team-management Discord bot designed to help you stay organized, on time, and in control—whether you are working solo or collaborating with a team.
                         
                         At its core, ClockWork lets you manage reminders, personal tasks, and team-based workflows directly inside Discord using clean, easy-to-use slash commands.
                         """
         );
-        embedBuilder.setColor(Color.ORANGE);
         embedBuilder.addBlankField(false);
         embedBuilder.addField(
                 "⏰ Reminders",
                 """
-                        ClockWork acts like your personal assistant. You can create reminders with custom messages and time durations, view all your active reminders, update them if plans change, or delete them when they are no longer needed. Each reminder is tracked with a unique ID so you can easily manage or review specific ones at any time.\
+                        ClockWork acts like your personal assistant. You can create reminders with custom messages and time durations, view all your active reminders, update them if plans change, or delete them when they are no longer needed. Each reminder is tracked with a unique ID so you can easily manage or review specific ones at any time.
                         
                         ```md
                         You can:
@@ -41,14 +43,14 @@ public class HelpEmbed {
         embedBuilder.addField(
                 "✅ Tasks",
                 """
-                        ClockWork helps you track what you need to do and what’s already done. This makes it easy to manage ongoing responsibilities without leaving Discord.\
+                        ClockWork helps you track what you need to do and what is already done. This makes it easy to manage ongoing responsibilities without leaving Discord.
                         
                         ```md
                         Perfect for:
                         - Deadlines
                         - Events
                         - Study sessions
-                        - “Don’t forget” moments```
+                        - “Do not forget” moments```
                         """,
                 false
         );
@@ -56,7 +58,7 @@ public class HelpEmbed {
         embedBuilder.addField(
                 "👥 Teams",
                 """
-                        ClockWork really shines when working with others. You can create and manage teams, invite users, remove members, leave teams, rename them, and even transfer leadership. Each team has its own structure, allowing members to collaborate efficiently.\
+                        ClockWork really shines when working with others. You can create and manage teams, invite users, remove members, leave teams, rename them, and even transfer leadership. Each team has its own structure, allowing members to collaborate efficiently.
                         
                         ```md
                         Within teams, you can:
@@ -87,11 +89,12 @@ public class HelpEmbed {
 
     public MessageEmbed createCategoryEmbed(SlashCommand slashCommand) {
 
-        String command = slashCommand.getName();
-        String commandName = command.substring(0, 1).toUpperCase() + command.substring(1);
+        String commandName = StringHelper.capitalize(slashCommand.getName());
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setTitle(commandName + " | Features");
+        embedBuilder.setColor(Color.ORANGE);
+        embedBuilder.setFooter("Type /help to view all categories and its commands.");
 
         for (SubcommandData sc : slashCommand.getSubcommands()) {
             embedBuilder.addField(
@@ -102,26 +105,16 @@ public class HelpEmbed {
         }
 
         for (SubcommandGroupData group : slashCommand.getSubcommandGroupData()) {
-            StringBuilder subList = new StringBuilder();
-
-            for (SubcommandData sub : group.getSubcommands()) {
-                subList.append("• **")
-                        .append(sub.getName())
-                        .append("** – ")
-                        .append(sub.getDescription())
-                        .append("\n");
-            }
+            String subList = group.getSubcommands().stream()
+                    .map(sub -> "• **" + sub.getName() + "** – " + sub.getDescription())
+                    .collect(Collectors.joining("\n"));
 
             embedBuilder.addField(
                     "/" + slashCommand.getName() + " " + group.getName(),
-                    subList.toString(),
+                    subList,
                     false
             );
         }
-
-
-        embedBuilder.setColor(Color.ORANGE);
-        embedBuilder.setFooter("Type /help to view all categories and its commands.");
 
         return embedBuilder.build();
     }

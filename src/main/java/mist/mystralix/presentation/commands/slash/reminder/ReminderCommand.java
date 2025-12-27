@@ -26,7 +26,7 @@ public final class ReminderCommand implements SlashCommand {
 
     @Override
     public String getDescription() {
-        return "All reminder-related features, such as adding, deleting, updating, etc.";
+        return "Create, manage, and view personal reminders with custom messages and durations.";
     }
 
     @Override
@@ -35,12 +35,12 @@ public final class ReminderCommand implements SlashCommand {
                 // /reminder create
                 new SubcommandData(
                         "create",
-                        "Create a new reminder with a message and time duration."
+                        "Create a new reminder with a message and a scheduled time."
                 ).addOptions(
                         new OptionData(
                                 OptionType.STRING,
                                 "message",
-                                "Reminder message content.",
+                                "Message content.",
                                 true
                         ),
                         new OptionData(
@@ -54,7 +54,7 @@ public final class ReminderCommand implements SlashCommand {
                 // /reminder delete
                 new SubcommandData(
                         "delete",
-                        "Deletes a reminder by its reminder ID."
+                        "Delete one of your reminders using its reminder ID."
                 ).addOptions(
                         new OptionData(
                                 OptionType.INTEGER,
@@ -67,13 +67,13 @@ public final class ReminderCommand implements SlashCommand {
                 // /reminder list
                 new SubcommandData(
                         "list",
-                        "Lists all of your active reminders."
+                        "View all of your currently active reminders."
                 ),
 
                 // /reminder update
                 new SubcommandData(
-                        "update",
-                        "Updates an existing reminder's message or time."
+                        "edit",
+                        "Edit an existing reminder’s message or scheduled time."
                 ).addOptions(
                         new OptionData(
                                 OptionType.INTEGER,
@@ -98,7 +98,7 @@ public final class ReminderCommand implements SlashCommand {
                 // /reminder view
                 new SubcommandData(
                         "view",
-                        "View a single reminder by its ID."
+                        "View detailed information about a specific reminder by ID."
                 ).addOptions(
                         new OptionData(
                                 OptionType.INTEGER,
@@ -121,7 +121,7 @@ public final class ReminderCommand implements SlashCommand {
         MessageEmbed messageEmbed = switch (subCommand) {
             case "create" -> REMINDER_SUB_COMMAND_FUNCTIONS.create(event);
             case "delete" -> REMINDER_SUB_COMMAND_FUNCTIONS.delete(event);
-            case "update" -> REMINDER_SUB_COMMAND_FUNCTIONS.update(event);
+            case "edit" -> REMINDER_SUB_COMMAND_FUNCTIONS.update(event);
             case "view"   -> REMINDER_SUB_COMMAND_FUNCTIONS.read(event);
             case "list"   -> REMINDER_SUB_COMMAND_FUNCTIONS.readAll(event);
             default -> null;

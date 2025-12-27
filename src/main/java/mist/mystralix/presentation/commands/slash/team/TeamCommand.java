@@ -36,13 +36,13 @@ public class TeamCommand implements SlashCommand {
 
     @Override
     public String getDescription() {
-        return "Ability to group and organize teams with tasks";
+        return "Create and manage teams, control member roles, and collaborate through shared tasks.";
     }
 
     @Override
     public List<SubcommandData> getSubcommands() {
         return List.of(
-                new SubcommandData("create", "Create a team")
+                new SubcommandData("create", "Create a new team and become its leader")
                     .addOptions(
                         new OptionData(
                             OptionType.STRING,
@@ -51,7 +51,7 @@ public class TeamCommand implements SlashCommand {
                             true
                         ).setRequiredLength(1, 32)
                 ),
-                new SubcommandData("delete", "Delete a team")
+                new SubcommandData("delete", "Permanently delete a team you own.")
                     .addOptions(
                         new OptionData(
                             OptionType.INTEGER,
@@ -60,7 +60,7 @@ public class TeamCommand implements SlashCommand {
                                 true
                         )
                 ),
-                new SubcommandData("add", "Add a user in a team")
+                new SubcommandData("invite", "Invite a user to join your team.")
                     .addOptions(
                         new OptionData(
                             OptionType.INTEGER,
@@ -75,7 +75,7 @@ public class TeamCommand implements SlashCommand {
                             true
                         )
                 ),
-                new SubcommandData("remove", "Removes a user in a team")
+                new SubcommandData("kick", "Remove a member from your team.")
                     .addOptions(
                         new OptionData(
                             OptionType.INTEGER,
@@ -90,7 +90,7 @@ public class TeamCommand implements SlashCommand {
                             true
                         )
                 ),
-                new SubcommandData("invitation", "Respond to the invitation sent to you be a team.")
+                new SubcommandData("invitation", "Accept or reject a team invitation you received.")
                     .addOptions(
                         new OptionData(
                             OptionType.INTEGER,
@@ -107,7 +107,7 @@ public class TeamCommand implements SlashCommand {
                                   .addChoice("Accept", "accept")
                                   .addChoice("Reject", "reject")
                     ),
-                new SubcommandData("leave", "Leave a team using team ID")
+                new SubcommandData("leave", "Leave a team you are currently part of.")
                     .addOptions(
                         new OptionData(
                             OptionType.INTEGER,
@@ -116,7 +116,7 @@ public class TeamCommand implements SlashCommand {
                             true
                         )
                 ),
-                new SubcommandData("position", "Adjust the position of a member in the team")
+                new SubcommandData("position", "Change a member’s role within the team.")
                         .addOptions(
                         new OptionData(
                                 OptionType.INTEGER,
@@ -139,7 +139,7 @@ public class TeamCommand implements SlashCommand {
                                 .addChoice("Moderator", "moderator")
                                 .addChoice("Member", "member")
                 ),
-                new SubcommandData("name", "Change the name of the team")
+                new SubcommandData("name", "Rename an existing team you own.")
                         .addOptions(
                         new OptionData(
                                 OptionType.INTEGER,
@@ -154,7 +154,7 @@ public class TeamCommand implements SlashCommand {
                                 true
                         )
                 ),
-                new SubcommandData("transfer", "Transfer team leadership to a user")
+                new SubcommandData("transfer", "Transfer team leadership to another member.")
                         .addOptions(
                         new OptionData(
                                 OptionType.INTEGER,
@@ -169,7 +169,7 @@ public class TeamCommand implements SlashCommand {
                                 true
                         )
                 ),
-                new SubcommandData("view", "View a team using team ID")
+                new SubcommandData("view", "View detailed information about a team by ID.")
                     .addOptions(
                         new OptionData(
                                 OptionType.INTEGER,
@@ -178,27 +178,27 @@ public class TeamCommand implements SlashCommand {
                                 true
                         )
                 ),
-                new SubcommandData("list", "View all teams you are in")
+                new SubcommandData("list", "View all teams you are currently a member of.")
         );
     }
 
     @Override
     public List<SubcommandGroupData> getSubcommandGroupData() {
         return List.of(
-                new SubcommandGroupData("task", "Task Management")
+                new SubcommandGroupData("task", "Manage tasks that belong to a specific team.")
                         .addSubcommands(
-                        new SubcommandData("create", "Create a task")
+                                new SubcommandData("create", "Create a new task for a team.")
                                 .addOptions(
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
                                         new OptionData(OptionType.STRING, "title", "Task title", true),
                                         new OptionData(OptionType.STRING, "description", "Task description", true)
                                 ),
-                        new SubcommandData("delete", "Delete a task")
+                                new SubcommandData("delete", "Delete an existing task from a team.")
                                 .addOptions(
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
                                         new OptionData(OptionType.INTEGER, "task", "Task ID", true)
                                 ),
-                        new SubcommandData("update", "Update a task’s title, description, or status.")
+                                new SubcommandData("edit", "Edit a task’s title, description, or status.")
                                 .addOptions(
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
                                         new OptionData(
@@ -221,25 +221,25 @@ public class TeamCommand implements SlashCommand {
                                         ).setRequiredLength(1, 256),
                                         TaskHelper.getTaskTypeOptions()
                                 ),
-                        new SubcommandData("list", "List all tasks")
+                                new SubcommandData("list", "View all tasks assigned to a team.")
                                 .addOptions(
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true)
                                 ),
 
-                        new SubcommandData("assign", "Assign a task to a user")
+                                new SubcommandData("assign", "Assign a task to a team member.")
                                 .addOptions(
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
                                         new OptionData(OptionType.INTEGER, "task", "Task ID", true),
                                         new OptionData(OptionType.USER, "user", "User to assign", true)
                                 ),
 
-                        new SubcommandData("unassign", "Unassign a task from a user")
+                                new SubcommandData("unassign", "Remove a task assignment from a team member.")
                                 .addOptions(
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
                                         new OptionData(OptionType.INTEGER, "task", "Task ID", true),
                                         new OptionData(OptionType.USER, "user", "User to unassign", true)
                                 ),
-                        new SubcommandData("view", "View a task")
+                                new SubcommandData("view", "View detailed information about a specific task.")
                                 .addOptions(
                                         new OptionData(OptionType.INTEGER, "team", "Team ID", true),
                                         new OptionData(OptionType.INTEGER, "task", "Task ID", true)
@@ -264,7 +264,7 @@ public class TeamCommand implements SlashCommand {
             messageEmbed = switch (subCommand) {
                 case "create" -> teamTaskSubCommandFunctions.create(event); // done
                 case "delete" -> teamTaskSubCommandFunctions.delete(event); // done
-                case "update" -> teamTaskSubCommandFunctions.update(event); // done
+                case "edit" -> teamTaskSubCommandFunctions.update(event); // done
                 case "list" -> teamTaskSubCommandFunctions.readAll(event); // done
                 case "assign", "unassign" -> teamTaskSubCommandFunctions.handleAssignment(event); // done
                 case "view" -> teamTaskSubCommandFunctions.read(event); // done
@@ -274,8 +274,8 @@ public class TeamCommand implements SlashCommand {
             messageEmbed = switch (subCommand) {
                 case "create" -> teamSubCommandFunctions.create(event); // done
                 case "delete" -> teamSubCommandFunctions.delete(event); // done
-                case "add" -> teamSubCommandFunctions.add(event); // done
-                case "remove" -> teamSubCommandFunctions.remove(event); // done
+                case "invite" -> teamSubCommandFunctions.add(event); // done
+                case "kick" -> teamSubCommandFunctions.remove(event); // done
                 case "invitation" -> teamSubCommandFunctions.handleInvitation(event); // done
                 case "leave" -> teamSubCommandFunctions.leave(event); // done
                 case "view" -> teamSubCommandFunctions.read(event); // done
