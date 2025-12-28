@@ -67,8 +67,13 @@ public final class ReminderCommand implements SlashCommand {
                 // /reminder list
                 new SubcommandData(
                         "list",
-                        "View all of your currently active reminders."
-                ),
+                        "View all reminders, with optional filtering by status."
+                ).addOptions(
+                        new OptionData(OptionType.STRING, "status", "Filter reminders by status.", false)
+                                .addChoice("Active", "active")
+                                .addChoice("Expired", "expired")
+                )
+                ,
 
                 // /reminder update
                 new SubcommandData(

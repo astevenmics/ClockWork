@@ -23,7 +23,6 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
 
@@ -163,8 +162,14 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
         User user = event.getUser();
         String userDiscordID = user.getId();
         ArrayList<Reminder> userReminders = REMINDER_SERVICE.getAllUserReminders(userDiscordID);
-        // TODO: Add option to view all, active, and expired ones
-        userReminders = userReminders.stream().filter(x -> !x.isNotificationSent()).collect(Collectors.toCollection(ArrayList::new));
+        String statusSelected = event.getOption("status", () -> null, OptionMapping::getAsString);
+
+        if ("active".equalsIgnoreCase(statusSelected)) {
+            userReminders.removeIf(Reminder::isNotificationSent);
+        } else if ("expired".equalsIgnoreCase(statusSelected)) {
+            userReminders.removeIf(r -> !r.isNotificationSent());
+        }
+
         if (userReminders.isEmpty()) {
             return REMINDER_EMBED.createErrorEmbed(user, ReminderMessages.NO_CURRENT_REMINDERS);
         }

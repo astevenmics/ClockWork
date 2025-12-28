@@ -47,7 +47,11 @@ public final class ClockWork {
         System.out.println("ClockWork bot is online!");
 
         CommandManager commandManager = new CommandManager(container);
-        jda.updateCommands().addCommands(commandManager.getCommandData()).queue();
+
+        jda.updateCommands()
+                .addCommands(commandManager.getCommandData())
+                .queue();
+
         ReminderScheduler reminderScheduler = ReminderScheduler.getInstance(container.getReminderService());
         reminderScheduler.scheduleReminders(jda);
         System.out.println("Reminder scheduler activated.");
