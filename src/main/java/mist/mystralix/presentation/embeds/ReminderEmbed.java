@@ -70,33 +70,6 @@ public class ReminderEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
         return embedBuilder.build();
     }
 
-    public MessageEmbed createReminderEmbed(User user, Reminder reminder) {
-
-        Instant targetInstant = Instant.ofEpochMilli(reminder.getTargetTimestamp());
-        String discordReminderTargetTimestamp = TimeFormat.DATE_TIME_LONG.format(targetInstant);
-
-        Instant createdInstant = Instant.ofEpochMilli(reminder.getCreatedTimestamp());
-        String discordCreatedTimestamp = TimeFormat.DATE_TIME_LONG.format(createdInstant);
-
-        return new EmbedBuilder()
-                .setTitle("Reminder Alert | Reminder #" + reminder.getId())
-                .setColor(Color.GREEN)
-                .setDescription(
-                        String.format(
-                                """
-                                        Message: %s
-                                        
-                                        Created On: %s
-                                        Due on: %s
-                                        """,
-                                reminder.getMessage(),
-                                discordCreatedTimestamp,
-                                discordReminderTargetTimestamp
-                        ))
-                .setFooter("Reminder for " + user.getEffectiveName(), user.getEffectiveAvatarUrl())
-                .build();
-    }
-
     @Override
     public MessageEmbed createPaginatedEmbed(User user, ArrayList<Object> data, int currentPage, int itemsPerPage) {
         int startIndex = (currentPage - 1) * itemsPerPage;
@@ -126,5 +99,32 @@ public class ReminderEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
         embedBuilder.setFooter("Reminder Count: " + data.size() + " | Page " + currentPage + "/" + totalPages, user.getEffectiveAvatarUrl());
 
         return embedBuilder.build();
+    }
+
+    public MessageEmbed createReminderEmbed(User user, Reminder reminder) {
+
+        Instant targetInstant = Instant.ofEpochMilli(reminder.getTargetTimestamp());
+        String discordReminderTargetTimestamp = TimeFormat.DATE_TIME_LONG.format(targetInstant);
+
+        Instant createdInstant = Instant.ofEpochMilli(reminder.getCreatedTimestamp());
+        String discordCreatedTimestamp = TimeFormat.DATE_TIME_LONG.format(createdInstant);
+
+        return new EmbedBuilder()
+                .setTitle("Reminder Alert | Reminder #" + reminder.getId())
+                .setColor(Color.GREEN)
+                .setDescription(
+                        String.format(
+                                """
+                                        Message: %s
+                                        
+                                        Created On: %s
+                                        Due on: %s
+                                        """,
+                                reminder.getMessage(),
+                                discordCreatedTimestamp,
+                                discordReminderTargetTimestamp
+                        ))
+                .setFooter("Reminder for " + user.getEffectiveName(), user.getEffectiveAvatarUrl())
+                .build();
     }
 }
