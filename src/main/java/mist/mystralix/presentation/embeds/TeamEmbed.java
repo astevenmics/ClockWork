@@ -15,6 +15,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class TeamEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
+
     @Override
     public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
         if (!(object instanceof Team team)) return null;
@@ -29,6 +30,65 @@ public class TeamEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
                 user.getEffectiveName() + " | Team",
                 user.getEffectiveAvatarUrl()
         );
+
+        return embedBuilder.build();
+    }
+
+    @Override
+    public MessageEmbed createErrorEmbed(User user, String message) {
+        return new EmbedBuilder()
+                .setColor(Color.RED)
+                .setTitle("Error | Team")
+                .setDescription(message)
+                .setFooter(user.getEffectiveName() + " | Team Error", user.getEffectiveAvatarUrl())
+                .build();
+    }
+
+    @Override
+    public MessageEmbed createMissingParametersEmbed(User user, String message) {
+        EmbedBuilder embed = new EmbedBuilder();
+        embed.setTitle("Team Interaction Incomplete");
+        embed.setColor(Color.ORANGE);
+        embed.setDescription(message);
+
+        embed.setFooter(
+                user.getEffectiveName() + " | Team Lacking Information",
+                user.getEffectiveAvatarUrl()
+        );
+
+        return embed.build();
+    }
+
+    @Override
+    public MessageEmbed createPaginatedEmbed(User user, ArrayList<Object> data, int currentPage, int itemsPerPage) {
+        int startIndex = (currentPage - 1) * itemsPerPage;
+        int endIndex = Math.min(currentPage * itemsPerPage, data.size());
+        int totalPages = (int) Math.ceil((double) data.size() / itemsPerPage);
+
+        EmbedBuilder embedBuilder = new EmbedBuilder();
+        embedBuilder.setTitle("List of Teams | " + user.getEffectiveName());
+
+        for (int i = startIndex; i < endIndex; i++) {
+            if (!(data.get(i) instanceof Team team)) continue;
+
+            User leaderUser = user.getJDA().getUserById(team.getTeamLeader());
+            String teamLeader = leaderUser != null ? leaderUser.getAsMention() : "<@" + team.getTeamLeader() + ">";
+
+            embedBuilder.addField("Team #" + team.getId(),
+                    String.format(
+                            """
+                                    Name: **%s**
+                                    Leader: %s
+                                    Size: %d users
+                                    """,
+                            team.getTeamName(),
+                            teamLeader,
+                            1 + team.getModerators().size() + team.getMembers().size()
+                    ),
+                    true);
+        }
+
+        embedBuilder.setFooter("Team Count: " + data.size() + " | Page " + currentPage + "/" + totalPages, user.getEffectiveAvatarUrl());
 
         return embedBuilder.build();
     }
@@ -216,31 +276,6 @@ public class TeamEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
                 .build();
     }
 
-    @Override
-    public MessageEmbed createErrorEmbed(User user, String message) {
-        return new EmbedBuilder()
-                .setColor(Color.RED)
-                .setTitle("Error | Team")
-                .setDescription(message)
-                .setFooter(user.getEffectiveName() + " | Team Error", user.getEffectiveAvatarUrl())
-                .build();
-    }
-
-    @Override
-    public MessageEmbed createMissingParametersEmbed(User user, String message) {
-        EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle("Team Interaction Incomplete");
-        embed.setColor(Color.ORANGE);
-        embed.setDescription(message);
-
-        embed.setFooter(
-                user.getEffectiveName() + " | Team Lacking Information",
-                user.getEffectiveAvatarUrl()
-        );
-
-        return embed.build();
-    }
-
     public MessageEmbed createPositionUpdateEmbed(
             User user,
             User userUpdated,
@@ -314,37 +349,4 @@ public class TeamEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
                 .build();
     }
 
-    @Override
-    public MessageEmbed createPaginatedEmbed(User user, ArrayList<Object> data, int currentPage, int itemsPerPage) {
-        int startIndex = (currentPage - 1) * itemsPerPage;
-        int endIndex = Math.min(currentPage * itemsPerPage, data.size());
-        int totalPages = (int) Math.ceil((double) data.size() / itemsPerPage);
-
-        EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("List of Teams | " + user.getEffectiveName());
-
-        for (int i = startIndex; i < endIndex; i++) {
-            if (!(data.get(i) instanceof Team team)) continue;
-
-            User leaderUser = user.getJDA().getUserById(team.getTeamLeader());
-            String teamLeader = leaderUser != null ? leaderUser.getAsMention() : "<@" + team.getTeamLeader() + ">";
-
-            embedBuilder.addField("Team #" + team.getId(),
-                    String.format(
-                            """
-                                    Name: **%s**
-                                    Leader: %s
-                                    Size: %d users
-                                    """,
-                            team.getTeamName(),
-                            teamLeader,
-                            1 + team.getModerators().size() + team.getMembers().size()
-                    ),
-                    true);
-        }
-
-        embedBuilder.setFooter("Team Count: " + data.size() + " | Page " + currentPage + "/" + totalPages, user.getEffectiveAvatarUrl());
-
-        return embedBuilder.build();
-    }
 }
