@@ -35,14 +35,14 @@ public final class Tables {
                 team_leader VARCHAR(50) NOT NULL,
                 moderators JSON NOT NULL DEFAULT (JSON_ARRAY()),
                 members JSON NOT NULL DEFAULT (JSON_ARRAY()),
-                tasks_uuid JSON NOT NULL DEFAULT (JSON_ARRAY()),
+                task_uuids JSON NOT NULL DEFAULT (JSON_ARRAY()),
                 team_invitations JSON NOT NULL DEFAULT (JSON_ARRAY()),
                 UNIQUE KEY(id)
             );
             """;
 
     public static final String TEAM_TASK = """
-            CREATE TABLE IF NOT EXISTS team_task (
+            CREATE TABLE IF NOT EXISTS team_tasks (
                 uuid VARCHAR(50) PRIMARY KEY,
                 user_discord_id VARCHAR(50) NOT NULL,
                 id BIGINT NOT NULL AUTO_INCREMENT,

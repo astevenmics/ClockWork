@@ -18,7 +18,7 @@ public class DBTeamRepository implements TeamRepository {
         String sqlStatement =
                 """
                         INSERT INTO teams
-                        (uuid, team_name, team_leader, moderators, members, tasks_uuid)
+                        (uuid, team_name, team_leader, moderators, members, task_uuids)
                         VALUES (?, ?, ?, ?, ?, ?)
                         """;
 
@@ -32,14 +32,14 @@ public class DBTeamRepository implements TeamRepository {
             String teamLeader = baseObject.getTeamLeader();
             String moderators = gson.toJson(baseObject.getModerators());
             String members = gson.toJson(baseObject.getMembers());
-            String tasksUUID = gson.toJson(baseObject.getTasksUUID());
+            String taskUUIDs = gson.toJson(baseObject.getTasksUUID());
 
             preparedStatement.setString(1, baseObject.getUUID());
             preparedStatement.setString(2, teamName);
             preparedStatement.setString(3, teamLeader);
             preparedStatement.setString(4, moderators);
             preparedStatement.setString(5, members);
-            preparedStatement.setString(6, tasksUUID);
+            preparedStatement.setString(6, taskUUIDs);
 
             preparedStatement.executeUpdate();
 
@@ -105,7 +105,7 @@ public class DBTeamRepository implements TeamRepository {
         String sqlStatement =
                 """
                         UPDATE teams
-                        SET team_leader = ?, team_name = ?, moderators = ?, members = ?, tasks_uuid = ?, team_invitations = ?
+                        SET team_leader = ?, team_name = ?, moderators = ?, members = ?, task_uuids = ?, team_invitations = ?
                         WHERE uuid = ?
                         """;
 
@@ -118,13 +118,13 @@ public class DBTeamRepository implements TeamRepository {
             Gson gson = new Gson();
             String moderators = gson.toJson(baseObject.getModerators());
             String members = gson.toJson(baseObject.getMembers());
-            String tasksUUID = gson.toJson(baseObject.getTasksUUID());
+            String taskUUIDs = gson.toJson(baseObject.getTasksUUID());
             String teamInvitations = gson.toJson(baseObject.getTeamInvitations());
             preparedStatement.setString(1, baseObject.getTeamLeader());
             preparedStatement.setString(2, baseObject.getTeamName());
             preparedStatement.setString(3, moderators);
             preparedStatement.setString(4, members);
-            preparedStatement.setString(5, tasksUUID);
+            preparedStatement.setString(5, taskUUIDs);
             preparedStatement.setString(6, teamInvitations);
             preparedStatement.setString(7, uuid);
 
