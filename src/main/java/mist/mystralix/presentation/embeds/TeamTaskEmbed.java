@@ -14,6 +14,7 @@ import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
 import java.awt.*;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.List;
 
 public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
 
@@ -70,7 +71,7 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
             SlashCommandInteraction event
     ) {
 
-        ArrayList<String> assignedUsers = teamTask.getAssignedUsers();
+        List<String> assignedUsers = teamTask.getAssignedUsers();
         Guild guild = event.getGuild();
         if(guild == null) {
             return createErrorEmbed(
