@@ -11,7 +11,8 @@ public class Loops {
     public static StringBuilder createTeamUsersStringBuilder(
             Guild guild,
             List<String> members,
-            String emptyMessage) {
+            String emptyMessage
+    ) {
         StringBuilder stringBuilder = new StringBuilder();
         if(members.isEmpty()) {
             stringBuilder.append(emptyMessage);
