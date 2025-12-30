@@ -1,114 +1,99 @@
 package mist.mystralix.application.validator;
 
-import mist.mystralix.application.team.TeamService;
-import mist.mystralix.application.validationresult.TeamValidationResult;
 import mist.mystralix.domain.team.Team;
 import mist.mystralix.presentation.embeds.IMessageEmbedBuilder;
 import mist.mystralix.utils.messages.CommonMessages;
 import mist.mystralix.utils.messages.TeamMessages;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
-import net.dv8tion.jda.api.interactions.commands.OptionMapping;
-import net.dv8tion.jda.api.interactions.commands.SlashCommandInteraction;
-
-import java.util.Objects;
 
 public class TeamValidator {
 
-    // Checks if the team exists
-    // Checks if the user is part of the team
-    public static MessageEmbed validateTeamAndAccess(
+    public static boolean isUserPartOfTeam(Team team, String userId) {
+        return team.getTeamLeader().equals(userId)
+                || team.getModerators().contains(userId)
+                || team.getMembers().contains(userId);
+    }
+
+    public static boolean isUserNotPartOfTeam(Team team, String userId) {
+        return !isUserPartOfTeam(team, userId);
+    }
+
+    public static MessageEmbed validateTeam(
             User user,
-            TeamService teamService,
-            IMessageEmbedBuilder teamEmbed,
-            int teamId
+            Team team,
+            IMessageEmbedBuilder teamEmbed
     ) {
-        Team team = teamService.getById(teamId);
         if (team == null) {
-            return teamEmbed.createErrorEmbed(
-                    user,
+            return teamEmbed.createErrorEmbed(user,
                     String.format(CommonMessages.OBJECT_NOT_FOUND, "team")
             );
         }
 
-        String userId = user.getId();
-        if (!team.getTeamLeader().equals(userId) && !team.getModerators().contains(userId) && !team.getMembers().contains(userId)) {
-            return teamEmbed.createErrorEmbed(
-                    user,
+        return null;
+    }
+
+    public static MessageEmbed validateAccess(
+            User user,
+            Team team,
+            IMessageEmbedBuilder teamEmbed
+    ) {
+        if (isUserNotPartOfTeam(team, user.getId())) {
+            return teamEmbed.createErrorEmbed(user,
                     String.format(TeamMessages.NOT_PART_OF_TEAM, team.getTeamName())
             );
         }
-
         return null;
     }
 
-    // Through validateTeamAndAccess | Checks if the team exists
-    // Through validateTeamAndAccess | Checks if the user is part of the team
-    // Checks if user is either a Team Leader or a Moderator
-    public static MessageEmbed validateTeamAndPermission(
+    public static boolean isModerator(Team team, String userId) {
+        return team.getModerators().contains(userId);
+    }
+
+    public static boolean isLeader(Team team, String userId) {
+        return team.getTeamLeader().equals(userId);
+    }
+
+
+    // Slash Command Helper //
+
+    public static MessageEmbed validateTeamAndAccess(
             User user,
-            TeamService teamService,
-            IMessageEmbedBuilder teamEmbed,
-            int teamId
+            Team team,
+            IMessageEmbedBuilder teamEmbed
     ) {
-        MessageEmbed messageEmbed = validateTeamAndAccess(user, teamService, teamEmbed, teamId);
+        MessageEmbed messageEmbed = validateTeam(user, team, teamEmbed);
         if (messageEmbed != null) {
             return messageEmbed;
         }
+        return validateAccess(user, team, teamEmbed);
+    }
 
-        Team team = teamService.getById(teamId);
-        String userId = user.getId();
-        if (!team.getTeamLeader().equals(userId) && !team.getModerators().contains(userId)) {
+    public static MessageEmbed validateTeamAndModeratorOrLeader(
+            User user,
+            Team team,
+            IMessageEmbedBuilder teamEmbed
+    ) {
+        MessageEmbed messageEmbed = validateTeamAndAccess(user, team, teamEmbed);
+        if (messageEmbed != null) {
+            return messageEmbed;
+        }
+        if (!isLeader(team, user.getId()) && !isModerator(team, user.getId())) {
             return teamEmbed.createErrorEmbed(user, TeamMessages.MODERATOR_REQUIRED);
         }
-
         return null;
     }
 
-    // Through validateTeamAndAccess | Checks if the team exists
-    // Through validateTeamAndAccess | Checks if the user is part of the team
-    // Checks if user is a Team Leader
-    public static MessageEmbed validateTeamAndLeadership(
+    public static MessageEmbed validateTeamAndLeader(
             User user,
-            TeamService teamService,
-            IMessageEmbedBuilder teamEmbed,
-            int teamId
+            Team team,
+            IMessageEmbedBuilder teamEmbed
     ) {
-        MessageEmbed messageEmbed = validateTeamAndAccess(user, teamService, teamEmbed, teamId);
+        MessageEmbed messageEmbed = validateTeamAndAccess(user, team, teamEmbed);
         if (messageEmbed != null) {
             return messageEmbed;
         }
-
-        Team team = teamService.getById(teamId);
-        String userId = user.getId();
-        if (!team.getTeamLeader().equals(userId)) {
-            return teamEmbed.createErrorEmbed(user, TeamMessages.LEADER_REQUIRED);
-        }
-
-        return null;
-    }
-
-    public static TeamValidationResult validateTeamAndGetTeam(
-            SlashCommandInteraction event,
-            TeamService teamService,
-            IMessageEmbedBuilder teamEmbed,
-            String... requiredOptions
-    ) {
-        User user = event.getUser();
-        for (String option : requiredOptions) {
-            if (event.getOption(option) == null) {
-                return new TeamValidationResult(teamEmbed.createErrorEmbed(user, CommonMessages.MISSING_PARAMETERS), null);
-            }
-        }
-
-        OptionMapping teamOption = event.getOption("id");
-        MessageEmbed errorEmbed = TeamValidator.validateTeamAndLeadership(user, teamService, teamEmbed, Objects.requireNonNull(teamOption).getAsInt());
-        if (errorEmbed != null) {
-            return new TeamValidationResult(errorEmbed, null);
-        }
-
-        Team team = teamService.getById(teamOption.getAsInt());
-        return new TeamValidationResult(null, team);
+        return isLeader(team, user.getId()) ? null : teamEmbed.createErrorEmbed(user, TeamMessages.LEADER_REQUIRED);
     }
 
 }

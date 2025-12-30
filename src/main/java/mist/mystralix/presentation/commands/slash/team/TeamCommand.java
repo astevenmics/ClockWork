@@ -133,9 +133,10 @@ public class TeamCommand implements SlashCommand {
                         new OptionData(
                                 OptionType.STRING,
                                 "position",
-                                "Changes position of a member from either Moderator or Member",
+                                "Changes position of a member from either Leader, Moderator or Member",
                                 true
                         )
+                                .addChoice("Leader", "leader")
                                 .addChoice("Moderator", "moderator")
                                 .addChoice("Member", "member")
                 ),
@@ -151,21 +152,6 @@ public class TeamCommand implements SlashCommand {
                                 OptionType.STRING,
                                 "name",
                                 "New name for the team",
-                                true
-                        )
-                ),
-                new SubcommandData("transfer", "Transfer team leadership to another member.")
-                        .addOptions(
-                        new OptionData(
-                                OptionType.INTEGER,
-                                "id",
-                                "Team ID of the team you want to leave",
-                                true
-                        ),
-                        new OptionData(
-                                OptionType.USER,
-                                "user",
-                                "Mention a user to transfer team leadership",
                                 true
                         )
                 ),
@@ -281,7 +267,6 @@ public class TeamCommand implements SlashCommand {
                 case "view" -> teamSubCommandFunctions.read(event); // done
                 case "list" -> teamSubCommandFunctions.readAll(event); // done
                 case "position" -> teamSubCommandFunctions.handlePosition(event); // done
-                case "transfer" -> teamSubCommandFunctions.transferTeam(event); // done
                 case "name" -> teamSubCommandFunctions.updateName(event); // done
                 default -> null;
             };

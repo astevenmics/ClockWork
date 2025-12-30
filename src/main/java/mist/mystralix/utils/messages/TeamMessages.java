@@ -9,16 +9,19 @@ public final class TeamMessages {
             "Team Task #%d is not part of the %s team.";
 
     public static final String USER_ALREADY_INVITED =
-            "The user, %s, has already been invited.";
+            "Invitation for this user already exists in this team";
 
     public static final String USER_ALREADY_PART_OF_TEAM =
-            "The user, %s, is already part of the %s team";
+            "The user is already part of the %s team";
 
     public static final String USER_NOT_PART_OF_TEAM =
             "The mentioned user is not a part of the **%s** team.";
 
     public static final String USER_ALREADY_HAS_ROLE_IN_TEAM =
-            "The user, %s, is already a %s in the %s team";
+            "The user is already a %s in the %s team";
+
+    public static final String USER_NOT_A_MODERATOR =
+            "The user is not a moderator in the %s team";
 
     public static final String ALREADY_PART_OF_TEAM =
             "You are already part of the **%s** team";
@@ -49,6 +52,9 @@ public final class TeamMessages {
 
     public static final String CANNOT_REMOVE_FELLOW_MODERATOR =
             "You are not able to remove co-moderators from the team.";
+
+    public static final String CANNOT_REMOVE_TEAM_LEADER =
+            "You cannot remove the leader of the team.";
 
     public static final String LEADER_CANNOT_LEAVE =
             "You cannot leave the team while you're still the leader.\n" +

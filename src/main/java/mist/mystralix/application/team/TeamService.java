@@ -36,15 +36,15 @@ public class TeamService implements IdentifiableFetcher<Team> {
 
     public void create(String uuid, String name, String leaderId) {
         TEAM_REPOSITORY.create(
-                new Team(
-                        uuid,
-                        name,
-                        leaderId,
-                        new ArrayList<>(),
-                        new ArrayList<>(),
-                        new ArrayList<>(),
-                        new ArrayList<>()
-                ));
+                new Team.Builder(uuid)
+                        .teamLeader(leaderId)
+                        .teamName(name)
+                        .moderators(new ArrayList<>())
+                        .members(new ArrayList<>())
+                        .taskUUIDs(new ArrayList<>())
+                        .teamInvitations(new ArrayList<>())
+                        .build()
+        );
     }
 
 
