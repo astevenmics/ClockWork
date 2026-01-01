@@ -8,6 +8,7 @@ import mist.mystralix.application.reminder.ReminderService;
 import mist.mystralix.application.validator.InputValidation;
 import mist.mystralix.application.validator.ReminderValidator;
 import mist.mystralix.domain.reminder.Reminder;
+import mist.mystralix.infrastructure.exception.ReminderOperationException;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
 import mist.mystralix.presentation.embeds.ReminderEmbed;
 import mist.mystralix.utils.TimeHandler;
@@ -119,7 +120,8 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                         return messageEmbed;
                     }
 
-                    Optional.ofNullable(event.getOption("message", () -> null, OptionMapping::getAsString)).ifPresent(reminder::setMessage);
+                    Optional.ofNullable(event.getOption("message", () -> null, OptionMapping::getAsString))
+                            .ifPresent(reminder::setMessage);
                     String timeString = event.getOption("time", () -> null, OptionMapping::getAsString);
         
                     if (timeString != null) {
@@ -127,8 +129,12 @@ public class ReminderSubCommandFunctions implements ISlashCommandCRUD {
                         if (duration <= 0) {
                             return REMINDER_EMBED.createErrorEmbed(user, ReminderMessages.INVALID_TIME_INPUT);
                         }
-        
-                        reminder.setTargetTimestamp(System.currentTimeMillis() + duration);
+
+                        try {
+                            reminder.setTargetTimestamp(System.currentTimeMillis() + duration);
+                        } catch (ReminderOperationException e) {
+                            return REMINDER_EMBED.createErrorEmbed(user, e.getMessage());
+                        }
                     }
 
                     REMINDER_SERVICE.update(reminder);

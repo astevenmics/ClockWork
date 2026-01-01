@@ -47,14 +47,13 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
             boolean isNotificationSent
     ) {
         REMINDER_REPOSITORY.create(
-                new Reminder(
-                        reminderUUID,
-                        userDiscordID,
-                        reminderMessage,
-                        createdTimestamp,
-                        targetTimestamp,
-                        isNotificationSent
-                )
+                new Reminder.Builder(reminderUUID)
+                        .userDiscordID(userDiscordID)
+                        .message(reminderMessage)
+                        .createdTimestamp(createdTimestamp)
+                        .targetTimestamp(targetTimestamp)
+                        .notificationSent(isNotificationSent)
+                        .build()
         );
     }
 
@@ -94,6 +93,7 @@ public class ReminderService implements IdentifiableFetcher<Reminder> {
     }
 
     public void reminderSentUpdate(Reminder reminder) {
+        reminder.toggleNotification();
         REMINDER_REPOSITORY.updateIsNotificationSent(reminder);
     }
 
