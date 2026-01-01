@@ -2,7 +2,7 @@ package mist.mystralix.presentation.commands.slash.task;
 
 import mist.mystralix.application.helper.TaskHelper;
 import mist.mystralix.application.pagination.PaginationService;
-import mist.mystralix.application.task.TaskService;
+import mist.mystralix.application.task.UserTaskService;
 import mist.mystralix.domain.enums.TaskStatus;
 import mist.mystralix.presentation.commands.slash.SlashCommand;
 import net.dv8tion.jda.api.entities.MessageEmbed;
@@ -15,10 +15,10 @@ import java.util.List;
 
 public final class TaskCommand implements SlashCommand {
 
-    private final TaskSubCommandFunctions TASK_SUB_COMMAND_HANDLER;
+    private final UserTaskSubCommandFunctions USER_TASK_SUB_COMMAND_HANDLER;
 
-    public TaskCommand(TaskService taskService, PaginationService paginationService) {
-        this.TASK_SUB_COMMAND_HANDLER = new TaskSubCommandFunctions(taskService, paginationService);
+    public TaskCommand(UserTaskService taskService, PaginationService paginationService) {
+        this.USER_TASK_SUB_COMMAND_HANDLER = new UserTaskSubCommandFunctions(taskService, paginationService);
     }
 
     @Override
@@ -125,12 +125,12 @@ public final class TaskCommand implements SlashCommand {
         }
 
         MessageEmbed messageEmbed = switch (subCommand) {
-            case "create" -> TASK_SUB_COMMAND_HANDLER.create(event);
-            case "cancel" -> TASK_SUB_COMMAND_HANDLER.cancelTask(event);
-            case "delete" -> TASK_SUB_COMMAND_HANDLER.delete(event);
-            case "list" -> TASK_SUB_COMMAND_HANDLER.readAll(event);
-            case "edit" -> TASK_SUB_COMMAND_HANDLER.update(event);
-            case "view" -> TASK_SUB_COMMAND_HANDLER.read(event);
+            case "create" -> USER_TASK_SUB_COMMAND_HANDLER.create(event);
+            case "cancel" -> USER_TASK_SUB_COMMAND_HANDLER.cancelTask(event);
+            case "delete" -> USER_TASK_SUB_COMMAND_HANDLER.delete(event);
+            case "list" -> USER_TASK_SUB_COMMAND_HANDLER.readAll(event);
+            case "edit" -> USER_TASK_SUB_COMMAND_HANDLER.update(event);
+            case "view" -> USER_TASK_SUB_COMMAND_HANDLER.read(event);
             default       -> null;
         };
 
