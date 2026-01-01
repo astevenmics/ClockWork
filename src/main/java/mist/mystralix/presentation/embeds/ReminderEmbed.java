@@ -117,8 +117,8 @@ public class ReminderEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
                                 """
                                         Message: %s
                                         
-                                        Created On: %s
-                                        Due on: %s
+                                        Created: %s
+                                        Due: %s
                                         """,
                                 reminder.getMessage(),
                                 discordCreatedTimestamp,
