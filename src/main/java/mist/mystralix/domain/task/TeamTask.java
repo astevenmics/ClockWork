@@ -10,7 +10,7 @@ import java.util.Objects;
 public class TeamTask extends UserTask implements ITask {
 
     private final String teamUUID;
-    private final int teamID;
+    private final Integer teamID;
     private final List<String> assignedUsers;
 
     private TeamTask(Builder builder) {
@@ -35,7 +35,7 @@ public class TeamTask extends UserTask implements ITask {
         return teamUUID;
     }
 
-    public int getTeamID() {
+    public Integer getTeamID() {
         return teamID;
     }
 
@@ -120,7 +120,7 @@ public class TeamTask extends UserTask implements ITask {
 
         public TeamTask build() {
             if (userDiscordID == null || teamUUID == null || teamID == null || title == null || description == null || status == null) {
-                throw new IllegalStateException("Not all required fields have been set");
+                throw new TeamTaskOperationException("Not all required fields have been set");
             }
             return new TeamTask(this);
         }
