@@ -3,7 +3,6 @@ package mist.mystralix.infrastructure.repository.teamtask;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import mist.mystralix.config.DBManager;
-import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.domain.task.TeamTask;
 
 import java.lang.reflect.Type;
@@ -18,11 +17,11 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
     private final Type LIST_TYPE = new TypeToken<ArrayList<String>>(){}.getType();
 
     @Override
-    public void create(TeamTask baseObject) {
+    public void create(TeamTask teamTask) {
         String sql = """
                 INSERT INTO team_tasks
-                (uuid, user_discord_id, task_dao, team_uuid, team_id, assigned_users)
-                VALUES (?, ?, ?, ?, ?, ?)
+                (uuid, user_discord_id, title, description, status, team_uuid, team_id, assigned_users)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
         try (
@@ -31,20 +30,21 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
             ) {
 
             Gson gson = new Gson();
-            String taskDAOAsJSON = gson.toJson(baseObject.getTaskDAO());
-            String assignedUsersAsJSON = gson.toJson(baseObject.getAssignedUsers());
+            String assignedUsersAsJSON = gson.toJson(teamTask.getAssignedUsers());
 
-            preparedStatement.setString(1, baseObject.getUUID());
-            preparedStatement.setString(2, baseObject.getUserDiscordID());
-            preparedStatement.setString(3, taskDAOAsJSON);
-            preparedStatement.setString(4, baseObject.getTeamUUID());
-            preparedStatement.setInt(5, baseObject.getTeamID());
-            preparedStatement.setString(6, assignedUsersAsJSON);
+            preparedStatement.setString(1, teamTask.getUUID());
+            preparedStatement.setString(2, teamTask.getUserDiscordID());
+            preparedStatement.setString(3, teamTask.getTitle());
+            preparedStatement.setString(4, teamTask.getDescription());
+            preparedStatement.setInt(5, teamTask.getStatus());
+            preparedStatement.setString(6, teamTask.getTeamUUID());
+            preparedStatement.setInt(7, teamTask.getTeamID());
+            preparedStatement.setString(8, assignedUsersAsJSON);
 
             preparedStatement.executeUpdate();
 
         } catch (SQLException e) {
-            System.out.println("Error creating team task with UUID: " + baseObject.getUUID());
+            System.out.println("Error creating team task with UUID: " + teamTask.getUUID());
             throw new RuntimeException("DB Error", e);
         }
 
@@ -66,24 +66,26 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
             if (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
                 String userDiscordID = resultSet.getString("user_discord_id");
-                String taskDAOAsJSON = resultSet.getString("task_dao");
+                String title = resultSet.getString("title");
+                String description = resultSet.getString("description");
+                Integer status = resultSet.getInt("status");
                 String teamUUID = resultSet.getString("team_uuid");
-                int teamID = resultSet.getInt("team_id");
+                Integer teamID = resultSet.getInt("team_id");
                 String assignedUsersAsJSON = resultSet.getString("assigned_users");
 
                 Gson gson = new Gson();
-                TaskDAO taskDAO = gson.fromJson(taskDAOAsJSON, TaskDAO.class);
                 ArrayList<String> assignedUsers = gson.fromJson(assignedUsersAsJSON, LIST_TYPE);
 
-                teamTask = new TeamTask(
-                        uuid,
-                        userDiscordID,
-                        id,
-                        taskDAO,
-                        teamUUID,
-                        teamID,
-                        assignedUsers
-                );
+                teamTask = new TeamTask.Builder(uuid)
+                        .userDiscordID(userDiscordID)
+                        .id(id)
+                        .title(title)
+                        .description(description)
+                        .status(status)
+                        .teamUUID(teamUUID)
+                        .teamID(teamID)
+                        .assignedUsers(assignedUsers)
+                        .build();
             }
 
         } catch (SQLException e) {
@@ -107,26 +109,28 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
+                Integer id = resultSet.getInt("id");
                 String userDiscordID = resultSet.getString("user_discord_id");
-                int id = resultSet.getInt("id");
-                String taskDAOAsJSON = resultSet.getString("task_dao");
+                String title = resultSet.getString("title");
+                String description = resultSet.getString("description");
+                Integer status = resultSet.getInt("status");
                 String teamUUID = resultSet.getString("team_uuid");
-                int teamID = resultSet.getInt("team_id");
+                Integer teamID = resultSet.getInt("team_id");
                 String assignedUsersAsJSON = resultSet.getString("assigned_users");
 
                 Gson gson = new Gson();
-                TaskDAO taskDAO = gson.fromJson(taskDAOAsJSON, TaskDAO.class);
                 ArrayList<String> assignedUsers = gson.fromJson(assignedUsersAsJSON, LIST_TYPE);
 
-                teamTask = new TeamTask(
-                        uuid,
-                        userDiscordID,
-                        id,
-                        taskDAO,
-                        teamUUID,
-                        teamID,
-                        assignedUsers
-                );
+                teamTask = new TeamTask.Builder(uuid)
+                        .userDiscordID(userDiscordID)
+                        .id(id)
+                        .title(title)
+                        .description(description)
+                        .status(status)
+                        .teamUUID(teamUUID)
+                        .teamID(teamID)
+                        .assignedUsers(assignedUsers)
+                        .build();
             }
 
         } catch (SQLException e) {
@@ -137,11 +141,16 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
     }
 
     @Override
-    public void update(TeamTask baseObject) {
+    public void update(TeamTask teamTask) {
 
-        String sql = "UPDATE team_tasks SET task_dao = ?, assigned_users = ? WHERE uuid = ?;";
+        String sql =
+                """
+                        UPDATE team_tasks
+                        SET title = ?, description = ?, status = ?, assigned_users = ?
+                        WHERE uuid = ?;
+                        """;
 
-        String teamTaskUUID = baseObject.getUUID();
+        String teamTaskUUID = teamTask.getUUID();
 
         try (
                 Connection connection = DBManager.getConnection();
@@ -149,12 +158,13 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
         ) {
 
             Gson gson = new Gson();
-            String taskDAOAsJSON = gson.toJson(baseObject.getTaskDAO());
-            String assignedUsersAsJSON = gson.toJson(baseObject.getAssignedUsers());
+            String assignedUsersAsJSON = gson.toJson(teamTask.getAssignedUsers());
 
-            preparedStatement.setString(1, taskDAOAsJSON);
-            preparedStatement.setString(2, assignedUsersAsJSON);
-            preparedStatement.setString(3, teamTaskUUID);
+            preparedStatement.setString(1, teamTask.getTitle());
+            preparedStatement.setString(2, teamTask.getDescription());
+            preparedStatement.setInt(3, teamTask.getStatus());
+            preparedStatement.setString(4, assignedUsersAsJSON);
+            preparedStatement.setString(5, teamTaskUUID);
 
             int rowsUpdated = preparedStatement.executeUpdate();
             if (rowsUpdated == 0) {
@@ -204,26 +214,28 @@ public class DBTeamTaskRepository implements TeamTaskRepository {
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
                 String uuid = resultSet.getString("uuid");
+                Integer id = resultSet.getInt("id");
                 String userDiscordID = resultSet.getString("user_discord_id");
-                int id = resultSet.getInt("id");
-                String taskDAOAsJSON = resultSet.getString("task_dao");
+                String title = resultSet.getString("title");
+                String description = resultSet.getString("description");
+                Integer status = resultSet.getInt("status");
                 String teamUUID = resultSet.getString("team_uuid");
                 String assignedUsersAsJSON = resultSet.getString("assigned_users");
 
                 Gson gson = new Gson();
-                TaskDAO taskDAO = gson.fromJson(taskDAOAsJSON, TaskDAO.class);
                 ArrayList<String> assignedUsers = gson.fromJson(assignedUsersAsJSON, LIST_TYPE);
 
                 teamTasks.add(
-                        new TeamTask(
-                                uuid,
-                                userDiscordID,
-                                id,
-                                taskDAO,
-                                teamUUID,
-                                teamId,
-                                assignedUsers
-                        )
+                        new TeamTask.Builder(uuid)
+                                .userDiscordID(userDiscordID)
+                                .id(id)
+                                .title(title)
+                                .description(description)
+                                .status(status)
+                                .teamUUID(teamUUID)
+                                .teamID(teamId)
+                                .assignedUsers(assignedUsers)
+                                .build()
                 );
             }
 

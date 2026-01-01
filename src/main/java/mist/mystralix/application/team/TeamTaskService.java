@@ -1,6 +1,5 @@
 package mist.mystralix.application.team;
 
-import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.domain.task.TeamTask;
 import mist.mystralix.infrastructure.repository.teamtask.TeamTaskRepository;
 import mist.mystralix.utils.IdentifiableFetcher;
@@ -38,19 +37,22 @@ public class TeamTaskService implements IdentifiableFetcher<TeamTask> {
     public void create(
             String uuid,
             String userDiscordID,
+            String title,
+            String description,
+            Integer status,
             String teamUUID,
-            int teamID,
-            TaskDAO taskDAO
+            Integer teamID
     ) {
         TEAM_TASK_REPOSITORY.create(
-                new TeamTask(
-                        uuid,
-                        userDiscordID,
-                        taskDAO,
-                        teamUUID,
-                        teamID,
-                        new ArrayList<>()
-                )
+                new TeamTask.Builder(uuid)
+                        .userDiscordID(userDiscordID)
+                        .title(title)
+                        .description(description)
+                        .status(status)
+                        .teamUUID(teamUUID)
+                        .teamID(teamID)
+                        .assignedUsers(new ArrayList<>())
+                        .build()
         );
     }
 

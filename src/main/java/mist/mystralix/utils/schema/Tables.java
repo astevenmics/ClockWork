@@ -4,12 +4,14 @@ import java.util.List;
 
 public final class Tables {
 
-    public static final String TASKS = """
-            CREATE TABLE IF NOT EXISTS tasks (
+    public static final String USER_TASKS = """
+            CREATE TABLE IF NOT EXISTS user_tasks (
                 uuid VARCHAR(50) PRIMARY KEY,
                 user_discord_id VARCHAR(50) NOT NULL,
                 id BIGINT NOT NULL AUTO_INCREMENT,
-                task_dao JSON NOT NULL DEFAULT (JSON_ARRAY()),
+                title VARCHAR(32) NOT NULL,
+                description VARCHAR(256) NOT NULL,
+                status INT NOT NULL,
                 UNIQUE KEY(id)
             );
             """;
@@ -41,12 +43,14 @@ public final class Tables {
             );
             """;
 
-    public static final String TEAM_TASK = """
+    public static final String TEAM_TASKS = """
             CREATE TABLE IF NOT EXISTS team_tasks (
                 uuid VARCHAR(50) PRIMARY KEY,
                 user_discord_id VARCHAR(50) NOT NULL,
                 id BIGINT NOT NULL AUTO_INCREMENT,
-                task_dao JSON NOT NULL DEFAULT (JSON_ARRAY()),
+                title VARCHAR(32) NOT NULL,
+                description VARCHAR(256) NOT NULL,
+                status INT NOT NULL,
                 team_uuid VARCHAR(50) NOT NULL,
                 team_id VARCHAR(50) NOT NULL,
                 assigned_users JSON NOT NULL DEFAULT (JSON_ARRAY()),
@@ -58,7 +62,7 @@ public final class Tables {
     }
 
     public static List<String> getTables() {
-        return List.of(TASKS, REMINDERS, TEAMS, TEAM_TASK);
+        return List.of(USER_TASKS, REMINDERS, TEAMS, TEAM_TASKS);
     }
 
 }
