@@ -1,16 +1,16 @@
 package mist.mystralix.application.pagination;
 
-import mist.mystralix.domain.task.Task;
+import mist.mystralix.domain.task.UserTask;
 
 import java.util.ArrayList;
 
-public class TaskPaginationData implements PaginationData {
+public class UserTaskPaginationData implements PaginationData {
 
     private int currentPage;
     private int totalPages;
     private ArrayList<Object> tasks;
 
-    public TaskPaginationData(int currentPage, int totalPages, ArrayList<Task> tasks) {
+    public UserTaskPaginationData(int currentPage, int totalPages, ArrayList<UserTask> tasks) {
         this.currentPage = currentPage;
         this.totalPages = totalPages;
         this.tasks = new ArrayList<>(tasks);

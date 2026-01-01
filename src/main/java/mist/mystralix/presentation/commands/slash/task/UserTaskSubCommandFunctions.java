@@ -3,15 +3,14 @@ package mist.mystralix.presentation.commands.slash.task;
 import mist.mystralix.application.helper.TaskHelper;
 import mist.mystralix.application.pagination.PaginationData;
 import mist.mystralix.application.pagination.PaginationService;
-import mist.mystralix.application.pagination.TaskPaginationData;
-import mist.mystralix.application.task.TaskService;
+import mist.mystralix.application.pagination.UserTaskPaginationData;
+import mist.mystralix.application.task.UserTaskService;
 import mist.mystralix.application.validator.InputValidation;
 import mist.mystralix.application.validator.TaskValidator;
 import mist.mystralix.domain.enums.TaskStatus;
-import mist.mystralix.domain.task.Task;
-import mist.mystralix.domain.task.TaskDAO;
+import mist.mystralix.domain.task.UserTask;
 import mist.mystralix.presentation.commands.slash.ISlashCommandCRUD;
-import mist.mystralix.presentation.embeds.TaskEmbed;
+import mist.mystralix.presentation.embeds.UserTaskEmbed;
 import mist.mystralix.utils.messages.CommonMessages;
 import mist.mystralix.utils.messages.TaskMessages;
 import net.dv8tion.jda.api.components.actionrow.ActionRow;
@@ -25,16 +24,16 @@ import java.util.ArrayList;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-public class TaskSubCommandFunctions implements ISlashCommandCRUD {
+public class UserTaskSubCommandFunctions implements ISlashCommandCRUD {
 
-    private final TaskService TASK_SERVICE;
+    private final UserTaskService USER_TASK_SERVICE;
 
     private final PaginationService PAGINATION_SERVICE;
 
-    private final TaskEmbed TASK_EMBED = new TaskEmbed();
+    private final UserTaskEmbed USER_TASK_EMBED = new UserTaskEmbed();
 
-    public TaskSubCommandFunctions(TaskService taskService, PaginationService paginationService) {
-        this.TASK_SERVICE = taskService;
+    public UserTaskSubCommandFunctions(UserTaskService taskService, PaginationService paginationService) {
+        this.USER_TASK_SERVICE = taskService;
         this.PAGINATION_SERVICE = paginationService;
     }
 
@@ -45,24 +44,18 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         OptionMapping description = event.getOption("description");
 
         if (title == null || description == null) {
-            return TASK_EMBED.createMissingParametersEmbed(user, CommonMessages.MISSING_PARAMETERS);
+            return USER_TASK_EMBED.createMissingParametersEmbed(user, CommonMessages.MISSING_PARAMETERS);
         }
-
-        TaskDAO taskDAO = new TaskDAO(
-                title.getAsString(),
-                description.getAsString(),
-                TaskStatus.INPROGRESS
-        );
 
         String uuid = UUID.randomUUID().toString();
 
-        TASK_SERVICE.addTask(taskDAO, user, uuid);
+        USER_TASK_SERVICE.addTask(user, uuid, title.getAsString(), description.getAsString(), TaskStatus.INPROGRESS.getIntValue());
 
-        Task createdTask = TASK_SERVICE.getByUUID(uuid);
+        UserTask createdTask = USER_TASK_SERVICE.getByUUID(uuid);
 
-        return TASK_EMBED.createMessageEmbed(
+        return USER_TASK_EMBED.createMessageEmbed(
                 user,
-                "New Task",
+                "New UserTask",
                 createdTask
         );
     }
@@ -71,18 +64,18 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
     public MessageEmbed delete(SlashCommandInteraction event) {
         return InputValidation.validate(
                 event,
-                TASK_SERVICE,
-                TASK_EMBED,
+                USER_TASK_SERVICE,
+                USER_TASK_EMBED,
                 "task_id",
                 "task",
-                task -> {
+                userTask -> {
                     User user = event.getUser();
-                    MessageEmbed messageEmbed = TaskValidator.validateTaskAccess(event.getUser(), task, TASK_EMBED);
+                    MessageEmbed messageEmbed = TaskValidator.validateTaskAccess(event.getUser(), userTask, USER_TASK_EMBED);
                     if (messageEmbed != null) {
                         return messageEmbed;
                     }
-                    TASK_SERVICE.delete(task);
-                    return TASK_EMBED.createMessageEmbed(user, "Deleted Task", task);
+                    USER_TASK_SERVICE.delete(userTask);
+                    return USER_TASK_EMBED.createMessageEmbed(user, "Deleted Task", userTask);
                 }
         );
     }
@@ -91,18 +84,18 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
     public MessageEmbed update(SlashCommandInteraction event) {
         return InputValidation.validate(
                 event,
-                TASK_SERVICE,
-                TASK_EMBED,
+                USER_TASK_SERVICE,
+                USER_TASK_EMBED,
                 "id",
                 "task",
-                task -> {
-                    MessageEmbed messageEmbed = TaskValidator.validateTaskAccess(event.getUser(), task, TASK_EMBED);
+                userTask -> {
+                    MessageEmbed messageEmbed = TaskValidator.validateTaskAccess(event.getUser(), userTask, USER_TASK_EMBED);
                     if (messageEmbed != null) {
                         return messageEmbed;
                     }
-                    TaskHelper.updateTaskDAO(event, task.getTaskDAO());
-                    TASK_SERVICE.update(task);
-                    return TASK_EMBED.createMessageEmbed(event.getUser(), "Updated Task", task);
+                    TaskHelper.updateTask(event, userTask);
+                    USER_TASK_SERVICE.update(userTask);
+                    return USER_TASK_EMBED.createMessageEmbed(event.getUser(), "Updated Task", userTask);
                 });
     }
 
@@ -110,38 +103,38 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
     public MessageEmbed read(SlashCommandInteraction event) {
         return InputValidation.validate(
                 event,
-                TASK_SERVICE,
-                TASK_EMBED,
+                USER_TASK_SERVICE,
+                USER_TASK_EMBED,
                 "task_id",
                 "task",
-                task -> {
-                    MessageEmbed messageEmbed = TaskValidator.validateTaskAccess(event.getUser(), task, TASK_EMBED);
+                userTask -> {
+                    MessageEmbed messageEmbed = TaskValidator.validateTaskAccess(event.getUser(), userTask, USER_TASK_EMBED);
                     if (messageEmbed != null) {
                         return messageEmbed;
                     }
-                    return TASK_EMBED.createMessageEmbed(event.getUser(), "Viewing", task);
+                    return USER_TASK_EMBED.createMessageEmbed(event.getUser(), "Viewing", userTask);
                 });
     }
 
     public MessageEmbed cancelTask(SlashCommandInteraction event) {
         return InputValidation.validate(
                 event,
-                TASK_SERVICE,
-                TASK_EMBED,
+                USER_TASK_SERVICE,
+                USER_TASK_EMBED,
                 "task_id",
                 "task",
-                task -> {
+                userTask -> {
                     User user = event.getUser();
 
-                    MessageEmbed messageEmbed = TaskValidator.validateTaskAccess(event.getUser(), task, TASK_EMBED);
+                    MessageEmbed messageEmbed = TaskValidator.validateTaskAccess(event.getUser(), userTask, USER_TASK_EMBED);
                     if (messageEmbed != null) {
                         return messageEmbed;
                     }
 
-                    task.getTaskDAO().setTaskStatus(TaskStatus.CANCELLED);
-                    TASK_SERVICE.update(task);
+                    userTask.setStatus(TaskStatus.CANCELLED.getIntValue());
+                    USER_TASK_SERVICE.update(userTask);
 
-                    return TASK_EMBED.createMessageEmbed(user, "Cancelled Task", task);
+                    return USER_TASK_EMBED.createMessageEmbed(user, "Cancelled Task", userTask);
                 }
         );
     }
@@ -155,23 +148,20 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
                 OptionMapping::getAsInt
         );
         TaskStatus selected = TaskStatus.getTaskStatus(option);
-        ArrayList<Task> tasks = TASK_SERVICE.getUserTasks(user);
+        ArrayList<UserTask> tasks = USER_TASK_SERVICE.getUserTasks(user);
 
         if (tasks.isEmpty()) {
-            return TASK_EMBED.createErrorEmbed(user, TaskMessages.NO_CURRENT_TASKS);
+            return USER_TASK_EMBED.createErrorEmbed(user, TaskMessages.NO_CURRENT_TASKS);
         }
 
         // Filter if not ALL
         if (selected != TaskStatus.ALL) {
             tasks = tasks.stream()
-                    .filter(t -> t
-                            .getTaskDAO()
-                            .getTaskStatus()
-                            .equals(selected))
+                    .filter(t -> TaskStatus.getTaskStatus(t.getStatus()).equals(selected))
                     .collect(Collectors.toCollection(ArrayList::new));
 
             if (tasks.isEmpty()) {
-                return TASK_EMBED.createErrorEmbed(
+                return USER_TASK_EMBED.createErrorEmbed(
                         user,
                         String.format(TaskMessages.NO_TASKS_FOUND_WITH_STATUS, selected.getStringValue())
                 );
@@ -182,12 +172,12 @@ public class TaskSubCommandFunctions implements ISlashCommandCRUD {
         int totalPages = (int) Math.ceil((double) tasks.size() / tasksPerPage);
         int currentPage = 1;
 
-        PaginationData paginationData = new TaskPaginationData(currentPage, totalPages, tasks);
-        PAGINATION_SERVICE.addPaginationData(Task.class.getName() + ":" + user.getId(), paginationData);
+        PaginationData paginationData = new UserTaskPaginationData(currentPage, totalPages, tasks);
+        PAGINATION_SERVICE.addPaginationData(UserTask.class.getName() + ":" + user.getId(), paginationData);
 
-        MessageEmbed messageEmbed = TASK_EMBED.createPaginatedEmbed(user, new ArrayList<>(tasks), currentPage, tasksPerPage);
-        Button previousButton = Button.primary("prev_page:" + Task.class.getName(), "Previous");
-        Button nextButton = Button.primary("next_page:" + Task.class.getName(), "Next");
+        MessageEmbed messageEmbed = USER_TASK_EMBED.createPaginatedEmbed(user, new ArrayList<>(tasks), currentPage, tasksPerPage);
+        Button previousButton = Button.primary("prev_page:" + UserTask.class.getName(), "Previous");
+        Button nextButton = Button.primary("next_page:" + UserTask.class.getName(), "Next");
 
         previousButton = previousButton.asDisabled();
         if (currentPage == totalPages) {

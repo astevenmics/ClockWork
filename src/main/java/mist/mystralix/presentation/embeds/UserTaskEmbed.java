@@ -1,8 +1,8 @@
 package mist.mystralix.presentation.embeds;
 
 import mist.mystralix.application.pagination.PaginationEmbedCreator;
-import mist.mystralix.domain.task.Task;
-import mist.mystralix.domain.task.TaskDAO;
+import mist.mystralix.domain.enums.TaskStatus;
+import mist.mystralix.domain.task.UserTask;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.User;
@@ -10,24 +10,24 @@ import net.dv8tion.jda.api.entities.User;
 import java.awt.*;
 import java.util.ArrayList;
 
-public class TaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
+public class UserTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
 
     @Override
     public <T> MessageEmbed createMessageEmbed(User user, String title, T object) {
 
         // Ensure provided object is a Task instance
-        if (!(object instanceof Task task)) {
+        if (!(object instanceof UserTask userTask)) {
             return null;
         }
 
-        TaskDAO taskDAO = task.getTaskDAO();
-        String taskTitle = taskDAO.getTitle();
-        String taskDesc = taskDAO.getDescription();
-        String taskStatus = taskDAO.getTaskStatus().getIcon() + " " + taskDAO.getTaskStatus().getStringValue();
+        TaskStatus status = TaskStatus.getTaskStatus(userTask.getStatus());
+        String taskTitle = userTask.getTitle();
+        String taskDesc = userTask.getDescription();
+        String taskStatus = status.getIcon() + " " + status.getStringValue();
 
         EmbedBuilder embed = new EmbedBuilder();
-        embed.setTitle(title + " | Task #" + task.getId());
-        embed.setColor(taskDAO.getTaskStatus().getColorValue());
+        embed.setTitle(title + " | Task #" + userTask.getId());
+        embed.setColor(status.getColorValue());
         embed.setDescription(
                 "Title: " + taskTitle + "\n" +
                         "Description: " + taskDesc + "\n" +
@@ -82,17 +82,17 @@ public class TaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
         embedBuilder.setTitle("List of Tasks | " + user.getEffectiveName());
 
         for (int i = startIndex; i < endIndex; i++) {
-            if (!(data.get(i) instanceof Task task)) continue;
-            TaskDAO taskDAO = task.getTaskDAO();
-            embedBuilder.addField("Task #" + task.getId(),
+            if (!(data.get(i) instanceof UserTask userTask)) continue;
+            TaskStatus status = TaskStatus.getTaskStatus(userTask.getStatus());
+            embedBuilder.addField("Task #" + userTask.getId(),
                     String.format(
                             """
                                     Title: **%s**
                                     Status: %s **%s**
                                     """,
-                            taskDAO.getTitle(),
-                            taskDAO.getTaskStatus().getIcon(),
-                            taskDAO.getTaskStatus().getStringValue()
+                            userTask.getTitle(),
+                            status.getIcon(),
+                            status.getStringValue()
                     ),
                     true);
         }
