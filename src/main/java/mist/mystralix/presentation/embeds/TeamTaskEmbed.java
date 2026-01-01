@@ -3,7 +3,6 @@ package mist.mystralix.presentation.embeds;
 import mist.mystralix.application.loops.Loops;
 import mist.mystralix.application.pagination.PaginationEmbedCreator;
 import mist.mystralix.domain.enums.TaskStatus;
-import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.domain.task.TeamTask;
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Guild;
@@ -25,7 +24,7 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
             return null;
         }
 
-        TaskDAO taskDAO = teamTask.getTaskDAO();
+        TaskStatus status = TaskStatus.getTaskStatus(teamTask.getStatus());
 
         return new EmbedBuilder()
                 .setTitle(title)
@@ -38,10 +37,10 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
                                         Status: %s **%s**
                                         """,
                                 teamTask.getId(),
-                                taskDAO.getTitle(),
-                                taskDAO.getDescription(),
-                                taskDAO.getTaskStatus().getIcon(),
-                                taskDAO.getTaskStatus().getStringValue()
+                                teamTask.getTitle(),
+                                teamTask.getDescription(),
+                                status.getIcon(),
+                                status.getStringValue()
 
                         )
                 )
@@ -86,14 +85,14 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
                 "No users assigned."
         );
 
-        TaskStatus teamTaskStatus = teamTask.getTaskDAO().getTaskStatus();
+        TaskStatus teamTaskStatus = TaskStatus.getTaskStatus(teamTask.getStatus());
 
         return new EmbedBuilder()
                 .setTitle("✅ New Team Task Created")
                 .setDescription("A new team task has been successfully created.")
                 .setColor(Color.GREEN)
-                .addField("Task Title", teamTask.getTaskDAO().getTitle(), false)
-                .addField("Task Description", teamTask.getTaskDAO().getDescription(), false)
+                .addField("Task Title", teamTask.getTitle(), false)
+                .addField("Task Description", teamTask.getDescription(), false)
                 .addField("Task ID", String.valueOf(teamTask.getId()), true)
                 .addField("Team ID", String.valueOf(teamTask.getTeamID()), true)
                 .addField("Status", teamTaskStatus.getIcon() + " " + teamTaskStatus.getStringValue(), true)
@@ -122,8 +121,7 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
         String footerMessage = isAssign ?
                 "Assigned by " : "Unassigned by ";
 
-        TaskDAO taskDAO = teamTask.getTaskDAO();
-        TaskStatus taskStatus = teamTask.getTaskDAO().getTaskStatus();
+        TaskStatus taskStatus = TaskStatus.getTaskStatus(teamTask.getStatus());
 
         return new EmbedBuilder()
                 .setTitle(title)
@@ -136,8 +134,8 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
                                         **Status**: %s **%s**
                                         **Assigned Users**: **%d**
                                         """,
-                                taskDAO.getTitle(),
-                                taskDAO.getDescription(),
+                                teamTask.getTitle(),
+                                teamTask.getDescription(),
                                 taskStatus.getIcon(),
                                 taskStatus.getStringValue(),
                                 teamTask.getAssignedUsers().size()
@@ -161,8 +159,7 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
             );
         }
 
-        TaskDAO taskDAO = teamTask.getTaskDAO();
-        TaskStatus taskStatus = taskDAO.getTaskStatus();
+        TaskStatus taskStatus = TaskStatus.getTaskStatus(teamTask.getStatus());
 
         StringBuilder teamMembers = Loops.createTeamUsersStringBuilder(
                 serverGuild,
@@ -173,9 +170,9 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
         return new EmbedBuilder()
                 .setTitle("Team Task #" + teamTask.getId())
                 .setColor(Color.BLUE)
-                .addField("Title:", taskDAO.getTitle(), true)
+                .addField("Title:", teamTask.getTitle(), true)
                 .addField("Status:", taskStatus.getIcon() + " " + taskStatus.getStringValue(), true)
-                .addField("Description:", taskDAO.getDescription(), false)
+                .addField("Description:", teamTask.getDescription(), false)
                 .addField("Assigned Users:", teamMembers.toString(), false)
                 .setFooter(user.getEffectiveName() + " | Team Viewing", user.getEffectiveAvatarUrl())
                 .build();
@@ -188,24 +185,24 @@ public class TeamTaskEmbed implements IMessageEmbedBuilder, PaginationEmbedCreat
         int totalPages = (int) Math.ceil((double) data.size() / itemsPerPage);
 
         EmbedBuilder embedBuilder = new EmbedBuilder();
-        embedBuilder.setTitle("List of Team Tasks | " + user.getEffectiveName());
+        embedBuilder.setTitle("List of Tasks | Team");
 
         for (int i = startIndex; i < endIndex; i++) {
             if (!(data.get(i) instanceof TeamTask teamTask)) continue;
 
-            TaskDAO taskDAO = teamTask.getTaskDAO();
+            TaskStatus status = TaskStatus.getTaskStatus(teamTask.getStatus());
 
-            embedBuilder.addField("Team Task #" + teamTask.getTeamID(),
+            embedBuilder.addField("Team Task #" + teamTask.getId(),
                     String.format(
                             """
                                     Title: **%s**
                                     Users: %d users assigned
                                     Status: %s **%s**
                                     """,
-                            taskDAO.getTitle(),
+                            teamTask.getTitle(),
                             teamTask.getAssignedUsers().size(),
-                            taskDAO.getTaskStatus().getIcon(),
-                            taskDAO.getTaskStatus().getStringValue()
+                            status.getIcon(),
+                            status.getStringValue()
                     ),
                     true);
         }

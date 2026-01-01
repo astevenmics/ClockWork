@@ -32,7 +32,7 @@ public class Team {
     // Immutable List
     private final List<String> teamInvitations;
 
-    public Team(Builder builder) {
+    private Team(Builder builder) {
         this.id = builder.id;
         this.uuid = Objects.requireNonNull(builder.uuid);
         this.teamName = Objects.requireNonNull(builder.teamName);
@@ -143,7 +143,7 @@ public class Team {
     public void addTask(String task) {
         Objects.requireNonNull(task, "Null Input. Please provide a proper input");
         if (this.taskUUIDs.contains(task)) {
-            throw new TeamOperationException("Task already exists in this team");
+            throw new TeamOperationException("Team Task already exists in this team");
         }
         this.taskUUIDs.add(task);
     }
@@ -194,7 +194,7 @@ public class Team {
     public void removeTask(String taskUUID) {
         Objects.requireNonNull(taskUUID, "Null Input. Please provide a proper input");
         if (!this.taskUUIDs.contains(taskUUID)) {
-            throw new TeamOperationException("Task does not exist in this team");
+            throw new TeamOperationException("Team Task does not exist in this team");
         }
         this.taskUUIDs.remove(taskUUID);
     }

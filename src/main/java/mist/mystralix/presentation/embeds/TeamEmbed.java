@@ -261,12 +261,14 @@ public class TeamEmbed implements IMessageEmbedBuilder, PaginationEmbedCreator {
                             **Moderators**: %s
                             **Members**: %s
                             **User Count**: %d
+                                    **Task Count**: %d
                             """,
                             team.getTeamName(),
                             teamLeaderMention,
                             teamModerators,
                             teamMembers,
-                            teamUserCount
+                                teamUserCount,
+                                team.getTasksUUID().size()
                         )
                 )
                 .setFooter(

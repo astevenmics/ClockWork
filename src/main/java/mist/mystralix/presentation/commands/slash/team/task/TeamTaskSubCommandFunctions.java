@@ -12,7 +12,6 @@ import mist.mystralix.application.validator.TeamTaskValidator;
 import mist.mystralix.application.validator.TeamValidator;
 import mist.mystralix.application.validator.UserValidator;
 import mist.mystralix.domain.enums.TaskStatus;
-import mist.mystralix.domain.task.TaskDAO;
 import mist.mystralix.domain.task.TeamTask;
 import mist.mystralix.domain.team.Team;
 import mist.mystralix.infrastructure.exception.TeamTaskOperationException;
@@ -81,13 +80,11 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         TEAM_TASK_SERVICE.create(
                 uuid,
                 userId,
+                title,
+                description,
+                TaskStatus.INPROGRESS.getIntValue(),
                 team.getUUID(),
-                team.getId(),
-                new TaskDAO(
-                        title,
-                        description,
-                        TaskStatus.INPROGRESS
-                )
+                team.getId()
         );
 
         try {
@@ -139,10 +136,10 @@ public class TeamTaskSubCommandFunctions implements ISlashCommandCRUD {
         }
 
         TeamTask teamTask = result.teamTask();
-        TaskHelper.updateTaskDAO(event, teamTask.getTaskDAO());
+        TaskHelper.updateTask(event, teamTask);
         TEAM_TASK_SERVICE.update(teamTask);
 
-        return TEAM_TASK_EMBED.createMessageEmbed(user, "Updated Task", teamTask);
+        return TEAM_TASK_EMBED.createMessageEmbed(user, "Updated Team Task", teamTask);
     }
 
     /*

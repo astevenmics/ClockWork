@@ -197,7 +197,7 @@ public class TeamSubCommandFunctions implements ISlashCommandCRUD {
         if (messageEmbed != null) return messageEmbed;
 
         User userToAdd = userOption.getAsUser();
-        messageEmbed = UserValidator.validateUserBot(userToAdd, userToAdd, TEAM_EMBED);
+        messageEmbed = UserValidator.validateUserBot(user, userToAdd, TEAM_EMBED);
         if (messageEmbed != null) return messageEmbed;
         if (TeamValidator.isUserPartOfTeam(team, userToAdd.getId())) {
             return TEAM_EMBED.createErrorEmbed(user,
